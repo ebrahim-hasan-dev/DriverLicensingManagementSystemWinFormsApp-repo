@@ -4,6 +4,12 @@ A professional, medium-scale ERP desktop application designed to automate and ma
 
 ---
 
+## 🚀 Overview: 
+
+A comprehensive Desktop Application designed to automate the complete lifecycle of driver licensing services. The system manages complex business logic including application processing, multi-stage testing, and license issuance for 7 different vehicle classes, ensuring strict adherence to governmental regulations.
+
+---
+
 ## 🏗 System Architecture
 
 The project follows a strict **4-Tier Architecture** to ensure separation of concerns, maintainability, and scalability.
@@ -40,7 +46,10 @@ The project follows a strict **4-Tier Architecture** to ensure separation of con
 *   **International Licenses:** Issuance for valid domestic Class 3 license holders.
 *   **Detain/Release System:** Managing license seizures and fine payments.
 *   **Retake Test:** The system allows for retaking any type of test in case of failure, whether when renewing the license or when obtaining the license for the first time, with payment of the retake test fee, and this is done using the original application number.
-*   **Searching:** The system allows you to use a filter system for faster searching, including applications, licenses, people, and users.
+*   **Searching:** The system allows you to use a filter system for faster searching, including applications, licenses, people, and users developed advanced data-grid filtering to manage thousands of records.
+*   **Business Rules Engine:** Developed a robust engine to validate applicant eligibility based on age, current license status, and previous application history to prevent redundant or illegal requests. 
+*   **Sequential Testing System:** Engineered a prerequisite-based testing module (Vision, Theory, Practical). The system automatically blocks progression unless previous stages are cleared and fees are settled. 
+*   **Role-Based Access Control:** Built a secure User Management module, allowing admins to manage system users, track action logs, and monitor transaction history. 
 
 ### 👤 Administration & Security
 *   **User Management:** Advanced CRUD with account activation/deactivation and login logging.
@@ -68,6 +77,7 @@ The project follows a strict **4-Tier Architecture** to ensure separation of con
 *   **Performance:** Strategic use of **Indexing** for faster searches and **SQL Views** for complex multi-table joins.
 *   **Data Integrity:** Multi-level validation at both the Application (C# Classes) and Database (SQL Constraints) levels.
 *   **State Persistence:** Used `Properties.Settings` for "Remember Me" functionality in the Login system.
+*   **Relational Database Design:** Architected a highly normalized SQL Server database to manage Persons, Users, Applications, Licenses, and Drivers, ensuring zero data redundancy.
 
 ---
 
