@@ -1,0 +1,1350 @@
+﻿using DLMApp_ModulesLayer;
+using System;
+using System.Collections.Generic;
+using System.Data.SqlClient;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace DLMApp_DataAccessLayer
+{
+    public class ApplicationRepository
+    {
+        // ===============================================================================================================
+
+        public static clsApplicationType GetApplicationType(enApplicationTypes ApplicationTypeID)
+        {
+            clsApplicationType applicationType = null;
+
+            SqlConnection Connection = null;
+            SqlCommand Command = null;
+            SqlDataReader Reader = null;
+
+            try
+            {
+                Connection = new SqlConnection(clsConnectionString.ConnectionString);
+
+                string GetApplicationTypeQuery = "select * from [Services_Types] where [Service_ID] = @ApplicationTypeID;";
+
+                Command = new SqlCommand(GetApplicationTypeQuery, Connection);
+
+                Command.Parameters.AddWithValue("@ApplicationTypeID", (byte)ApplicationTypeID);
+
+                Connection.Open();
+
+                Reader = Command.ExecuteReader();
+
+                while (Reader.Read())
+                {
+                    applicationType = new clsApplicationType();
+
+                    byte.TryParse(Reader["Service_ID"].ToString(), out byte ID);
+                    applicationType.ApplicationTypeID = ID;
+
+                    applicationType.ApplicationTypeName = Reader["Service_Name"] as string ?? "";
+
+                    float.TryParse(Reader["Service_Fees"].ToString(), out float ServiceFees);
+                    applicationType.ApplicationTypeFees = ServiceFees;
+                }
+            }
+            catch
+            {
+                applicationType = null;
+            }
+            finally
+            {
+                if (Reader != null)
+                {
+                    Reader.Close();
+                    Reader.Dispose();
+                }
+
+                if (Command != null)
+                {
+                    Command.Dispose();
+                }
+
+                if (Connection != null)
+                {
+                    Connection.Close();
+                    Connection.Dispose();
+                }
+            }
+
+            return applicationType;
+        }
+
+        public static List<clsApplicationType> GetAllApplicationTypes()
+        {
+            List<clsApplicationType> ListOfApplicationTypes = new List<clsApplicationType>();
+
+            SqlConnection Connection = null;
+            SqlCommand Command = null;
+            SqlDataReader Reader = null;
+
+            try
+            {
+                Connection = new SqlConnection(clsConnectionString.ConnectionString);
+
+                string GetAllQuery = "select * from [Services_Types];";
+
+                Command = new SqlCommand(GetAllQuery, Connection);
+
+                Connection.Open();
+
+                Reader = Command.ExecuteReader();
+
+                while (Reader.Read())
+                {
+                    clsApplicationType ApplicationType = new clsApplicationType();
+
+                    byte.TryParse(Reader["Service_ID"].ToString(), out byte ID);
+                    ApplicationType.ApplicationTypeID = ID;
+
+                    ApplicationType.ApplicationTypeName = Reader["Service_Name"] as string ?? "";
+
+                    float.TryParse(Reader["Service_Fees"].ToString(), out float ServiceFees);
+                    ApplicationType.ApplicationTypeFees = ServiceFees;
+
+                    ListOfApplicationTypes.Add(ApplicationType);
+                }
+            }
+            finally
+            {
+                if (Reader != null)
+                {
+                    Reader.Close();
+                    Reader.Dispose();
+                }
+
+                if (Command != null)
+                {
+                    Command.Dispose();
+                }
+
+                if (Connection != null)
+                {
+                    Connection.Close();
+                    Connection.Dispose();
+                }
+            }
+
+            return ListOfApplicationTypes;
+        }
+
+        public static bool UpdateApplicationTypeFees(byte ApplicationTypeID, float ApplicationTypeFees)
+        {
+            bool Updated = false;
+
+            if (ApplicationTypeID > 0 && ApplicationTypeFees > 0)
+            {
+                SqlConnection Connection = null;
+                SqlCommand Command = null;
+
+                try
+                {
+                    Connection = new SqlConnection(clsConnectionString.ConnectionString);
+
+                    string UpdateQuery = "update [Services_Types] set [Service_Fees] = @ApplicationTypeFees where [Service_ID] = @ApplicationTypeID;";
+
+                    Command = new SqlCommand(UpdateQuery, Connection);
+
+                    Command.Parameters.AddWithValue("@ApplicationTypeID", ApplicationTypeID);
+                    Command.Parameters.AddWithValue("@ApplicationTypeFees", ApplicationTypeFees);
+
+                    Connection.Open();
+
+                    if (Command.ExecuteNonQuery() > 0)
+                    {
+                        Updated = true;
+                    }
+                }
+                finally
+                {
+                    if (Command != null)
+                    {
+                        Command.Dispose();
+                    }
+
+                    if (Connection != null)
+                    {
+                        Connection.Close();
+                        Connection.Dispose();
+                    }
+                }
+            }
+
+            return Updated;
+        }
+
+
+        // ================================================================================================================
+
+
+        public static bool AddNewApplication(clsApplication Application)
+        {
+            bool Added = false;
+
+            if (Application.IsFull())
+            {
+                SqlConnection Connection = null;
+                SqlCommand Command = null;
+
+                try
+                {
+                    Connection = new SqlConnection(clsConnectionString.ConnectionString);
+
+                    string AddedQuery = @"insert into [Orders] 
+                                        (Service_Fees, Last_Status_DateTime, Added_DateTime, Order_Status_ID, Service_ID, CreatedBy_UserID, Person_ID) 
+                                        values (@ServiceFees, null, default, @OrderStatusID, @ServiceID, @CreatedByUserID, @PersonID);
+                                         select Scope_Identity();";
+
+
+                    Command = new SqlCommand(AddedQuery, Connection);
+
+                    Command.Parameters.AddWithValue("@ServiceFees", Application.Fees);
+                    Command.Parameters.AddWithValue("@OrderStatusID", (byte)Application.StatusID);
+                    Command.Parameters.AddWithValue("@ServiceID", (byte)Application.ApplicationTypeID);
+                    Command.Parameters.AddWithValue("@CreatedByUserID", Application.CreatedByUserID);
+                    Command.Parameters.AddWithValue("@PersonID", Application.PersonID);
+
+                    Connection.Open();
+
+                    if (int.TryParse(Command.ExecuteScalar().ToString(), out int ApplicationID))
+                    {
+                        Application.ApplicationID = ApplicationID;
+                        Added = true;
+                    }
+                }
+                finally
+                {
+                    if (Command != null)
+                    {
+                        Command.Dispose();
+                    }
+
+                    if (Connection != null)
+                    {
+                        Connection.Close();
+                        Connection.Dispose();
+                    }
+                }
+            }
+
+            return Added;
+        }
+
+        public static bool AddNewLocalLisenceApplication(clsNewLocalLicenseApplication NewLocalLicenseApplication)
+        {
+           bool Added = false;
+
+            SqlConnection Connection = null;
+            SqlCommand Command = null;
+
+            if (NewLocalLicenseApplication.IsFull())
+            {
+                try
+                {
+                    Connection = new SqlConnection(clsConnectionString.ConnectionString);
+
+                    string AddedQuery = @"insert into [New_Local_Licenses_Order] ([Order_ID], [License_Category_ID], [Passed_Tests]) 
+                                                    values (@OrderID, @LicenseCategoryID, 0);
+                                                     select Scope_Identity();";
+
+                    Command = new SqlCommand(AddedQuery, Connection);
+
+                    Command.Parameters.AddWithValue("@OrderID", NewLocalLicenseApplication.ApplicationInfo.ApplicationID);
+                    Command.Parameters.AddWithValue("@LicenseCategoryID", NewLocalLicenseApplication.LicenseClassID);
+
+                    Connection.Open();
+
+                    if (int.TryParse(Command.ExecuteScalar().ToString(), out int NewLocalLicenseApplicationID))
+                    {
+                        NewLocalLicenseApplication.NewLocalLicenseApplicationID = NewLocalLicenseApplicationID;
+                        Added = true;
+                    }
+                }
+                finally
+                {
+                    if (Command != null)
+                    {
+                        Command.Dispose();
+                    }
+
+                    if (Connection != null)
+                    {
+                        Connection.Close();
+                        Connection.Dispose();
+                    }
+                }
+            }
+
+            return Added;
+        }
+
+        public static int FindNewLocalLicenseID(int ApplicationID)
+        {
+            int NewLocalLicenseID = 0;
+
+            if (ApplicationID > 0)
+            {
+                SqlConnection Connection = null;
+                SqlCommand Command = null;
+
+                try
+                {
+                    Connection = new SqlConnection(clsConnectionString.ConnectionString);
+
+                    string FindQuery = "select [New_Local_License_ID] from [New_Local_Licenses_Order] where [Order_ID] = @OrderID;";
+
+                    Command = new SqlCommand(FindQuery, Connection);
+
+                    Command.Parameters.AddWithValue("@OrderID", ApplicationID);
+
+                    Connection.Open();
+
+                    int.TryParse(Command.ExecuteScalar().ToString(), out NewLocalLicenseID);
+                }
+                finally
+                {
+                    if (Command != null)
+                    {
+                        Command.Dispose();
+                    }
+
+                    if (Connection != null)
+                    {
+                        Connection.Close();
+                        Connection.Dispose();
+                    }
+
+                }
+            }
+
+            return NewLocalLicenseID;
+        }
+
+        public static bool IsExist(int ApplicationID)
+        {
+            bool Exist = false;
+
+            if (ApplicationID > 0)
+            {
+                SqlConnection Connection = null;
+                SqlCommand Command = null;
+                SqlDataReader Reader = null;
+
+                try
+                {
+                    Connection = new SqlConnection(clsConnectionString.ConnectionString);
+
+                    string FindQuery = "select [Order_ID] from [Orders] where [Order_ID] = @ApplicationID;";
+
+                    Command = new SqlCommand(FindQuery, Connection);
+
+                    Command.Parameters.AddWithValue("@ApplicationID", ApplicationID);
+
+                    Connection.Open();
+
+                    Reader = Command.ExecuteReader();
+
+                    if (Reader.HasRows)
+                    {
+                        Exist = true;
+                    }
+                }
+                finally
+                {
+                    if (Reader != null)
+                    {
+                        Reader.Close();
+                        Reader.Dispose();
+                    }
+
+                    if (Command != null)
+                    {
+                        Command.Dispose();
+                    }
+
+                    if (Connection != null)
+                    {
+                        Connection.Close();
+                        Connection.Dispose();
+                    }
+                }
+            }
+
+            return Exist;
+        }
+
+        public static bool Delete(int ApplicationID)
+        {
+            bool Delete = false;
+
+            if (ApplicationID > 0)
+            {
+                SqlConnection Connection = null;
+                SqlCommand Command = null;
+
+                try
+                {
+                    Connection = new SqlConnection(clsConnectionString.ConnectionString);
+
+                    string DeleteQuery = "delete from [Orders] where [Order_ID] = @ApplicationID;";
+
+                    Command = new SqlCommand(DeleteQuery, Connection);
+
+                    Command.Parameters.AddWithValue("@ApplicationID", ApplicationID);
+
+                    Connection.Open();
+
+                    if (Command.ExecuteNonQuery() > 0)
+                    {
+                        Delete = true;
+                    }
+                }
+                finally
+                {
+                    if (Command != null)
+                    {
+                        Command.Dispose();
+                    }
+
+                    if (Connection != null)
+                    {
+                        Connection.Close();
+                        Connection.Dispose();
+                    }
+                }
+            }
+
+            return Delete;
+        }
+
+        public static bool UpdateApplicationStatus(int ApplicationID, enApplicationStatus ApplicationStatus)
+        {
+            bool Success = false;
+
+            SqlConnection Connection = null;
+            SqlCommand Command = null;
+
+            if (ApplicationID > 0)
+            {
+                try
+                {
+                    Connection = new SqlConnection(clsConnectionString.ConnectionString);
+
+                    string AddedQuery = $"update [Orders] set [Order_Status_ID] = {(byte)ApplicationStatus}, [Last_Status_DateTime] = @DateTimeNow where [Order_ID] = @ApplicationID;";
+
+                    Command = new SqlCommand(AddedQuery, Connection);
+
+                    Command.Parameters.AddWithValue("@ApplicationID", ApplicationID);
+                    Command.Parameters.AddWithValue("@DateTimeNow", DateTime.Now);
+
+                    Connection.Open();
+
+                    if (Command.ExecuteNonQuery() > 0)
+                    {
+                        Success = true;
+                    }
+                }
+                finally
+                {
+                    if (Command != null)
+                    {
+                        Command.Dispose();
+                    }
+
+                    if (Connection != null)
+                    {
+                        Connection.Close();
+                        Connection.Dispose();
+                    }
+                }
+            }
+
+            return Success;
+        }
+
+        public static clsApplication Find(int ApplicationID)
+        {
+            clsApplication Application = null;
+
+            if (ApplicationID > 0)
+            {
+                SqlConnection Connection = null;
+                SqlCommand Command = null;
+                SqlDataReader Reader = null;
+
+                try
+                {
+                    Connection = new SqlConnection(clsConnectionString.ConnectionString);
+
+                    string FindQuery = @"select [Orders].*, [User_Name] from [Orders] join [Users] on [Orders].[CreatedBy_UserID] = [Users].[User_ID]
+                                            where [Order_ID] = @ApplicationID;";
+
+                    Command = new SqlCommand(FindQuery, Connection);
+
+                    Command.Parameters.AddWithValue("@ApplicationID", ApplicationID);
+
+                    Connection.Open();
+
+                    Reader = Command.ExecuteReader();
+
+                    if (Reader.Read())
+                    {
+                        Application = new clsApplication();
+
+                        Application.ApplicationID = ApplicationID;
+
+                        Enum.TryParse(Reader["Order_Status_ID"].ToString(), out enApplicationStatus ApplicationStatus);
+                        Application.StatusID = ApplicationStatus;
+
+                        Enum.TryParse(Reader["Service_ID"].ToString(), out enApplicationTypes ApplicationTypes);
+                        Application.ApplicationTypeID = ApplicationTypes;
+
+                        float.TryParse(Reader["Service_Fees"].ToString(), out float fees);
+                        Application.Fees = fees;
+
+                        DateTime.TryParse(Reader["Added_DateTime"].ToString(), out DateTime Date);
+                        Application.AddedDateTme = Date;
+
+                        if (Reader["Last_Status_DateTime"] == DBNull.Value)
+                        {
+                            Application.LastUpdateDate = default(DateTime);
+                        }
+                        else
+                        {
+                            DateTime.TryParse(Reader["Last_Status_DateTime"].ToString(), out Date);
+                            Application.LastUpdateDate = Date;
+                        }
+
+                        int.TryParse(Reader["Person_ID"].ToString(), out int PersonID);
+                        Application.PersonID = PersonID;
+
+                        Application.CreatedByUser = Reader["User_Name"] as string ?? "";
+                    }
+                }
+                finally
+                {
+                    if (Reader != null)
+                    {
+                        Reader.Close();
+                        Reader.Dispose();
+                    }
+
+                    if (Command != null)
+                    {
+                        Command.Dispose();
+                    }
+
+                    if (Connection != null)
+                    {
+                        Connection.Close();
+                        Connection.Dispose();
+                    }
+                }
+            }
+
+            return Application;
+        }
+
+        public static List<clsNewLocalLicenseApplication> FindAllNewLocalLicensesApplications()
+        {
+            List<clsNewLocalLicenseApplication> ListOfNewLocalLicenseApplications = new List<clsNewLocalLicenseApplication>();
+
+            SqlConnection Connection = null;
+            SqlCommand Command = null;
+            SqlDataReader Reader = null;
+
+            try
+            {
+                Connection = new SqlConnection(clsConnectionString.ConnectionString);
+
+                string GetAllQuery = "select * from [vNewLocalLicensesOrders] where [Service_ID] = 1;";
+
+                Command = new SqlCommand(GetAllQuery, Connection);
+
+                Connection.Open();
+
+                Reader = Command.ExecuteReader();
+
+                while (Reader.Read())
+                {
+                    clsNewLocalLicenseApplication NewLocalLicenseApplication = new clsNewLocalLicenseApplication();
+
+                    int.TryParse(Reader["Order_ID"].ToString(), out int ID);
+                    NewLocalLicenseApplication.ApplicationInfo.ApplicationID = ID;
+
+                    Enum.TryParse(Reader["Order_Status_ID"].ToString(), out enApplicationStatus ApplicationStatus);
+                    NewLocalLicenseApplication.ApplicationInfo.StatusID = ApplicationStatus;
+
+                    Enum.TryParse(Reader["Service_ID"].ToString(), out enApplicationTypes ApplicationTypes);
+                    NewLocalLicenseApplication.ApplicationInfo.ApplicationTypeID = ApplicationTypes;
+
+                    float.TryParse(Reader["Service_Fees"].ToString(), out float fees);
+                    NewLocalLicenseApplication.ApplicationInfo.Fees = fees;
+
+                    DateTime.TryParse(Reader["Added_DateTime"].ToString(), out DateTime Date);
+                    NewLocalLicenseApplication.ApplicationInfo.AddedDateTme = Date;
+
+                    if (Reader["Last_Status_DateTime"] == DBNull.Value)
+                    {
+                        NewLocalLicenseApplication.ApplicationInfo.LastUpdateDate = default(DateTime);
+                    }
+                    else
+                    {
+                        DateTime.TryParse(Reader["Last_Status_DateTime"].ToString(), out Date);
+                        NewLocalLicenseApplication.ApplicationInfo.LastUpdateDate = Date;
+                    }
+
+                    int.TryParse(Reader["Person_ID"].ToString(), out int PersonID);
+                    NewLocalLicenseApplication.ApplicationInfo.PersonID = PersonID;
+
+                    NewLocalLicenseApplication.ApplicationInfo.CreatedByUser = Reader["User_Name"] as string ?? "";
+
+                    byte.TryParse(Reader["Passed_Tests"].ToString(), out byte PassedTests);
+                    NewLocalLicenseApplication.PassedTests = PassedTests;
+
+
+                    Enum.TryParse(Reader["License_Category_ID"].ToString(), out enLicenseClasses LicenseClassID);
+                    NewLocalLicenseApplication.LicenseClassID = LicenseClassID;
+
+
+                    ListOfNewLocalLicenseApplications.Add(NewLocalLicenseApplication);
+                }
+            }
+            finally
+            {
+                if (Reader != null)
+                {
+                    Reader.Close();
+                    Reader.Dispose();
+                }
+
+                if (Command != null)
+                {
+                    Command.Dispose();
+                }
+
+                if (Connection != null)
+                {
+                    Connection.Close();
+                    Connection.Dispose();
+                }
+            }
+
+            return ListOfNewLocalLicenseApplications;
+        }
+
+        public static List<clsNewLocalLicenseApplication> FindAllNewLocalLicensesApplications(DateTime AddedDateTime)
+        {
+            List<clsNewLocalLicenseApplication> ListOfNewLocalLicenseApplications = new List<clsNewLocalLicenseApplication>();
+
+            if (AddedDateTime != default(DateTime))
+            {
+                SqlConnection Connection = null;
+                SqlCommand Command = null;
+                SqlDataReader Reader = null;
+
+                try
+                {
+                    Connection = new SqlConnection(clsConnectionString.ConnectionString);
+
+                    string GetAllQuery = @"select * from [vNewLocalLicensesOrders] where ([Added_DateTime] between @AddedDateTime and @NextDate)
+                                            and [Service_ID] = 1;";
+
+                    Command = new SqlCommand(GetAllQuery, Connection);
+
+                    Command.Parameters.AddWithValue("@AddedDateTime", AddedDateTime.Date);
+                    Command.Parameters.AddWithValue("@NextDate", AddedDateTime.AddDays(1).Date);
+
+                    Connection.Open();
+
+                    Reader = Command.ExecuteReader();
+
+                    while (Reader.Read())
+                    {
+                        clsNewLocalLicenseApplication NewLocalLicenseApplication = new clsNewLocalLicenseApplication();
+
+                        int.TryParse(Reader["Order_ID"].ToString(), out int ID);
+                        NewLocalLicenseApplication.ApplicationInfo.ApplicationID = ID;
+
+                        Enum.TryParse(Reader["Order_Status_ID"].ToString(), out enApplicationStatus ApplicationStatus);
+                        NewLocalLicenseApplication.ApplicationInfo.StatusID = ApplicationStatus;
+
+                        Enum.TryParse(Reader["Service_ID"].ToString(), out enApplicationTypes ApplicationTypes);
+                        NewLocalLicenseApplication.ApplicationInfo.ApplicationTypeID = ApplicationTypes;
+
+                        float.TryParse(Reader["Service_Fees"].ToString(), out float fees);
+                        NewLocalLicenseApplication.ApplicationInfo.Fees = fees;
+
+                        DateTime.TryParse(Reader["Added_DateTime"].ToString(), out DateTime Date);
+                        NewLocalLicenseApplication.ApplicationInfo.AddedDateTme = Date;
+
+                        if (Reader["Last_Status_DateTime"] == DBNull.Value)
+                        {
+                            NewLocalLicenseApplication.ApplicationInfo.LastUpdateDate = default(DateTime);
+                        }
+                        else
+                        {
+                            DateTime.TryParse(Reader["Last_Status_DateTime"].ToString(), out Date);
+                            NewLocalLicenseApplication.ApplicationInfo.LastUpdateDate = Date;
+                        }
+
+                        int.TryParse(Reader["Person_ID"].ToString(), out int PersonID);
+                        NewLocalLicenseApplication.ApplicationInfo.PersonID = PersonID;
+
+                        NewLocalLicenseApplication.ApplicationInfo.CreatedByUser = Reader["User_Name"] as string ?? "";
+
+                        byte.TryParse(Reader["Passed_Tests"].ToString(), out byte PassedTests);
+                        NewLocalLicenseApplication.PassedTests = PassedTests;
+
+
+                        Enum.TryParse(Reader["License_Category_ID"].ToString(), out enLicenseClasses LicenseClassID);
+                        NewLocalLicenseApplication.LicenseClassID = LicenseClassID;
+
+                        ListOfNewLocalLicenseApplications.Add(NewLocalLicenseApplication);
+                    }
+                }
+                finally
+                {
+                    if (Reader != null)
+                    {
+                        Reader.Close();
+                        Reader.Dispose();
+                    }
+
+                    if (Command != null)
+                    {
+                        Command.Dispose();
+                    }
+
+                    if (Connection != null)
+                    {
+                        Connection.Close();
+                        Connection.Dispose();
+                    }
+                }
+            }
+
+            return ListOfNewLocalLicenseApplications;
+        }
+
+        public static List<clsApplication> FindAllRenewLicensesApplications()
+        {
+            List<clsApplication> ListOfApplications = new List<clsApplication>();
+
+            SqlConnection Connection = null;
+            SqlCommand Command = null;
+            SqlDataReader Reader = null;
+
+            try
+            {
+                Connection = new SqlConnection(clsConnectionString.ConnectionString);
+
+                string GetAllQuery = "select * from [vRenewLicensesOrders] where [Service_ID] = 2;";
+
+                Command = new SqlCommand(GetAllQuery, Connection);
+
+                Connection.Open();
+
+                Reader = Command.ExecuteReader();
+
+                while (Reader.Read())
+                {
+                    clsApplication Application = new clsApplication();
+
+                    int.TryParse(Reader["Order_ID"].ToString(), out int ID);
+                    Application.ApplicationID = ID;
+
+                    Enum.TryParse(Reader["Order_Status_ID"].ToString(), out enApplicationStatus ApplicationStatus);
+                    Application.StatusID = ApplicationStatus;
+
+                    Enum.TryParse(Reader["Service_ID"].ToString(), out enApplicationTypes ApplicationTypes);
+                    Application.ApplicationTypeID = ApplicationTypes;
+
+                    float.TryParse(Reader["Service_Fees"].ToString(), out float fees);
+                    Application.Fees = fees;
+
+                    DateTime.TryParse(Reader["Added_DateTime"].ToString(), out DateTime Date);
+                    Application.AddedDateTme = Date;
+
+                    if (Reader["Last_Status_DateTime"] == DBNull.Value)
+                    {
+                        Application.LastUpdateDate = default(DateTime);
+                    }
+                    else
+                    {
+                        DateTime.TryParse(Reader["Last_Status_DateTime"].ToString(), out Date);
+                        Application.LastUpdateDate = Date;
+                    }
+
+                    int.TryParse(Reader["Person_ID"].ToString(), out int PersonID);
+                    Application.PersonID = PersonID;
+
+                    Application.CreatedByUser = Reader["User_Name"] as string ?? "";
+
+                    if (Reader["Test_Result"] == DBNull.Value || (bool)Reader["Test_Result"] == false)
+                    {
+                        Application.PassedInVisionTest = false;
+                    }
+                    else
+                    {
+                        Application.PassedInVisionTest = true;
+                    }
+
+                 
+                    ListOfApplications.Add(Application);
+                }
+            }
+            finally
+            {
+                if (Reader != null)
+                {
+                    Reader.Close();
+                    Reader.Dispose();
+                }
+
+                if (Command != null)
+                {
+                    Command.Dispose();
+                }
+
+                if (Connection != null)
+                {
+                    Connection.Close();
+                    Connection.Dispose();
+                }
+            }
+
+            return ListOfApplications;
+        }
+
+        public static List<clsApplication> FindAllRenewLicensesApplications(DateTime AddedDateTime)
+        {
+            List<clsApplication> ListOfApplications = new List<clsApplication>();
+
+            if (AddedDateTime != default(DateTime))
+            {
+                SqlConnection Connection = null;
+                SqlCommand Command = null;
+                SqlDataReader Reader = null;
+
+                try
+                {
+                    Connection = new SqlConnection(clsConnectionString.ConnectionString);
+
+                    string GetAllQuery = @"select * from [vRenewLicensesOrders] where ([Added_DateTime] between @AddedDateTime and @NextDay)
+                                            and [Service_ID] = 2;";
+
+                    Command = new SqlCommand(GetAllQuery, Connection);
+
+                    Command.Parameters.AddWithValue("@AddedDateTime", AddedDateTime.Date);
+                    Command.Parameters.AddWithValue("@NextDay", AddedDateTime.AddDays(1).Date);
+
+                    Connection.Open();
+
+                    Reader = Command.ExecuteReader();
+
+                    while (Reader.Read())
+                    {
+                        clsApplication Application = new clsApplication();
+
+                        int.TryParse(Reader["Order_ID"].ToString(), out int ID);
+                        Application.ApplicationID = ID;
+
+                        Enum.TryParse(Reader["Order_Status_ID"].ToString(), out enApplicationStatus ApplicationStatus);
+                        Application.StatusID = ApplicationStatus;
+
+                        Enum.TryParse(Reader["Service_ID"].ToString(), out enApplicationTypes ApplicationTypes);
+                        Application.ApplicationTypeID = ApplicationTypes;
+
+                        float.TryParse(Reader["Service_Fees"].ToString(), out float fees);
+                        Application.Fees = fees;
+
+                        DateTime.TryParse(Reader["Added_DateTime"].ToString(), out DateTime Date);
+                        Application.AddedDateTme = Date;
+
+                        if (Reader["Last_Status_DateTime"] == DBNull.Value)
+                        {
+                            Application.LastUpdateDate = default(DateTime);
+                        }
+                        else
+                        {
+                            DateTime.TryParse(Reader["Last_Status_DateTime"].ToString(), out Date);
+                            Application.LastUpdateDate = Date;
+                        }
+
+                        int.TryParse(Reader["Person_ID"].ToString(), out int PersonID);
+                        Application.PersonID = PersonID;
+
+                        Application.CreatedByUser = Reader["User_Name"] as string ?? "";
+
+                        if (Reader["Test_Result"] == DBNull.Value || (bool)Reader["Test_Result"] == false)
+                        {
+                            Application.PassedInVisionTest = false;
+                        }
+                        else
+                        {
+                            Application.PassedInVisionTest = true;
+                        }
+
+                        
+                        ListOfApplications.Add(Application);
+                    }
+                }
+                finally
+                {
+                    if (Reader != null)
+                    {
+                        Reader.Close();
+                        Reader.Dispose();
+                    }
+
+                    if (Command != null)
+                    {
+                        Command.Dispose();
+                    }
+
+                    if (Connection != null)
+                    {
+                        Connection.Close();
+                        Connection.Dispose();
+                    }
+                }
+            }
+
+            return ListOfApplications;
+        }
+
+        public static bool UpdateNumberOfPassedTests(List<clsPeopleRegisteredInAppointmentDTO> ListOfRegisteredPeople)
+        {
+            bool Success = false;
+
+            if (ListOfRegisteredPeople.Count > 0)
+            {
+                SqlConnection Connection = null;
+                SqlCommand Command = null;
+
+                try
+                {
+                    Connection = new SqlConnection(clsConnectionString.ConnectionString);
+
+                    StringBuilder stringBuilder = new StringBuilder();
+
+                    short i;
+                    for (i = 0; i < ListOfRegisteredPeople.Count; i++)
+                    {
+                        if (ListOfRegisteredPeople[i]?.Result == true)
+                        {
+                            stringBuilder.Append($"update [New_Local_Licenses_Order] set [Passed_Tests] += 1 where [New_Local_License_ID] = @{ListOfRegisteredPeople[i].LocalLicenseApplicationID};");
+                        }
+                    }
+
+                    if (stringBuilder.Length > 0)
+                    {
+                        Command = new SqlCommand(stringBuilder.ToString(), Connection);
+
+                        for (i = 0; i < ListOfRegisteredPeople.Count; i++)
+                        {
+                            Command.Parameters.AddWithValue("@" + ListOfRegisteredPeople[i].LocalLicenseApplicationID, ListOfRegisteredPeople[i].LocalLicenseApplicationID);
+                        }
+
+                        Connection.Open();
+
+                        if (Command.ExecuteNonQuery() > 0)
+                        {
+                            Success = true;
+                        }
+                    }
+                    else
+                    {
+                        Success = true;
+                    }
+                }
+                finally
+                {
+                    if (Command != null)
+                    {
+                        Command.Dispose();
+                    }
+
+                    if (Connection != null)
+                    {
+                        Connection.Close();
+                        Connection.Dispose();
+                    }
+                }
+            }
+
+            return Success;
+        }
+
+        public static bool IsStatusNew(int ApplicationID)
+        {
+            bool StatusNew = false;
+
+            if (ApplicationID > 0)
+            {
+                SqlConnection Connection = null;
+                SqlCommand Command = null;
+                SqlDataReader Reader = null;
+
+                try
+                {
+                    Connection = new SqlConnection(clsConnectionString.ConnectionString);
+
+                    string GetAllQuery = "select [Order_ID] from [Orders] where [Order_ID] = @ApplicationID and [Order_Status_ID] = 1;";
+
+                    Command = new SqlCommand(GetAllQuery, Connection);
+
+                    Command.Parameters.AddWithValue("@ApplicationID", ApplicationID);
+
+                    Connection.Open();
+
+                    Reader = Command.ExecuteReader();
+
+                    if (Reader.HasRows)
+                    {
+                        StatusNew = true;
+                    }
+                }
+                finally
+                {
+                    if (Reader != null)
+                    {
+                        Reader.Close();
+                        Reader.Dispose();
+                    }
+
+                    if (Command != null)
+                    {
+                        Command.Dispose();
+                    }
+
+                    if (Connection != null)
+                    {
+                        Connection.Close();
+                        Connection.Dispose();
+                    }
+                }
+            }
+
+            return StatusNew;
+        }
+
+        public static int DoesHaveApplicationOfSameLicenseClassForNewLocalLicenseStatusNew(int PersonID, byte LicneseClass)
+        {
+            int ApplicationID = 0;
+
+            if (PersonID > 0 && LicneseClass > 0)
+            {
+                SqlConnection Connection = null;
+                SqlCommand Command = null;
+                SqlDataReader Reader = null;
+
+                try
+                {
+                    Connection = new SqlConnection(clsConnectionString.ConnectionString);
+
+                    string FindQuery = @"select [Orders].[Order_ID], [License_Category_ID] from [Orders] join [New_Local_Licenses_Order] 
+                                        on [Orders].[Order_ID] = [New_Local_Licenses_Order].[Order_ID]
+                                        where [Person_ID] = @PersonID and [Service_ID] = 1 and [Order_Status_ID] = 1 and [License_Category_ID] = @LicneseClass;";
+
+                    Command = new SqlCommand(FindQuery, Connection);
+
+                    Command.Parameters.AddWithValue("@PersonID", PersonID);
+                    Command.Parameters.AddWithValue("@LicneseClass", LicneseClass);
+
+                    Connection.Open();
+
+                    Reader = Command.ExecuteReader();
+
+                    if (Reader.Read())
+                    {
+                        int.TryParse(Reader["Order_ID"].ToString(), out int ID);
+                        ApplicationID = ID;
+                    }
+                }
+                finally
+                {
+                    if (Reader != null)
+                    {
+                        Reader.Close();
+                        Reader.Dispose();
+                    }
+
+                    if (Command != null)
+                    {
+                        Command.Dispose();
+                    }
+
+                    if (Connection != null)
+                    {
+                        Connection.Close();
+                        Connection.Dispose();
+                    }
+                }
+            }
+
+            return ApplicationID;
+        }
+
+        public static List<clsApplication> FindAllRenewLicenseApplicationsForNationalNumber(string NationalNumber)
+        {
+            List<clsApplication> ListOfApplications = new List<clsApplication>();
+
+            if (!string.IsNullOrWhiteSpace(NationalNumber))
+            {
+                SqlConnection Connection = null;
+                SqlCommand Command = null;
+                SqlDataReader Reader = null;
+
+                try
+                {
+                    Connection = new SqlConnection(clsConnectionString.ConnectionString);
+
+                    string GetAllQuery = "select * from [vRenewLicensesOrdersForNationalNumber] where [National_Number] = @NationalNumber and [Service_ID] = 2;";
+
+                    Command = new SqlCommand(GetAllQuery, Connection);
+
+                    Command.Parameters.AddWithValue("@NationalNumber", NationalNumber);
+
+                    Connection.Open();
+
+                    Reader = Command.ExecuteReader();
+
+                    while (Reader.Read())
+                    {
+                        clsApplication Application = new clsApplication();
+
+                        int.TryParse(Reader["Order_ID"].ToString(), out int ID);
+                        Application.ApplicationID = ID;
+
+                        Enum.TryParse(Reader["Order_Status_ID"].ToString(), out enApplicationStatus ApplicationStatus);
+                        Application.StatusID = ApplicationStatus;
+
+                        Enum.TryParse(Reader["Service_ID"].ToString(), out enApplicationTypes ApplicationTypes);
+                        Application.ApplicationTypeID = ApplicationTypes;
+
+                        float.TryParse(Reader["Service_Fees"].ToString(), out float fees);
+                        Application.Fees = fees;
+
+                        DateTime.TryParse(Reader["Added_DateTime"].ToString(), out DateTime Date);
+                        Application.AddedDateTme = Date;
+
+                        if (Reader["Last_Status_DateTime"] == DBNull.Value)
+                        {
+                            Application.LastUpdateDate = default(DateTime);
+                        }
+                        else
+                        {
+                            DateTime.TryParse(Reader["Last_Status_DateTime"].ToString(), out Date);
+                            Application.LastUpdateDate = Date;
+                        }
+
+                        int.TryParse(Reader["Person_ID"].ToString(), out int PersonID);
+                        Application.PersonID = PersonID;
+
+                        Application.CreatedByUser = Reader["User_Name"] as string ?? "";
+
+
+                        if (Reader["Test_Result"] == DBNull.Value || (bool)Reader["Test_Result"] == false)
+                        {
+                            Application.PassedInVisionTest = false;
+                        }
+                        else
+                        {
+                            Application.PassedInVisionTest = true;
+                        }
+
+
+                        ListOfApplications.Add(Application);
+                    }
+                }
+                finally
+                {
+                    if (Reader != null)
+                    {
+                        Reader.Close();
+                        Reader.Dispose();
+                    }
+
+                    if (Command != null)
+                    {
+                        Command.Dispose();
+                    }
+
+                    if (Connection != null)
+                    {
+                        Connection.Close();
+                        Connection.Dispose();
+                    }
+                }
+            }
+
+            return ListOfApplications;
+        }
+
+        public static List<clsNewLocalLicenseApplication> FindAllNewLocalLicensesApplicationsForNationalNumber(string NationalNumber)
+        {
+            List<clsNewLocalLicenseApplication> ListOfNewLocalLicenseApplications = new List<clsNewLocalLicenseApplication>();
+
+            if (!string.IsNullOrWhiteSpace(NationalNumber))
+            {
+                SqlConnection Connection = null;
+                SqlCommand Command = null;
+                SqlDataReader Reader = null;
+
+                try
+                {
+                    Connection = new SqlConnection(clsConnectionString.ConnectionString);
+
+                    string GetAllQuery = "select * from [vNewLocalLicensesOrdersForNationalNumber] where [National_Number] = @NationalNumber and [Service_ID] = 1;";
+
+                    Command = new SqlCommand(GetAllQuery, Connection);
+
+                    Command.Parameters.AddWithValue("@NationalNumber", NationalNumber);
+
+                    Connection.Open();
+
+                    Reader = Command.ExecuteReader();
+
+                    while (Reader.Read())
+                    {
+                        clsNewLocalLicenseApplication NewLocalLicenseApplication = new clsNewLocalLicenseApplication();
+
+                        int.TryParse(Reader["Order_ID"].ToString(), out int ID);
+                        NewLocalLicenseApplication.ApplicationInfo.ApplicationID = ID;
+
+                        Enum.TryParse(Reader["Order_Status_ID"].ToString(), out enApplicationStatus ApplicationStatus);
+                        NewLocalLicenseApplication.ApplicationInfo.StatusID = ApplicationStatus;
+
+                        Enum.TryParse(Reader["Service_ID"].ToString(), out enApplicationTypes ApplicationTypes);
+                        NewLocalLicenseApplication.ApplicationInfo.ApplicationTypeID = ApplicationTypes;
+
+                        float.TryParse(Reader["Service_Fees"].ToString(), out float fees);
+                        NewLocalLicenseApplication.ApplicationInfo.Fees = fees;
+
+                        DateTime.TryParse(Reader["Added_DateTime"].ToString(), out DateTime Date);
+                        NewLocalLicenseApplication.ApplicationInfo.AddedDateTme = Date;
+
+                        if (Reader["Last_Status_DateTime"] == DBNull.Value)
+                        {
+                            NewLocalLicenseApplication.ApplicationInfo.LastUpdateDate = default(DateTime);
+                        }
+                        else
+                        {
+                            DateTime.TryParse(Reader["Last_Status_DateTime"].ToString(), out Date);
+                            NewLocalLicenseApplication.ApplicationInfo.LastUpdateDate = Date;
+                        }
+
+                        int.TryParse(Reader["Person_ID"].ToString(), out int PersonID);
+                        NewLocalLicenseApplication.ApplicationInfo.PersonID = PersonID;
+
+                        NewLocalLicenseApplication.ApplicationInfo.CreatedByUser = Reader["User_Name"] as string ?? "";
+
+                        byte.TryParse(Reader["Passed_Tests"].ToString(), out byte PassedTests);
+                        NewLocalLicenseApplication.PassedTests = PassedTests;
+
+
+                        Enum.TryParse(Reader["License_Category_ID"].ToString(), out enLicenseClasses LicenseClassID);
+                        NewLocalLicenseApplication.LicenseClassID = LicenseClassID;
+
+                        ListOfNewLocalLicenseApplications.Add(NewLocalLicenseApplication);
+                    }
+                }
+                finally
+                {
+                    if (Reader != null)
+                    {
+                        Reader.Close();
+                        Reader.Dispose();
+                    }
+
+                    if (Command != null)
+                    {
+                        Command.Dispose();
+                    }
+
+                    if (Connection != null)
+                    {
+                        Connection.Close();
+                        Connection.Dispose();
+                    }
+                }
+            }
+
+            return ListOfNewLocalLicenseApplications;
+        }
+
+        public static bool MakeFaildRenewLicenseApplicationsIsCompleted(List<clsPeopleRegisteredInAppointmentDTO> ListOfRegisteredPeopleRenewLicense)
+        {
+            bool Success = false;
+
+            if (ListOfRegisteredPeopleRenewLicense.Count > 0)
+            {
+                SqlConnection Connection = null;
+                SqlCommand Command = null;
+
+                try
+                {
+                    Connection = new SqlConnection(clsConnectionString.ConnectionString);
+
+                    StringBuilder stringBuilder = new StringBuilder();
+
+                    short i;
+                    for (i = 0; i < ListOfRegisteredPeopleRenewLicense.Count; i++)
+                    {
+                        if (ListOfRegisteredPeopleRenewLicense[i]?.Result == false)
+                        {
+                            stringBuilder.Append($"update [Orders] set [Order_Status_ID] = 3 where [Order_ID] = @{ListOfRegisteredPeopleRenewLicense[i].ApplicationID};");
+                        }
+                    }
+
+                    if (stringBuilder.Length > 0)
+                    {
+                        Command = new SqlCommand(stringBuilder.ToString(), Connection);
+
+                        for (i = 0; i < ListOfRegisteredPeopleRenewLicense.Count; i++)
+                        {
+                            Command.Parameters.AddWithValue("@" + ListOfRegisteredPeopleRenewLicense[i].ApplicationID, ListOfRegisteredPeopleRenewLicense[i].ApplicationID);
+                        }
+
+                        Connection.Open();
+
+                        if (Command.ExecuteNonQuery() > 0)
+                        {
+                            Success = true;
+                        }
+                    }
+                    else
+                    {
+                        Success = true;
+                    }
+                }
+                finally
+                {
+                    if (Command != null)
+                    {
+                        Command.Dispose();
+                    }
+
+                    if (Connection != null)
+                    {
+                        Connection.Close();
+                        Connection.Dispose();
+                    }
+                }
+            }
+
+            return Success;
+        }
+
+
+
+
+
+    }
+}

@@ -1,0 +1,139 @@
+﻿using DLMApp_BusinessLayer;
+using DLMApp_ModulesLayer;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using static System.Net.Mime.MediaTypeNames;
+
+namespace DLMApp_PresentationLayer
+{
+    public partial class fmReleaseDetainedLicenseScreen : Form
+    { // ==================================================
+
+        clsApplicationType _ApplicationType = null;
+        clsLicense _License = null;
+
+        // ==================================================
+
+
+        public fmReleaseDetainedLicenseScreen()
+        {
+            InitializeComponent();
+        }
+
+        void Reset()
+        {
+            lbCreatedByUserResult.Text = "???";
+            lbDetainedDateResult.Text = "???";
+            lbFineResult.Text = "???";
+            lbReasonResult.Text = "???";
+
+            uctrlLisenseInfo1.Reset();
+        }
+
+        void FillDetainedLicenseInfo(clsDetainedLicenseInfo DetainedLicenseInfo)
+        {
+            lbCreatedByUserResult.Text = DetainedLicenseInfo.CreatedByUser;
+            lbDetainedDateResult.Text = DetainedLicenseInfo.DetainedDate.ToString("d-M-yyyy");
+            lbFineResult.Text = DetainedLicenseInfo.Fine.ToString();
+            lbReasonResult.Text = DetainedLicenseInfo.Reasson;
+
+            lbTotalFeesResult.Text = (float.Parse(lbFineResult.Text) + float.Parse(uctrlApplicationInfo1.lbApplicationFeesResult.Text)).ToString();
+        }
+
+        private void btFind_Click(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrWhiteSpace(mtxtbLicenseID.Text))
+            {
+                Reset();
+                
+                _License = LicenseService.Find(int.Parse(mtxtbLicenseID.Text));
+
+                if (_License != null)
+                {
+                    clsDetainedLicenseInfo DetainedLicenseInfo = DetainedLicenseService.GetDetainedLicenseInfo(_License.ID);
+
+                    if (DetainedLicenseInfo != null)
+                    {
+                        if (_License.IsActive)
+                        {
+                            FillDetainedLicenseInfo(DetainedLicenseInfo);
+
+                            btRelease.Enabled = true;
+                            this.AcceptButton = btRelease;
+                        }
+                        else
+                        {
+                            MessageBox.Show("This license is not active", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("This license is not detained", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Wrong License ID", "Wrong", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    mtxtbLicenseID.Clear();
+                }
+            }
+            else
+            {
+                MessageBox.Show("License ID is required", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btRelease_Click(object sender, EventArgs e)
+        {
+            clsApplication Application = clsGlobal.FillAndGetApplication(_License.PersonInfo.PersonID, enApplicationStatus.Completed,
+                enApplicationTypes.ReleaseDetainedLicense, _ApplicationType.ApplicationTypeFees);
+
+            if (ApplicationService.AddNewApplication(Application))
+            {
+                if (DetainedLicenseService.ReleaseDetainedLicense(_License.ID, clsGlobal.CurrentUser.UserID, Application.ApplicationID))
+                {
+                    _License.IsDetained = false;
+
+                    MessageBox.Show("The operation was completed successfully", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    uctrlApplicationInfo1.lbApplicationIDResult.Text = Application.ApplicationID.ToString();
+
+                    uctrlLisenseInfo1.SetLicenseInfo(_License, _License.ApplicationID, _License.LicenseClass);
+
+                    mtxtbLicenseID.Clear();
+
+                    btRelease.Enabled = false;
+
+                    this.AcceptButton = btFind;
+
+                    mtxtbLicenseID.Focus();
+                }
+            }
+        }
+
+        private void fmReleaseDetainedLicenseScreen_Load(object sender, EventArgs e)
+        {
+            _ApplicationType = ApplicationService.GetApplicationType(enApplicationTypes.ReleaseDetainedLicense);
+
+            uctrlApplicationInfo1.SetApplicationInfo(_ApplicationType);
+
+            clsGlobal.MakeTitleInCenterScreen(this.Width, lbReleaseDetainedLicenseScreen);
+        }
+
+        private void btCancel_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+
+
+
+
+    }
+}
