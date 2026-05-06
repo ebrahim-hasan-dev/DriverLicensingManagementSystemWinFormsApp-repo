@@ -88,7 +88,8 @@ The database was meticulously planned using:
 *   **dbdiagram.io** for the relational schema to ensure maximum normalization.
 
 > [!TIP]
-> You can find all design assets in the `/Database Images` folder.
+> You can find all design assets in the `/Database Images` folder, and The database design images in this folder are not the first version of the database, these are design images of the latest version that was being modified during project development.
+
 
 ---
 
