@@ -14,9 +14,10 @@
 
 
 Create database MyDLM;
+go
 
 use MyDLM;
-
+go
 
 create table [Services_Types]
 (
@@ -290,251 +291,237 @@ create unique index ui_National_Number on [People] ([National_Number]);
 ---- Insert all static data.
 
 
-SET IDENTITY_INSERT [dbo].[Countries] ON 
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (1, N'Afghanistan')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (2, N'Albania')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (3, N'Algeria')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (4, N'Andorra')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (5, N'Angola')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (6, N'Antigua and Barbuda')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (7, N'Argentina')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (8, N'Armenia')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (9, N'Austria')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (10, N'Azerbaijan')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (11, N'Bahrain')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (12, N'Bangladesh')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (13, N'Barbados')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (14, N'Belarus')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (15, N'Belgium')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (16, N'Belize')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (17, N'Benin')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (18, N'Bhutan')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (19, N'Bolivia')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (20, N'Bosnia and Herzegovina')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (21, N'Botswana')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (22, N'Brazil')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (23, N'Brunei')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (24, N'Bulgaria')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (25, N'Burkina Faso')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (26, N'Burundi')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (27, N'Cabo Verde')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (28, N'Cambodia')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (29, N'Cameroon')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (30, N'Canada')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (31, N'Central African Republic')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (32, N'Chad')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (33, N'Channel Islands')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (34, N'Chile')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (35, N'China')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (36, N'Colombia')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (37, N'Comoros')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (38, N'Congo')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (39, N'Costa Rica')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (40, N'Côte d''Ivoire')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (41, N'Croatia')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (42, N'Cuba')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (43, N'Cyprus')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (44, N'Czech Republic')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (45, N'Denmark')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (46, N'Djibouti')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (47, N'Dominica')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (48, N'Dominican Republic')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (49, N'DR Congo')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (50, N'Ecuador')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (51, N'Egypt')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (52, N'El Salvador')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (53, N'Equatorial Guinea')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (54, N'Eritrea')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (55, N'Estonia')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (56, N'Eswatini')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (57, N'Ethiopia')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (58, N'Faeroe Islands')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (59, N'Finland')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (60, N'France')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (61, N'French Guiana')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (62, N'Gabon')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (63, N'Gambia')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (64, N'Georgia')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (65, N'Germany')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (66, N'Ghana')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (67, N'Gibraltar')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (68, N'Greece')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (69, N'Grenada')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (70, N'Guatemala')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (71, N'Guinea')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (72, N'Guinea-Bissau')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (73, N'Guyana')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (74, N'Haiti')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (75, N'Holy See')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (76, N'Honduras')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (77, N'Hong Kong')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (78, N'Hungary')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (79, N'Iceland')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (80, N'India')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (81, N'Indonesia')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (82, N'Iran')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (83, N'Iraq')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (84, N'Ireland')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (85, N'Isle of Man')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (86, N'Israel')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (87, N'Italy')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (88, N'Jamaica')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (89, N'Japan')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (90, N'Jordan')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (91, N'Kazakhstan')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (92, N'Kenya')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (93, N'Kuwait')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (94, N'Kyrgyzstan')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (95, N'Laos')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (96, N'Latvia')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (97, N'Lebanon')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (98, N'Lesotho')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (99, N'Liberia')
-GO
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (100, N'Libya')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (101, N'Liechtenstein')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (102, N'Lithuania')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (103, N'Luxembourg')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (104, N'Macao')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (105, N'Madagascar')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (106, N'Malawi')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (107, N'Malaysia')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (108, N'Maldives')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (109, N'Mali')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (110, N'Malta')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (111, N'Mauritania')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (112, N'Mauritius')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (113, N'Mayotte')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (114, N'Mexico')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (115, N'Moldova')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (116, N'Monaco')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (117, N'Mongolia')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (118, N'Montenegro')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (119, N'Morocco')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (120, N'Mozambique')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (121, N'Myanmar')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (122, N'Namibia')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (123, N'Nepal')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (124, N'Netherlands')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (125, N'Nicaragua')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (126, N'Niger')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (127, N'Nigeria')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (128, N'North Korea')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (129, N'North Macedonia')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (130, N'Norway')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (131, N'Oman')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (132, N'Pakistan')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (133, N'Panama')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (134, N'Paraguay')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (135, N'Peru')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (136, N'Philippines')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (137, N'Poland')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (138, N'Portugal')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (139, N'Qatar')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (140, N'Réunion')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (141, N'Romania')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (142, N'Russia')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (143, N'Rwanda')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (144, N'Saint Helena')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (145, N'Saint Kitts and Nevis')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (146, N'Saint Lucia')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (147, N'Saint Vincent and the Grenadines')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (148, N'San Marino')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (149, N'Sao Tome & Principe')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (150, N'Saudi Arabia')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (151, N'Senegal')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (152, N'Serbia')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (153, N'Seychelles')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (154, N'Sierra Leone')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (155, N'Singapore')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (156, N'Slovakia')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (157, N'Slovenia')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (158, N'Somalia')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (159, N'South Africa')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (160, N'South Korea')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (161, N'South Sudan')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (162, N'Spain')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (163, N'Sri Lanka')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (164, N'State of Palestine')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (165, N'Sudan')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (166, N'Suriname')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (167, N'Sweden')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (168, N'Switzerland')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (169, N'Syria')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (170, N'Taiwan')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (171, N'Tajikistan')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (172, N'Tanzania')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (173, N'Thailand')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (174, N'The Bahamas')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (175, N'Timor-Leste')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (176, N'Togo')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (177, N'Trinidad and Tobago')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (178, N'Tunisia')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (179, N'Turkey')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (180, N'Turkmenistan')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (181, N'Uganda')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (182, N'Ukraine')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (183, N'United Arab Emirates')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (184, N'United Kingdom')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (185, N'United States')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (186, N'Uruguay')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (187, N'Uzbekistan')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (188, N'Venezuela')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (189, N'Vietnam')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (190, N'Western Sahara')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (191, N'Yemen')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (192, N'Zambia')
-INSERT [dbo].[Countries] ([Country_ID], [Country_Name]) VALUES (193, N'Zimbabwe')
-SET IDENTITY_INSERT [dbo].[Countries] OFF
-GO
 
-SET IDENTITY_INSERT [dbo].[License_Categories] ON 
+INSERT into [Countries] ( [Country_Name]) VALUES (N'Afghanistan')
+INSERT into [Countries] ( [Country_Name]) VALUES (N'Albania')
+INSERT into [Countries] ( [Country_Name]) VALUES (N'Algeria')
+INSERT into [Countries] ( [Country_Name]) VALUES (N'Andorra')
+INSERT into [Countries] ( [Country_Name]) VALUES (N'Angola')
+INSERT into [Countries] ( [Country_Name]) VALUES (N'Antigua and Barbuda')
+INSERT into [Countries] ( [Country_Name]) VALUES (N'Argentina')
+INSERT into [Countries] ( [Country_Name]) VALUES (N'Armenia')
+INSERT into [Countries] ( [Country_Name]) VALUES (N'Austria')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Azerbaijan')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Bahrain')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Bangladesh')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Barbados')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Belarus')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Belgium')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Belize')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Benin')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Bhutan')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Bolivia')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Bosnia and Herzegovina')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Botswana')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Brazil')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Brunei')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Bulgaria')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Burkina Faso')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Burundi')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Cabo Verde')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Cambodia')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Cameroon')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Canada')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Central African Republic')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Chad')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Channel Islands')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Chile')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'China')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Colombia')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Comoros')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Congo')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Costa Rica')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Côte d''Ivoire')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Croatia')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Cuba')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Cyprus')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Czech Republic')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Denmark')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Djibouti')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Dominica')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Dominican Republic')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'DR Congo')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Ecuador')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Egypt')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'El Salvador')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Equatorial Guinea')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Eritrea')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Estonia')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Eswatini')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Ethiopia')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Faeroe Islands')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Finland')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'France')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'French Guiana')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Gabon')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Gambia')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Georgia')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Germany')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Ghana')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Gibraltar')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Greece')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Grenada')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Guatemala')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Guinea')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Guinea-Bissau')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Guyana')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Haiti')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Holy See')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Honduras')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Hong Kong')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Hungary')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Iceland')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'India')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Indonesia')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Iran')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Iraq')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Ireland')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Isle of Man')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Israel')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Italy')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Jamaica')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Japan')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Jordan')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Kazakhstan')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Kenya')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Kuwait')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Kyrgyzstan')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Laos')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Latvia')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Lebanon')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Lesotho')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Liberia')
+	    
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Libya')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Liechtenstein')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Lithuania')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Luxembourg')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Macao')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Madagascar')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Malawi')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Malaysia')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Maldives')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Mali')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Malta')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Mauritania')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Mauritius')
+INSERT into [Countries] ( [Country_Name]) VALUES (N'Mayotte')
+INSERT into [Countries] ( [Country_Name]) VALUES (N'Mexico')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Moldova')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Monaco')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Mongolia')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Montenegro')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Morocco')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Mozambique')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Myanmar')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Namibia')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Nepal')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Netherlands')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Nicaragua')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Niger')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Nigeria')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'North Korea')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'North Macedonia')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Norway')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Oman')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Pakistan')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Panama')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Paraguay')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Peru')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Philippines')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Poland')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Portugal')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Qatar')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Réunion')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Romania')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Russia')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Rwanda')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Saint Helena')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Saint Kitts and Nevis')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Saint Lucia')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Saint Vincent and the Grenadines')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'San Marino')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Sao Tome & Principe')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Saudi Arabia')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Senegal')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Serbia')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Seychelles')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Sierra Leone')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Singapore')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Slovakia')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Slovenia')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Somalia')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'South Africa')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'South Korea')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'South Sudan')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Spain')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Sri Lanka')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'State of Palestine')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Sudan')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Suriname')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Sweden')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Switzerland')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Syria')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Taiwan')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Tajikistan')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Tanzania')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Thailand')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'The Bahamas')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Timor-Leste')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Togo')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Trinidad and Tobago')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Tunisia')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Turkey')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Turkmenistan')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Uganda')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Ukraine')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'United Arab Emirates')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'United Kingdom')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'United States')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Uruguay')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Uzbekistan')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Venezuela')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Vietnam')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Western Sahara')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Yemen')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Zambia')
+INSERT into [Countries] ( [Country_Name]) VALUES ( N'Zimbabwe')
 
-INSERT [dbo].[License_Categories] ([License_Category_ID], [Category_Name], [Category_Description], [Minimum_Allowed_Age], [Fees], [License_Validity_Period]) VALUES (1, N'Class 1 - Small Motorcycle', N'It allows the driver to drive small motorcycles, It is suitable for motorcycles with small capacity and limited power.', 18, 15.0000, 5)
-INSERT [dbo].[License_Categories] ([License_Category_ID], [Category_Name], [Category_Description], [Minimum_Allowed_Age], [Fees], [License_Validity_Period]) VALUES (2, N'Class 2 - Heavy Motorcycle License', N'Heavy Motorcycle License (Large Motorcycle License)', 21, 30.0000, 5)
-INSERT [dbo].[License_Categories] ([License_Category_ID], [Category_Name], [Category_Description], [Minimum_Allowed_Age], [Fees], [License_Validity_Period]) VALUES (3, N'Class 3 - Ordinary driving license', N'Ordinary driving license (car licence)', 18, 20.0000, 5)
-INSERT [dbo].[License_Categories] ([License_Category_ID], [Category_Name], [Category_Description], [Minimum_Allowed_Age], [Fees], [License_Validity_Period]) VALUES (4, N'Class 4 - Commercial', N'Commercial driving license (taxi/limousine)', 21, 200.0000, 10)
-INSERT [dbo].[License_Categories] ([License_Category_ID], [Category_Name], [Category_Description], [Minimum_Allowed_Age], [Fees], [License_Validity_Period]) VALUES (5, N'Class 5 - Agricultural', N'Agricultural and work vehicles used in farming or construction, (tractors / tillage machinery)', 21, 50.0000, 10)
-INSERT [dbo].[License_Categories] ([License_Category_ID], [Category_Name], [Category_Description], [Minimum_Allowed_Age], [Fees], [License_Validity_Period]) VALUES (6, N'Class 6 - Small and medium bus', N'Small and medium bus license', 21, 250.0000, 10)
-INSERT [dbo].[License_Categories] ([License_Category_ID], [Category_Name], [Category_Description], [Minimum_Allowed_Age], [Fees], [License_Validity_Period]) VALUES (7, N'Class 7 - Truck and heavy vehicle', N'Truck and heavy vehicle license', 21, 300.0000, 10)
-SET IDENTITY_INSERT [dbo].[License_Categories] OFF
-GO
 
-SET IDENTITY_INSERT [dbo].[Licenses_Status] ON 
 
-INSERT [dbo].[Licenses_Status] ([License_Status_ID], [Status]) VALUES (1, N'New')
-INSERT [dbo].[Licenses_Status] ([License_Status_ID], [Status]) VALUES (2, N'Lost Replacement')
-INSERT [dbo].[Licenses_Status] ([License_Status_ID], [Status]) VALUES (3, N'Damaged Replacement')
-INSERT [dbo].[Licenses_Status] ([License_Status_ID], [Status]) VALUES (4, N'Renew')
-SET IDENTITY_INSERT [dbo].[Licenses_Status] OFF
-GO
+INSERT into [License_Categories] ([Category_Name], [Category_Description], [Minimum_Allowed_Age], [Fees], [License_Validity_Period]) VALUES (N'Class 1 - Small Motorcycle', N'It allows the driver to drive small motorcycles, It is suitable for motorcycles with small capacity and limited power.', 18, 15.0000, 5)
+INSERT into [License_Categories] ([Category_Name], [Category_Description], [Minimum_Allowed_Age], [Fees], [License_Validity_Period]) VALUES (N'Class 2 - Heavy Motorcycle License', N'Heavy Motorcycle License (Large Motorcycle License)', 21, 30.0000, 5)
+INSERT into [License_Categories] ([Category_Name], [Category_Description], [Minimum_Allowed_Age], [Fees], [License_Validity_Period]) VALUES (N'Class 3 - Ordinary driving license', N'Ordinary driving license (car licence)', 18, 20.0000, 5)
+INSERT into [License_Categories] ([Category_Name], [Category_Description], [Minimum_Allowed_Age], [Fees], [License_Validity_Period]) VALUES (N'Class 4 - Commercial', N'Commercial driving license (taxi/limousine)', 21, 200.0000, 10)
+INSERT into [License_Categories] ([Category_Name], [Category_Description], [Minimum_Allowed_Age], [Fees], [License_Validity_Period]) VALUES (N'Class 5 - Agricultural', N'Agricultural and work vehicles used in farming or construction, (tractors / tillage machinery)', 21, 50.0000, 10)
+INSERT into [License_Categories] ([Category_Name], [Category_Description], [Minimum_Allowed_Age], [Fees], [License_Validity_Period]) VALUES (N'Class 6 - Small and medium bus', N'Small and medium bus license', 21, 250.0000, 10)
+INSERT into [License_Categories] ([Category_Name], [Category_Description], [Minimum_Allowed_Age], [Fees], [License_Validity_Period]) VALUES (N'Class 7 - Truck and heavy vehicle', N'Truck and heavy vehicle license', 21, 300.0000, 10)
 
-SET IDENTITY_INSERT [dbo].[Orders_Status] ON 
 
-INSERT [dbo].[Orders_Status] ([Order_Status_ID], [Order_Status_Name]) VALUES (1, N'New')
-INSERT [dbo].[Orders_Status] ([Order_Status_ID], [Order_Status_Name]) VALUES (2, N'Canceled')
-INSERT [dbo].[Orders_Status] ([Order_Status_ID], [Order_Status_Name]) VALUES (3, N'Complete')
-SET IDENTITY_INSERT [dbo].[Orders_Status] OFF
-GO
+INSERT into [Licenses_Status] ([Status]) VALUES (N'New')
+INSERT into [Licenses_Status] ([Status]) VALUES (N'Lost Replacement')
+INSERT into [Licenses_Status] ([Status]) VALUES (N'Damaged Replacement')
+INSERT into [Licenses_Status] ([Status]) VALUES (N'Renew')
 
-SET IDENTITY_INSERT [dbo].[Services_Types] ON 
 
-INSERT [dbo].[Services_Types] ([Service_ID], [Service_Name], [Service_Fees]) VALUES (1, N'New Local Driving License Service', 15.0000)
-INSERT [dbo].[Services_Types] ([Service_ID], [Service_Name], [Service_Fees]) VALUES (2, N'Renew Driving License Service', 7.0000)
-INSERT [dbo].[Services_Types] ([Service_ID], [Service_Name], [Service_Fees]) VALUES (3, N'Replacement for a Lost Driving License', 10.0000)
-INSERT [dbo].[Services_Types] ([Service_ID], [Service_Name], [Service_Fees]) VALUES (4, N'Replacement for a Damaged Driving License', 5.0000)
-INSERT [dbo].[Services_Types] ([Service_ID], [Service_Name], [Service_Fees]) VALUES (5, N'Release Detained Driving Licsense', 15.0000)
-INSERT [dbo].[Services_Types] ([Service_ID], [Service_Name], [Service_Fees]) VALUES (6, N'New International License', 51.0000)
-INSERT [dbo].[Services_Types] ([Service_ID], [Service_Name], [Service_Fees]) VALUES (7, N'Retake Test', 5.0000)
-SET IDENTITY_INSERT [dbo].[Services_Types] OFF
-GO
-SET IDENTITY_INSERT [dbo].[Tests] ON 
+INSERT into [Orders_Status] ([Order_Status_Name]) VALUES (N'New')
+INSERT into [Orders_Status] ([Order_Status_Name]) VALUES (N'Canceled')
+INSERT into [Orders_Status] ([Order_Status_Name]) VALUES (N'Complete')
 
-INSERT [dbo].[Tests] ([Test_ID], [Test_Name], [Test_Fees], [Test_Description], [MaxNumberOfPeople]) VALUES (1, N'Vision Test', 20.0000, N'This assesses the applicant''s visual acuity to ensure they have sufficient vision to drive safely.', 3)
-INSERT [dbo].[Tests] ([Test_ID], [Test_Name], [Test_Fees], [Test_Description], [MaxNumberOfPeople]) VALUES (2, N'Written (Theory) Test', 30.0000, N'This test assesses the applicant''s knowledge of traffic rules, road signs, and driving regulations. It typically consists of multiple-choice questions, and the applicant must select the correct answer(s). The written test aims to ensure that the applicant understands the rules of the road and can apply them in various driving scenarios.', 3)
-INSERT [dbo].[Tests] ([Test_ID], [Test_Name], [Test_Fees], [Test_Description], [MaxNumberOfPeople]) VALUES (3, N'Practical (Street) Test', 40.0000, N'This test evaluates the applicant''s driving skills and ability to operate a motor vehicle safely on public roads. A licensed examiner accompanies the applicant in the vehicle and observes their driving performance.', 3)
-SET IDENTITY_INSERT [dbo].[Tests] OFF
-GO
+
+INSERT into [Services_Types] ([Service_Name], [Service_Fees]) VALUES (N'New Local Driving License Service', 15.0000)
+INSERT into [Services_Types] ([Service_Name], [Service_Fees]) VALUES (N'Renew Driving License Service', 7.0000)
+INSERT into [Services_Types] ([Service_Name], [Service_Fees]) VALUES (N'Replacement for a Lost Driving License', 10.0000)
+INSERT into [Services_Types] ([Service_Name], [Service_Fees]) VALUES (N'Replacement for a Damaged Driving License', 5.0000)
+INSERT into [Services_Types] ([Service_Name], [Service_Fees]) VALUES (N'Release Detained Driving Licsense', 15.0000)
+INSERT into [Services_Types] ([Service_Name], [Service_Fees]) VALUES (N'New International License', 51.0000)
+INSERT into [Services_Types] ([Service_Name], [Service_Fees]) VALUES (N'Retake Test', 5.0000)
+
+
+INSERT into [Tests] ([Test_Name], [Test_Fees], [Test_Description], [MaxNumberOfPeople]) VALUES (N'Vision Test', 20.0000, N'This assesses the applicant''s visual acuity to ensure they have sufficient vision to drive safely.', 3)
+INSERT into [Tests] ([Test_Name], [Test_Fees], [Test_Description], [MaxNumberOfPeople]) VALUES (N'Written (Theory) Test', 30.0000, N'This test assesses the applicant''s knowledge of traffic rules, road signs, and driving regulations. It typically consists of multiple-choice questions, and the applicant must select the correct answer(s). The written test aims to ensure that the applicant understands the rules of the road and can apply them in various driving scenarios.', 3)
+INSERT into [Tests] ([Test_Name], [Test_Fees], [Test_Description], [MaxNumberOfPeople]) VALUES (N'Practical (Street) Test', 40.0000, N'This test evaluates the applicant''s driving skills and ability to operate a motor vehicle safely on public roads. A licensed examiner accompanies the applicant in the vehicle and observes their driving performance.', 3)
+
 
 
 ----==============================================================================================================
@@ -565,23 +552,27 @@ GO
 ---- Here we will implement some code so that I can add an admin to the program so that we can access it.
 
 
-use MyDLM;
+-- use MyDLM;
 
 --select * from [Countries] where [Country_Name] = 'Egypt';
 
  alter table [People] alter column [CreatedBy_UserID] int null;
+ go
 
 insert into [People] values 
 ('Ebarhim', 'Hasan', 'Ebrahim', 'Ebrahim',
 'D:\Visual Studio 2022 Projects\DLMApp_WindowsForms\People Images\Guid23029eb5-8b97-4b23-99f4-7e511482cc1f.jpg', '07-07-1998',
 'Elmansoura Elgalaa Steet 25', 'ebrahim.hasan.dev@gmail.com', '12345678902478', GETDATE(), 'Male', 51, null);
-
+go
 
 --select * from [People];
 
-update [People] set [CreatedBy_UserID] = 1;
-
 insert into [Users] values ('admin', '123', 1, 1);
+go
+
+update [People] set [CreatedBy_UserID] = 1;
+go
+
 
 --select * from [Users];
 
@@ -589,10 +580,17 @@ insert into [Users] values ('admin', '123', 1, 1);
 ---- by using the following line of code
 
  alter table [People] alter column [CreatedBy_UserID] int not null;
+ go
 
 create index i_PersonID on [Phones] ([Person_ID]);
+
+go
+
 alter table [Phones] add constraint unq_PhoneNumber unique ([Phone_Number]);
+go
+
 insert into [Phones] values ('01001978166', 1);
+go
 
 --select * from [Phones];
 
@@ -600,7 +598,6 @@ insert into [Phones] values ('01001978166', 1);
 ----==============================================================================================================
 
 ---- Views 
-
 
 create view vPeopleRegisteredInAppointment as
 select [Orders].[Order_ID], [People].[Person_ID], [First_Name], [Second_Name], [Third_Name], [Last_Name],
@@ -616,7 +613,7 @@ join [People] on [Orders].[Person_ID] = [People].[Person_ID]
 join [Countries] on [People].[Nationality_Country_ID] = [Countries].[Country_ID]
 join [Users] on [Tests_Appointments].[CreatedBy_UserID] = [Users].[User_ID];
 
-
+go
 --select * from [vPeopleRegisteredInAppointment] where Test_ID = 1 and Is_Completed = 0;
 
 ----=====================================
@@ -634,6 +631,8 @@ join [People] on [Orders].[Person_ID] = [People].[Person_ID]
 join [Countries] on [People].[Nationality_Country_ID] = [Countries].[Country_ID]
 join [Users] on [Tests_Appointments].[CreatedBy_UserID] = [Users].[User_ID] where [New_Local_License_ID] is null;
 
+go
+
 --select * from [vPeopleRegisteredInAppointmentRenewLicense] where Test_ID = 1 and Is_Completed = 0;
 
 ----=====================================
@@ -645,6 +644,8 @@ on [Orders].[Order_ID] = [New_Local_Licenses_Order].[Order_ID]
 join [License_Categories] 
 on [New_Local_Licenses_Order].[License_Category_ID] = [License_Categories].[License_Category_ID];
 
+go
+
 --select * from [vGetLicenseClassInfoByApplicationID] where [Order_ID] = 40;
 
 ----=====================================
@@ -653,6 +654,8 @@ create view vDoesHaveLicenseOfSameClass as
 select [People].[Person_ID], [Licenses].* 
 from [People] join [Drivers] on [People].[Person_ID] = [Drivers].[Person_ID]
 join [Licenses] on [Drivers].[Driver_ID] = [Licenses].[Driver_ID];
+
+go
 
 --select * from [vDoesHaveLicenseOfSameClass] where [Person_ID] = 61 and [License_Category_ID] = 3;
 
@@ -664,6 +667,7 @@ select [People].*, [License_ID], [User_Name] from
 join [People] on [Drivers].[Person_ID] = [People].[Person_ID]
 join [Users] on [People].[CreatedBy_UserID] = [Users].[User_ID];
 
+go
 
 --select * from [vFindPersonByLicenseID] where [License_ID] = 1;
 
@@ -677,6 +681,8 @@ join [Licenses_Status] on [Licenses].[License_Status_ID] = [Licenses_Status].[Li
 join [License_Categories] on [Licenses].[License_Category_ID] = [License_Categories].[License_Category_ID]
 join [Users] on [Licenses].[CreatedBy_UserID] = [Users].[User_ID];
 
+go
+
 --select * from [vLicensesInfo];
 
 ----=====================================
@@ -686,6 +692,8 @@ select [Orders].*, [User_Name], [Passed_Tests], [License_Category_ID]
 from [Orders] join [Users] on [Orders].[CreatedBy_UserID] = [Users].[User_ID]
 join [New_Local_Licenses_Order] on [Orders].[Order_ID] = [New_Local_Licenses_Order].[Order_ID];
 
+go
+
 --select * from [vNewLocalLicensesOrders];
 
 ----=====================================
@@ -694,6 +702,8 @@ create view [vRenewLicensesOrders] as
 select [Orders].*, [User_Name], [Test_Result], [Enrollment_ID]
 from [Orders] join [Users] on [Orders].[CreatedBy_UserID] = [Users].[User_ID]
 left join [Enrollments] on [Orders].[Order_ID] = [Enrollments].[RetakeTestOrderID];
+
+go
 
 --select * from [vRenewLicensesOrders];
 
@@ -705,6 +715,8 @@ from [Orders] join [Users] on [Orders].[CreatedBy_UserID] = [Users].[User_ID]
 join [People] on [People].[Person_ID] = [Orders].[Person_ID]
 join [New_Local_Licenses_Order] on [Orders].[Order_ID] = [New_Local_Licenses_Order].[Order_ID];
 
+go
+
 --select * from [vNewLocalLicensesOrdersForNationalNumber];
 
 ----=====================================
@@ -715,30 +727,32 @@ from [Orders] join [Users] on [Orders].[CreatedBy_UserID] = [Users].[User_ID]
 join [People] on [People].[Person_ID] = [Orders].[Person_ID]
 left join [Enrollments] on [Orders].[Order_ID] = [Enrollments].[RetakeTestOrderID];
 
+go
+
 --select * from [vRenewLicensesOrdersForNationalNumber];
 
 ----==============================================================================================================
 
 
-select * from [Orders_Status];
-select * from [Licenses_Status];
-select * from [Services_Types];
-select * from [Tests];
-select * from [License_Categories];
+--select * from [Orders_Status];
+--select * from [Licenses_Status];
+--select * from [Services_Types];
+--select * from [Tests];
+--select * from [License_Categories];
 
-select * from [People];
-select * from [Phones];
-select * from [Users];
+--select * from [People];
+--select * from [Phones];
+--select * from [Users];
 
-select * from [New_Local_Licenses_Order];
-select * from [Enrollments];
-select * from [Orders];
-select * from [Tests_Appointments];
+--select * from [New_Local_Licenses_Order];
+--select * from [Enrollments];
+--select * from [Orders];
+--select * from [Tests_Appointments];
 
-select * from [Drivers];
-select * from [Licenses];
-select * from [Release_Licenses_Reservation_Order];
-select * from [International_Licenses];
+--select * from [Drivers];
+--select * from [Licenses];
+--select * from [Release_Licenses_Reservation_Order];
+--select * from [International_Licenses];
 
 
 --delete [Enrollments];
