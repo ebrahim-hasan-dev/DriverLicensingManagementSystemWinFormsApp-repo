@@ -1,7 +1,9 @@
 ﻿
-using System;
-using System.Windows.Forms;
 using DLMApp_BusinessLayer;
+using System;
+using System.Security.Cryptography; // مخصصة للتشفير
+using System.Text;
+using System.Windows.Forms;
 
 
 namespace DLMApp_PresentationLayer
@@ -63,8 +65,17 @@ namespace DLMApp_PresentationLayer
         {
             if (chbRememberMe.Checked)
             {
-                Properties.Settings.Default.Username = clsGlobal.CurrentUser.UserName;
-                Properties.Settings.Default.Password = clsGlobal.CurrentUser.Password;
+                // تحويل النص إلى مصفوفة بايتات (Bytes)
+                byte[] PasswordBytes = Encoding.UTF8.GetBytes(clsGlobal.CurrentUser.Password);
+                byte[] UsernameBytes = Encoding.UTF8.GetBytes(clsGlobal.CurrentUser.UserName);
+
+                // تشفير البيانات باستخدام DPAPI 
+                // المفتاح السري للتشفير هنا مدمج ومخفي جوة نظام الويندوز نفسه ومربوط بالمستخدم الحالي
+                byte[] EncryptedBytesPasswprd = ProtectedData.Protect(PasswordBytes, null, DataProtectionScope.CurrentUser);
+                byte[] EncryptedBytesUsename = ProtectedData.Protect(UsernameBytes, null, DataProtectionScope.CurrentUser);
+
+                Properties.Settings.Default.Username = Convert.ToBase64String(EncryptedBytesUsename);
+                Properties.Settings.Default.Password = Convert.ToBase64String(EncryptedBytesPasswprd);
             }
             else
             {
@@ -95,14 +106,28 @@ namespace DLMApp_PresentationLayer
         {
             if (this.Visible)
             {
-                txtbUserName.Text = Properties.Settings.Default.Username;
-                txtbPassword.Text = Properties.Settings.Default.Password;
+                Unprotected();
 
                 chbRememberMe.Checked = Properties.Settings.Default.RememberMe;
             }
         }
 
+        private void Unprotected()
+        {
+            if (!string.IsNullOrWhiteSpace(Properties.Settings.Default.Username) && !string.IsNullOrWhiteSpace(Properties.Settings.Default.Password))
+            {
+                byte[] SavedBytesUsername = Convert.FromBase64String(Properties.Settings.Default.Username);
+                byte[] SavedBytesPassword = Convert.FromBase64String(Properties.Settings.Default.Password);
 
+                // فك التشفير ليعود لمصفوفة بايتات
+                byte[] DecryptedBytesUsername = ProtectedData.Unprotect(SavedBytesUsername, null, DataProtectionScope.CurrentUser);
+                byte[] DecryptedBytesPassword = ProtectedData.Unprotect(SavedBytesPassword, null, DataProtectionScope.CurrentUser);
+
+                // تحويل البايتات إلى النص الأصلي
+                txtbUserName.Text = Encoding.UTF8.GetString(DecryptedBytesUsername);
+                txtbPassword.Text = Encoding.UTF8.GetString(DecryptedBytesPassword);
+            }
+        }
         
 
 
