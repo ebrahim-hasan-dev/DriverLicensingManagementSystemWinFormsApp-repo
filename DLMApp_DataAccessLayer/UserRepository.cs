@@ -54,8 +54,9 @@ namespace DLMApp_DataAccessLayer
                         User.Password = Reader["Password"] as string ?? "";
                     }
                 }
-                catch
+                catch (Exception ex)
                 {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
                     User = null;
                 }
                 finally
@@ -121,6 +122,10 @@ namespace DLMApp_DataAccessLayer
                     ListOfUsers.Add(User);
                 }
             }
+            catch (Exception ex)
+            {
+                clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
+            }
             finally
             {
                 if (Reader != null)
@@ -177,6 +182,10 @@ namespace DLMApp_DataAccessLayer
                         Updated = true;
                     }
                 }
+                catch (Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
+                }
                 finally
                 {
                     if (Command != null)
@@ -221,6 +230,10 @@ namespace DLMApp_DataAccessLayer
                     {
                         Updated = true;
                     }
+                }
+                catch (Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
                 }
                 finally
                 {
@@ -280,6 +293,10 @@ namespace DLMApp_DataAccessLayer
                         Added = true;
                     }
                 }
+                catch (Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
+                }
                 finally
                 {
                     if (Command != null)
@@ -326,6 +343,10 @@ namespace DLMApp_DataAccessLayer
                     {
                         Exist = true;
                     }
+                }
+                catch (Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
                 }
                 finally
                 {
@@ -393,8 +414,9 @@ namespace DLMApp_DataAccessLayer
                         //User.Password = Reader["Password"] as string ?? "";
                     }
                 }
-                catch
+                catch (Exception ex)
                 {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
                     User = null;
                 }
                 finally
@@ -462,8 +484,9 @@ namespace DLMApp_DataAccessLayer
                         User.Password = Reader["Password"] as string ?? "";
                     }
                 }
-                catch
+                catch (Exception ex)
                 {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
                     User = null;
                 }
                 finally
@@ -532,8 +555,9 @@ namespace DLMApp_DataAccessLayer
                         //User.Password = Reader["Password"] as string ?? "";
                     }
                 }
-                catch
+                catch (Exception ex)
                 {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
                     User = null;
                 }
                 finally
@@ -589,6 +613,10 @@ namespace DLMApp_DataAccessLayer
                     {
                         Exist = true;
                     }
+                }
+                catch (Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
                 }
                 finally
                 {

@@ -49,6 +49,10 @@ namespace DLMApp_DataAccessLayer
                         Added = true;
                     }
                 }
+                catch (Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
+                }
                 finally
                 {
                     if (Command != null)
@@ -93,6 +97,10 @@ namespace DLMApp_DataAccessLayer
                     {
                         Update = true;
                     }
+                }
+                catch (Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
                 }
                 finally
                 {
@@ -165,6 +173,10 @@ namespace DLMApp_DataAccessLayer
 
                         ListOfclsInternationalLicenses.Add(internationalLicense);
                     }
+                }
+                catch (Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
                 }
                 finally
                 {

@@ -1,5 +1,6 @@
 ﻿
 using DLMApp_BusinessLayer;
+using DLMApp_ModulesLayer;
 using System;
 using System.Security.Cryptography; // مخصصة للتشفير
 using System.Text;
@@ -20,6 +21,8 @@ namespace DLMApp_PresentationLayer
         {
             MessageBox.Show("One of the requirements is missing", "Missing",
                 MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+            clsEventLog.WriteToEventLog("One of the requirements is missing", enLogType.Warning);
         }
 
         private void btLogin_Click(object sender, EventArgs e)
@@ -31,6 +34,8 @@ namespace DLMApp_PresentationLayer
                 if (clsGlobal.CurrentUser == null)
                 {
                     MessageBox.Show("Incorrect Password or Username", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                    clsEventLog.WriteToEventLog("Incorrect Password or Username", enLogType.Warning);
                 }
                 else
                 {
@@ -45,6 +50,8 @@ namespace DLMApp_PresentationLayer
                         this.Hide();
 
                         fmMainScreen MainScreen = new fmMainScreen(this);
+
+                        clsEventLog.WriteToEventLog("The program has been opened", enLogType.Information);
                         MainScreen.Show();
                     }
                     else
@@ -52,6 +59,7 @@ namespace DLMApp_PresentationLayer
                         clsGlobal.CurrentUser = null;
 
                         MessageBox.Show("Your account is inactive", "Error",  MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        clsEventLog.WriteToEventLog("Your account is inactive", enLogType.Warning);
                     }
                 }
             }
@@ -93,6 +101,7 @@ namespace DLMApp_PresentationLayer
 
         private void btCancel_Click(object sender, EventArgs e)
         {
+            clsEventLog.WriteToEventLog("The program has been closed", enLogType.Information);
             this.Close();
         }
 

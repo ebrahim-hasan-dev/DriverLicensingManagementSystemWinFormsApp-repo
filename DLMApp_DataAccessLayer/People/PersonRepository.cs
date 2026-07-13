@@ -109,6 +109,10 @@ namespace DLMApp_DataAccessLayer
                         }
                     }
                 }
+                catch (Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
+                }
                 finally
                 {
                     if (Command != null)
@@ -155,6 +159,10 @@ namespace DLMApp_DataAccessLayer
                     {
                         Exist = true;
                     }
+                }
+                catch (Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
                 }
                 finally
                 {
@@ -209,6 +217,10 @@ namespace DLMApp_DataAccessLayer
                         Exist = true;
                     }
                 }
+                catch (Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
+                }
                 finally
                 {
                     if (Reader != null)
@@ -261,6 +273,10 @@ namespace DLMApp_DataAccessLayer
                     {
                         Exist = true;
                     }
+                }
+                catch (Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
                 }
                 finally
                 {
@@ -324,6 +340,10 @@ namespace DLMApp_DataAccessLayer
                     }
 
                     Success = true;
+                }
+                catch (Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
                 }
                 finally
                 {
@@ -405,8 +425,9 @@ namespace DLMApp_DataAccessLayer
                         Person.CreatedByUserID = CreatedByUserID;
                     }
                 }
-                catch
+                catch (Exception ex)
                 {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
                     Person = null;
                 }
                 finally
@@ -504,8 +525,9 @@ namespace DLMApp_DataAccessLayer
                         Person.Country = Reader["Country_Name"] as string ?? "";
                     }
                 }
-                catch
+                catch (Exception ex)
                 {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
                     Person = null;
                 }
                 finally
@@ -605,8 +627,9 @@ namespace DLMApp_DataAccessLayer
                         Person.CreatedByUserID = ID;
                     }
                 }
-                catch
+                catch (Exception ex)
                 {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
                     Person = null;
                 }
                 finally
@@ -698,8 +721,9 @@ namespace DLMApp_DataAccessLayer
                         Person.AddedDate = Date;
                     }
                 }
-                catch
+                catch (Exception ex)
                 {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
                     Person = null;
                 }
                 finally
@@ -797,8 +821,9 @@ namespace DLMApp_DataAccessLayer
                         Person.Country = Reader["Country_Name"] as string ?? "";
                     }
                 }
-                catch
+                catch (Exception ex)
                 {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
                     Person = null;
                 }
                 finally
@@ -859,6 +884,10 @@ namespace DLMApp_DataAccessLayer
                         Deleted = true;
                     }
                 }
+                catch (Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
+                }
                 finally
                 {
                     if (Command != null)
@@ -896,6 +925,10 @@ namespace DLMApp_DataAccessLayer
                     {
                        Deleted = true;
                     }
+                }
+                catch (Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
                 }
                 finally
                 {
@@ -985,6 +1018,10 @@ namespace DLMApp_DataAccessLayer
 
                     ListOfPeople.Add(Person);
                 }
+            }
+            catch (Exception ex)
+            {
+                clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
             }
             finally
             {
@@ -1124,6 +1161,10 @@ namespace DLMApp_DataAccessLayer
 
                         Updated = true;
                     }
+                }
+                catch (Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
                 }
                 finally
                 {

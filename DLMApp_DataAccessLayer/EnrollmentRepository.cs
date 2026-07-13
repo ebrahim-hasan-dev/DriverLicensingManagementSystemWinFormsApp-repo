@@ -58,6 +58,10 @@ namespace DLMApp_DataAccessLayer
                         IsAdded = true;
                     }
                 }
+                catch (Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
+                }
                 finally
                 {
                     if (Command != null)
@@ -119,8 +123,9 @@ namespace DLMApp_DataAccessLayer
                         IsAdded = true;
                     }
                 }
-                catch
+                catch (Exception ex)
                 {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
                     IsAdded = false;
                 }
                 finally
@@ -170,6 +175,10 @@ namespace DLMApp_DataAccessLayer
                     {
                         Exist = true;
                     }
+                }
+                catch (Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
                 }
                 finally
                 {
@@ -239,6 +248,10 @@ namespace DLMApp_DataAccessLayer
                         Success = true;
                     }
                 }
+                catch (Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
+                }
                 finally
                 {
                     if (Command != null)
@@ -299,6 +312,10 @@ namespace DLMApp_DataAccessLayer
                         Success = true;
                     }
                 }
+                catch (Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
+                }
                 finally
                 {
                     if (Command != null)
@@ -346,6 +363,10 @@ namespace DLMApp_DataAccessLayer
                     {
                         Pass = true;
                     }
+                }
+                catch (Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
                 }
                 finally
                 {
@@ -401,6 +422,10 @@ namespace DLMApp_DataAccessLayer
                         Pass = true;
                     }
                 }
+                catch (Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
+                }
                 finally
                 {
                     if (Reader != null)
@@ -451,6 +476,10 @@ namespace DLMApp_DataAccessLayer
                         Deleted = true;
                     }
                 }
+                catch (Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
+                }
                 finally
                 {
                     if (Command != null)
@@ -494,6 +523,10 @@ namespace DLMApp_DataAccessLayer
                     {
                         Deleted = true;
                     }
+                }
+                catch (Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
                 }
                 finally
                 {
@@ -545,6 +578,10 @@ namespace DLMApp_DataAccessLayer
                     {
                         Exist = true;
                     }
+                }
+                catch (Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
                 }
                 finally
                 {

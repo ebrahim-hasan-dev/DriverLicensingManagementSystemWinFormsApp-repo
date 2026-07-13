@@ -44,6 +44,10 @@ namespace DLMApp_DataAccessLayer
                         Detained = true;
                     }
                 }
+                catch (Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
+                }
                 finally
                 {
                     if (Command != null)
@@ -90,6 +94,10 @@ namespace DLMApp_DataAccessLayer
                     {
                         IsDetained = true;
                     }
+                }
+                catch (Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
                 }
                 finally
                 {
@@ -156,6 +164,10 @@ namespace DLMApp_DataAccessLayer
                         DetainedLicenseInfo.DetainedDate = DetainedDate;
                     }
                 }
+                catch (Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
+                }
                 finally
                 {
                     if (Reader != null)
@@ -210,6 +222,10 @@ namespace DLMApp_DataAccessLayer
                     {
                         Released = true;
                     }
+                }
+                catch (Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
                 }
                 finally
                 {

@@ -85,6 +85,10 @@ namespace DLMApp_DataAccessLayer
                         ListOfRegisteredPeople.Add(PeopleRegisteredInAppointmentDTO);
                     }
                 }
+                catch (Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
+                }
                 finally
                 {
                     if (Reader != null)
@@ -177,6 +181,10 @@ namespace DLMApp_DataAccessLayer
                         ListOfRegisteredPeople.Add(PeopleRegisteredInAppointmentDTO);
                     }
                 }
+                catch (Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
+                }
                 finally
                 {
                     if (Reader != null)
@@ -259,6 +267,10 @@ namespace DLMApp_DataAccessLayer
 
                         ListOfRegisteredPeople.Add(PeopleRegisteredInAppointmentDTO);
                     }
+                }
+                catch (Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
                 }
                 finally
                 {
@@ -349,6 +361,10 @@ namespace DLMApp_DataAccessLayer
 
                         ListOfRegisteredPeople.Add(PeopleRegisteredInAppointmentDTO);
                     }
+                }
+                catch (Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
                 }
                 finally
                 {

@@ -46,6 +46,10 @@ namespace DLMApp_DataAccessLayer
                         DriverID = int.Parse(objPersonID.ToString());
                     }
                 }
+                catch (Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
+                }
                 finally
                 {
                     if (Command != null)
@@ -91,6 +95,10 @@ namespace DLMApp_DataAccessLayer
                     {
                         DriverID = int.Parse(objPersonID.ToString());
                     }
+                }
+                catch (Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
                 }
                 finally
                 {

@@ -1,7 +1,8 @@
 ﻿
+using DLMApp_ModulesLayer;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using DLMApp_ModulesLayer;
 
 
 
@@ -41,8 +42,10 @@ namespace DLMApp_DataAccessLayer
                     ListOfCountries.Add(country);
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
+
                 ListOfCountries.Clear();
             }
             finally

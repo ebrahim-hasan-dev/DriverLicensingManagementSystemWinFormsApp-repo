@@ -46,6 +46,10 @@ namespace DLMApp_DataAccessLayer
                         IsAdded = true;
                     }
                 }
+                catch (Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
+                }
                 finally
                 {
                     if (Command != null)
@@ -86,6 +90,10 @@ namespace DLMApp_DataAccessLayer
                     Connection.Open();
 
                     short.TryParse(Command.ExecuteScalar().ToString(), out NumberOfPeople);
+                }
+                catch (Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
                 }
                 finally
                 {
@@ -131,6 +139,10 @@ namespace DLMApp_DataAccessLayer
                         IsUpdated = true;
                     }
                 }
+                catch (Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
+                }
                 finally
                 {
                     if (Command != null)
@@ -174,6 +186,10 @@ namespace DLMApp_DataAccessLayer
                     {
                         IsUpdated = true;
                     }
+                }
+                catch (Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
                 }
                 finally
                 {
@@ -231,6 +247,10 @@ namespace DLMApp_DataAccessLayer
 
                         Exist = true;
                     }
+                }
+                catch (Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
                 }
                 finally
                 {

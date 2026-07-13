@@ -47,8 +47,10 @@ namespace DLMApp_DataAccessLayer
                     applicationType.ApplicationTypeFees = ServiceFees;
                 }
             }
-            catch
+            catch(Exception ex)
             {
+                clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
+
                 applicationType = null;
             }
             finally
@@ -109,6 +111,10 @@ namespace DLMApp_DataAccessLayer
                     ListOfApplicationTypes.Add(ApplicationType);
                 }
             }
+            catch(Exception ex)
+            {
+                clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
+            }
             finally
             {
                 if (Reader != null)
@@ -158,6 +164,10 @@ namespace DLMApp_DataAccessLayer
                     {
                         Updated = true;
                     }
+                }
+                catch(Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
                 }
                 finally
                 {
@@ -216,6 +226,10 @@ namespace DLMApp_DataAccessLayer
                         Added = true;
                     }
                 }
+                catch(Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
+                }
                 finally
                 {
                     if (Command != null)
@@ -264,6 +278,10 @@ namespace DLMApp_DataAccessLayer
                         Added = true;
                     }
                 }
+                catch (Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
+                }
                 finally
                 {
                     if (Command != null)
@@ -304,6 +322,10 @@ namespace DLMApp_DataAccessLayer
                     Connection.Open();
 
                     int.TryParse(Command.ExecuteScalar().ToString(), out NewLocalLicenseID);
+                }
+                catch(Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
                 }
                 finally
                 {
@@ -352,6 +374,10 @@ namespace DLMApp_DataAccessLayer
                     {
                         Exist = true;
                     }
+                }
+                catch(Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
                 }
                 finally
                 {
@@ -403,6 +429,10 @@ namespace DLMApp_DataAccessLayer
                         Delete = true;
                     }
                 }
+                catch (Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
+                }
                 finally
                 {
                     if (Command != null)
@@ -447,6 +477,10 @@ namespace DLMApp_DataAccessLayer
                     {
                         Success = true;
                     }
+                }
+                catch (Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
                 }
                 finally
                 {
@@ -524,6 +558,10 @@ namespace DLMApp_DataAccessLayer
 
                         Application.CreatedByUser = Reader["User_Name"] as string ?? "";
                     }
+                }
+                catch (Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
                 }
                 finally
                 {
@@ -613,6 +651,10 @@ namespace DLMApp_DataAccessLayer
 
                     ListOfNewLocalLicenseApplications.Add(NewLocalLicenseApplication);
                 }
+            }
+            catch (Exception ex)
+            {
+                clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
             }
             finally
             {
@@ -707,6 +749,10 @@ namespace DLMApp_DataAccessLayer
                         ListOfNewLocalLicenseApplications.Add(NewLocalLicenseApplication);
                     }
                 }
+                catch (Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
+                }
                 finally
                 {
                     if (Reader != null)
@@ -797,6 +843,10 @@ namespace DLMApp_DataAccessLayer
                  
                     ListOfApplications.Add(Application);
                 }
+            }
+            catch (Exception ex)
+            {
+                clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
             }
             finally
             {
@@ -894,6 +944,10 @@ namespace DLMApp_DataAccessLayer
                         ListOfApplications.Add(Application);
                     }
                 }
+                catch (Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
+                }
                 finally
                 {
                     if (Reader != null)
@@ -963,6 +1017,10 @@ namespace DLMApp_DataAccessLayer
                         Success = true;
                     }
                 }
+                catch (Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
+                }
                 finally
                 {
                     if (Command != null)
@@ -1009,6 +1067,10 @@ namespace DLMApp_DataAccessLayer
                     {
                         StatusNew = true;
                     }
+                }
+                catch (Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
                 }
                 finally
                 {
@@ -1066,6 +1128,10 @@ namespace DLMApp_DataAccessLayer
                         int.TryParse(Reader["Order_ID"].ToString(), out int ID);
                         ApplicationID = ID;
                     }
+                }
+                catch (Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
                 }
                 finally
                 {
@@ -1163,6 +1229,10 @@ namespace DLMApp_DataAccessLayer
                         ListOfApplications.Add(Application);
                     }
                 }
+                catch (Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
+                }
                 finally
                 {
                     if (Reader != null)
@@ -1255,6 +1325,10 @@ namespace DLMApp_DataAccessLayer
                         ListOfNewLocalLicenseApplications.Add(NewLocalLicenseApplication);
                     }
                 }
+                catch (Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
+                }
                 finally
                 {
                     if (Reader != null)
@@ -1323,6 +1397,10 @@ namespace DLMApp_DataAccessLayer
                     {
                         Success = true;
                     }
+                }
+                catch (Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
                 }
                 finally
                 {

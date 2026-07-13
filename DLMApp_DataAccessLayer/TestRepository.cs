@@ -50,8 +50,9 @@ namespace DLMApp_DataAccessLayer
                     ListOfTests.Add(test);
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
                 ListOfTests.Clear();
             }
             finally
@@ -100,6 +101,10 @@ namespace DLMApp_DataAccessLayer
 
                     short.TryParse(Command.ExecuteScalar().ToString(), out MaxNumberOfPeople);
                 }
+                catch (Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
+                }
                 finally
                 {
                     if (Command != null)
@@ -145,6 +150,10 @@ namespace DLMApp_DataAccessLayer
                     {
                         Updated = true;
                     }
+                }
+                catch (Exception ex)
+                {
+                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
                 }
                 finally
                 {
