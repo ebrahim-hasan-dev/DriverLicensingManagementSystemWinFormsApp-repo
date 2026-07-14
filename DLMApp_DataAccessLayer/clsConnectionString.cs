@@ -1,4 +1,4 @@
-﻿
+﻿using System.Configuration;
 
 namespace DLMApp_DataAccessLayer
 {
@@ -13,6 +13,6 @@ namespace DLMApp_DataAccessLayer
         // write the name of this file inside the .gitignore file so that it is not uploaded to GitHub.
 
 
-        public static string ConnectionString = "Server=.;DataBase=MyDLM;Integrated Security=True;";
+        public static string ConnectionString = ConfigurationManager.ConnectionStrings["DLMConnectionString"]?.ConnectionString ?? "Server=.;DataBase=MyDLM;Integrated Security=True;";
     }
 }
