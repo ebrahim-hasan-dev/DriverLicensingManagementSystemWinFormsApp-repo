@@ -49,8 +49,8 @@ namespace DLMApp_PresentationLayer
 
                 if (_Person != null)
                 {
-                    clsApplication Application = clsGlobal.FillAndGetApplication(_Person.PersonID, enApplicationStatus.New,
-                        enApplicationTypes.RetakeTest, _ApplicationFees);
+                    clsApplication Application = Utility.FillAndGetApplication(_Person.PersonID, enApplicationStatus.New,
+                        enApplicationTypes.RetakeTest, _ApplicationFees, clsGlobal.CurrentUser.UserID);
 
                     if (ApplicationService.AddNewApplication(Application))
                     {

@@ -31,7 +31,7 @@ namespace DLMApp_PresentationLayer
             {
                 clsGlobal.CurrentUser = UserService.Find(txtbUserName.Text);
 
-                if (clsGlobal.CurrentUser == null || !clsGlobal.VerifyPassword(txtbPassword.Text, clsGlobal.CurrentUser.Password))
+                if (clsGlobal.CurrentUser == null || !PasswordManager.VerifyPassword(txtbPassword.Text, clsGlobal.CurrentUser.Password))
                 {
                     MessageBox.Show("Incorrect Password or Username", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 

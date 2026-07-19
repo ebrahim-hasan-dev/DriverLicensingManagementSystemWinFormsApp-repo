@@ -39,7 +39,7 @@ namespace DLMApp_PresentationLayer
         {
             User.UserName = txtbUserName.Text;
 
-            User.Password = clsGlobal.HashPassword(txtbPassword.Text);
+            User.Password = PasswordManager.HashPassword(txtbPassword.Text);
 
             User.IsActive = chbActive.Checked;
             User.PersonID = uctrlAddOrUpdatePerson1.PersonID;

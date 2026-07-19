@@ -56,8 +56,8 @@ namespace DLMApp_PresentationLayer
                         {
                             if (License.IsThirdClass() == true)
                             {
-                                clsApplication Application = clsGlobal.FillAndGetApplication(License.PersonInfo.PersonID, enApplicationStatus.Completed,
-                                    enApplicationTypes.NewInternationalLicense, _ApplicationType.ApplicationTypeFees);
+                                clsApplication Application = Utility.FillAndGetApplication(License.PersonInfo.PersonID, enApplicationStatus.Completed,
+                                    enApplicationTypes.NewInternationalLicense, _ApplicationType.ApplicationTypeFees, clsGlobal.CurrentUser.UserID);
 
                                 if (ApplicationService.AddNewApplication(Application))
                                 {

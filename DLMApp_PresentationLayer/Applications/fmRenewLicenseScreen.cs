@@ -77,8 +77,8 @@ namespace DLMApp_PresentationLayer
 
         private void btSave_Click(object sender, EventArgs e)
         {
-            clsApplication Application = clsGlobal.FillAndGetApplication(_License.PersonInfo.PersonID, enApplicationStatus.New, enApplicationTypes.RenewLicense,
-                _ApplicationType.ApplicationTypeFees);
+            clsApplication Application = Utility.FillAndGetApplication(_License.PersonInfo.PersonID, enApplicationStatus.New, enApplicationTypes.RenewLicense,
+                _ApplicationType.ApplicationTypeFees, clsGlobal.CurrentUser.UserID);
 
             if (ApplicationService.AddNewApplication(Application))
             {

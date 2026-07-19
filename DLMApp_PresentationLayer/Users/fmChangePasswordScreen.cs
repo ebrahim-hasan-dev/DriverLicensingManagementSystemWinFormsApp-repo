@@ -40,9 +40,9 @@ namespace DLMApp_PresentationLayer
             {
                 if (txtbConfirmNewPassword.Text == txtbNewPassword.Text)
                 {
-                    if (clsGlobal.VerifyPassword(txtbCurrentPassword.Text, _User.Password))
+                    if (PasswordManager.VerifyPassword(txtbCurrentPassword.Text, _User.Password))
                     {
-                        string HashPassword = clsGlobal.HashPassword(txtbNewPassword.Text);
+                        string HashPassword = PasswordManager.HashPassword(txtbNewPassword.Text);
 
                         if (UserService.ChangePassword(_User.UserID, HashPassword))
                         {

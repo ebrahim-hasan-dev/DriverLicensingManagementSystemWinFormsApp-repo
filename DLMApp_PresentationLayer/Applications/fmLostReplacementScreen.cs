@@ -73,8 +73,8 @@ namespace DLMApp_PresentationLayer
                     {
                         if (License.IsDetained == false)
                         {
-                            clsApplication Application = clsGlobal.FillAndGetApplication(Person.PersonID, enApplicationStatus.Completed,
-                                enApplicationTypes.ReplacementForLostLicense, _ApplicationType.ApplicationTypeFees);
+                            clsApplication Application = Utility.FillAndGetApplication(Person.PersonID, enApplicationStatus.Completed,
+                                enApplicationTypes.ReplacementForLostLicense, _ApplicationType.ApplicationTypeFees, clsGlobal.CurrentUser.UserID);
 
                             if (ApplicationService.AddNewApplication(Application))
                             {

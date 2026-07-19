@@ -125,8 +125,8 @@ namespace DLMApp_PresentationLayer
 
                         clsNewLocalLicenseApplication newLocalLicenseApplication = new clsNewLocalLicenseApplication();
 
-                        newLocalLicenseApplication.ApplicationInfo = clsGlobal.FillAndGetApplication(_Person.PersonID, enApplicationStatus.New, enApplicationTypes.NewLocalLicense,
-                            _ApplicationFees);
+                        newLocalLicenseApplication.ApplicationInfo = Utility.FillAndGetApplication(_Person.PersonID, enApplicationStatus.New, enApplicationTypes.NewLocalLicense,
+                            _ApplicationFees, clsGlobal.CurrentUser.UserID);
 
                         newLocalLicenseApplication.LicenseClassID = (enLicenseClasses)_LicenseClassID;
 

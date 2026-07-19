@@ -92,8 +92,8 @@ namespace DLMApp_PresentationLayer
 
         private void btRelease_Click(object sender, EventArgs e)
         {
-            clsApplication Application = clsGlobal.FillAndGetApplication(_License.PersonInfo.PersonID, enApplicationStatus.Completed,
-                enApplicationTypes.ReleaseDetainedLicense, _ApplicationType.ApplicationTypeFees);
+            clsApplication Application = Utility.FillAndGetApplication(_License.PersonInfo.PersonID, enApplicationStatus.Completed,
+                enApplicationTypes.ReleaseDetainedLicense, _ApplicationType.ApplicationTypeFees, clsGlobal.CurrentUser.UserID);
 
             if (ApplicationService.AddNewApplication(Application))
             {
