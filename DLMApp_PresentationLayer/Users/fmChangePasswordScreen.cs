@@ -1,14 +1,9 @@
 ﻿using DLMApp_BusinessLayer;
 using DLMApp_ModulesLayer;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+
+
 
 namespace DLMApp_PresentationLayer
 {
@@ -45,9 +40,11 @@ namespace DLMApp_PresentationLayer
             {
                 if (txtbConfirmNewPassword.Text == txtbNewPassword.Text)
                 {
-                    if (_User.Password == txtbCurrentPassword.Text)
+                    if (clsGlobal.VerifyPassword(txtbCurrentPassword.Text, _User.Password))
                     {
-                        if (UserService.ChangePassword(_User.UserID, txtbNewPassword.Text))
+                        string HashPassword = clsGlobal.HashPassword(txtbNewPassword.Text);
+
+                        if (UserService.ChangePassword(_User.UserID, HashPassword))
                         {
                             _User.Password = txtbNewPassword.Text;
 

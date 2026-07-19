@@ -1,14 +1,10 @@
 ﻿using DLMApp_BusinessLayer;
 using DLMApp_ModulesLayer;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+
 
 namespace DLMApp_PresentationLayer
 {
@@ -37,10 +33,14 @@ namespace DLMApp_PresentationLayer
             uctrlAddOrUpdatePerson1.btSave.Location = new Point(uctrlAddOrUpdatePerson1.Width + 50, 0); 
         }
 
+       
+
         void FillUser(clsUser User)
         {
             User.UserName = txtbUserName.Text;
-            User.Password = txtbPassword.Text;
+
+            User.Password = clsGlobal.HashPassword(txtbPassword.Text);
+
             User.IsActive = chbActive.Checked;
             User.PersonID = uctrlAddOrUpdatePerson1.PersonID;
         }

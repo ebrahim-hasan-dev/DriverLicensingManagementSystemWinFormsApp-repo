@@ -1,20 +1,18 @@
 ﻿using DLMApp_ModulesLayer;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Data.SqlClient;
+
 
 namespace DLMApp_DataAccessLayer
 {
     public class UserRepository
     {
-        static public clsUser Find(string UserName, string Password)
+        static public clsUser Find(string UserName)
         {
             clsUser User = null;
 
-            if (!string.IsNullOrWhiteSpace(UserName) && !string.IsNullOrWhiteSpace(Password))
+            if (!string.IsNullOrWhiteSpace(UserName))
             {
                 SqlConnection Connection = null;
                 SqlCommand Command = null;
@@ -24,15 +22,13 @@ namespace DLMApp_DataAccessLayer
                 {
                     Connection = new SqlConnection(clsConnectionString.ConnectionString);
 
-                    string FindQuery = "select * from [Users] where [User_Name] = @UserName and [Password] = @Password;";
+                    string FindQuery = "select * from [Users] where [User_Name] = @UserName;";
 
                     Command = new SqlCommand(FindQuery, Connection);
 
                     Command.Parameters.Add("@UserName", System.Data.SqlDbType.NVarChar).Value = UserName;
-                    Command.Parameters.Add("@Password", System.Data.SqlDbType.NVarChar).Value = Password;
 
                     //Command.Parameters.AddWithValue("@UserName", UserName);
-                    //Command.Parameters.AddWithValue("@Password", Password);
 
                     Connection.Open();
 
@@ -372,7 +368,7 @@ namespace DLMApp_DataAccessLayer
             return Exist;
         }
 
-        static public clsUser Find(string UserName)
+        static public clsUser FindWithoutPass(string UserName)
         {
             clsUser User = null;
 

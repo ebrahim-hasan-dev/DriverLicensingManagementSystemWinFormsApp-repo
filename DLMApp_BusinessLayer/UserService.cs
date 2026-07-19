@@ -10,11 +10,11 @@ namespace DLMApp_BusinessLayer
 {
     public class UserService
     {
-        static public clsUser Find(string UserName, string Password)
+        static public clsUser Find(string UserName)
         {
-            if (!string.IsNullOrWhiteSpace(UserName) && !string.IsNullOrWhiteSpace(Password))
+            if (!string.IsNullOrWhiteSpace(UserName))
             {
-                return UserRepository.Find(UserName, Password);
+                return UserRepository.Find(UserName);
             }
             else
             {
@@ -75,11 +75,11 @@ namespace DLMApp_BusinessLayer
             }
         }
 
-        static public clsUser Find(string UserName)
+        static public clsUser FindWithoutPass(string UserName)
         {
             if (!string.IsNullOrWhiteSpace(UserName))
             {
-                return UserRepository.Find(UserName);
+                return UserRepository.FindWithoutPass(UserName);
             }
             else
             {

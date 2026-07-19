@@ -29,9 +29,9 @@ namespace DLMApp_PresentationLayer
         {
             if (!string.IsNullOrWhiteSpace(txtbUserName.Text) && !string.IsNullOrWhiteSpace(txtbPassword.Text))
             {
-                clsGlobal.CurrentUser = UserService.Find(txtbUserName.Text, txtbPassword.Text);
+                clsGlobal.CurrentUser = UserService.Find(txtbUserName.Text);
 
-                if (clsGlobal.CurrentUser == null)
+                if (clsGlobal.CurrentUser == null || !clsGlobal.VerifyPassword(txtbPassword.Text, clsGlobal.CurrentUser.Password))
                 {
                     MessageBox.Show("Incorrect Password or Username", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -41,11 +41,13 @@ namespace DLMApp_PresentationLayer
                 {
                     if (clsGlobal.CurrentUser.IsActive)
                     {
+                        string Password = txtbPassword.Text;
+
                         txtbUserName.Clear();
                         txtbPassword.Clear();
                         txtbUserName.Focus();
 
-                        RememberMe();
+                        RememberMe(Password);
 
                         this.Hide();
 
@@ -58,7 +60,7 @@ namespace DLMApp_PresentationLayer
                     {
                         clsGlobal.CurrentUser = null;
 
-                        MessageBox.Show("Your account is inactive", "Error",  MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show("Your account is inactive", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         clsEventLog.WriteToEventLog("Your account is inactive", enLogType.Warning);
                     }
                 }
@@ -69,12 +71,12 @@ namespace DLMApp_PresentationLayer
             }
         }
 
-        void RememberMe()
+        void RememberMe(string Password)
         {
             if (chbRememberMe.Checked)
             {
                 // تحويل النص إلى مصفوفة بايتات (Bytes)
-                byte[] PasswordBytes = Encoding.UTF8.GetBytes(clsGlobal.CurrentUser.Password);
+                byte[] PasswordBytes = Encoding.UTF8.GetBytes(Password);
                 byte[] UsernameBytes = Encoding.UTF8.GetBytes(clsGlobal.CurrentUser.UserName);
 
                 // تشفير البيانات باستخدام DPAPI 

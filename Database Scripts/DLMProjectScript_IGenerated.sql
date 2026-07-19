@@ -67,7 +67,7 @@ create table [Users]
 (
 [User_ID] int primary key identity,
 [User_Name] nvarchar(50) not null,
-[Password] nvarchar(10) not null,
+[Password] nvarchar(100) not null,
 [Is_Active] bit not null
 );
 

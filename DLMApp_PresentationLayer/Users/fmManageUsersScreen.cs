@@ -166,7 +166,7 @@ namespace DLMApp_PresentationLayer
                     {
                         dgvUsers.Rows.Clear();
 
-                        clsUser User = UserService.Find(mtxtbFilter.Text);
+                        clsUser User = UserService.FindWithoutPass(mtxtbFilter.Text);
 
                         if (User != null)
                         {
