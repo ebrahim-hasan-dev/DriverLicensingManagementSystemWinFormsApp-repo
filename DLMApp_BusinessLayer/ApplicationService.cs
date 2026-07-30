@@ -2,9 +2,8 @@
 using DLMApp_ModulesLayer;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+
 
 namespace DLMApp_BusinessLayer
 {
@@ -12,21 +11,21 @@ namespace DLMApp_BusinessLayer
     {
         // ===============================================================================================================
 
-        public static clsApplicationType GetApplicationType(enApplicationTypes ApplicationTypeID)
+        public static async Task<clsApplicationType> GetApplicationType(enApplicationTypes ApplicationTypeID)
         {
-            return ApplicationRepository.GetApplicationType(ApplicationTypeID);
+            return await ApplicationRepository.GetApplicationType(ApplicationTypeID);
         }
 
-        public static List<clsApplicationType> GetAllApplicationTypes()
+        public static async Task<List<clsApplicationType>> GetAllApplicationTypes()
         {
-            return ApplicationRepository.GetAllApplicationTypes();
+            return await ApplicationRepository.GetAllApplicationTypes();
         }
 
-        public static bool UpdateApplicationTypeFees(byte ApplicationTypeID, float ApplicationTypeFees)
+        public static async Task<bool> UpdateApplicationTypeFees(byte ApplicationTypeID, float ApplicationTypeFees)
         {
             if (ApplicationTypeID > 0 && ApplicationTypeFees > 0)
             {
-                return ApplicationRepository.UpdateApplicationTypeFees(ApplicationTypeID, ApplicationTypeFees);
+                return await ApplicationRepository.UpdateApplicationTypeFees(ApplicationTypeID, ApplicationTypeFees);
             }
             else
             {
@@ -37,11 +36,11 @@ namespace DLMApp_BusinessLayer
 
         // ===============================================================================================================
 
-        public static bool AddNewApplication(clsApplication Application)
+        public static async Task<bool> AddNewApplication(clsApplication Application)
         {
             if (Application.IsFull())
             {
-                return ApplicationRepository.AddNewApplication(Application);
+                return await ApplicationRepository.AddNewApplication(Application);
             }
             else
             {
@@ -49,19 +48,19 @@ namespace DLMApp_BusinessLayer
             }
         }
 
-        public static bool AddNewLocalLicenseApplication(clsNewLocalLicenseApplication NewLocalLicenseApplication)
+        public static async Task<bool> AddNewLocalLicenseApplication(clsNewLocalLicenseApplication NewLocalLicenseApplication)
         {
             if (NewLocalLicenseApplication.IsFull())
             {
-                if (ApplicationRepository.AddNewApplication(NewLocalLicenseApplication.ApplicationInfo))
+                if (await ApplicationRepository.AddNewApplication(NewLocalLicenseApplication.ApplicationInfo))
                 {
-                    if (ApplicationRepository.AddNewLocalLisenceApplication(NewLocalLicenseApplication))
+                    if (await ApplicationRepository.AddNewLocalLisenceApplication(NewLocalLicenseApplication))
                     {
                         return true;
                     }
                     else
                     {
-                        ApplicationRepository.Delete(NewLocalLicenseApplication.ApplicationInfo.ApplicationID);
+                        await ApplicationRepository.Delete(NewLocalLicenseApplication.ApplicationInfo.ApplicationID);
 
                         return false;
                     }
@@ -77,11 +76,11 @@ namespace DLMApp_BusinessLayer
             }
         }
 
-        public static int FindNewLocalLicenseID(int ApplicationID)
+        public static async Task<int> FindNewLocalLicenseID(int ApplicationID)
         {
             if (ApplicationID > 0)
             {
-                return ApplicationRepository.FindNewLocalLicenseID(ApplicationID);
+                return await ApplicationRepository.FindNewLocalLicenseID(ApplicationID);
             }
             else
             {
@@ -89,11 +88,11 @@ namespace DLMApp_BusinessLayer
             }
         }
 
-        public static bool IsExist(int ApplicationID)
+        public static async Task<bool> UpdateApplicationStatus(int ApplicationID, enApplicationStatus ApplicationStatus)
         {
             if (ApplicationID > 0)
             {
-                return ApplicationRepository.IsExist(ApplicationID);
+                return await ApplicationRepository.UpdateApplicationStatus(ApplicationID, ApplicationStatus);
             }
             else
             {
@@ -101,23 +100,11 @@ namespace DLMApp_BusinessLayer
             }
         }
 
-        public static bool UpdateApplicationStatus(int ApplicationID, enApplicationStatus ApplicationStatus)
+        public static async Task<clsApplication> Find(int ApplicationID)
         {
             if (ApplicationID > 0)
             {
-                return ApplicationRepository.UpdateApplicationStatus(ApplicationID, ApplicationStatus);
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        public static clsApplication Find(int ApplicationID)
-        {
-            if (ApplicationID > 0)
-            {
-                return ApplicationRepository.Find(ApplicationID);
+                return await ApplicationRepository.Find(ApplicationID);
             }
             else
             {
@@ -125,16 +112,16 @@ namespace DLMApp_BusinessLayer
             }
         }
 
-        public static List<clsNewLocalLicenseApplication> FindAllNewLocalLicensesApplications()
+        public static async Task<List<clsNewLocalLicenseApplication>> FindAllNewLocalLicensesApplications()
         {
-            return ApplicationRepository.FindAllNewLocalLicensesApplications();
+            return await ApplicationRepository.FindAllNewLocalLicensesApplications();
         }
 
-        public static List<clsNewLocalLicenseApplication> FindAllNewLocalLicensesApplications(DateTime AddedDateTime)
+        public static async Task<List<clsNewLocalLicenseApplication>> FindAllNewLocalLicensesApplications(DateTime AddedDateTime)
         {
             if (AddedDateTime != default(DateTime))
             {
-                return ApplicationRepository.FindAllNewLocalLicensesApplications(AddedDateTime);
+                return await ApplicationRepository.FindAllNewLocalLicensesApplications(AddedDateTime);
             }
             else
             {
@@ -142,16 +129,16 @@ namespace DLMApp_BusinessLayer
             }
         }
 
-        public static List<clsApplication> FindAllRenewLicensesApplications()
+        public static async Task<List<clsApplication>> FindAllRenewLicensesApplications()
         {
-            return ApplicationRepository.FindAllRenewLicensesApplications();
+            return await ApplicationRepository.FindAllRenewLicensesApplications();
         }
 
-        public static List<clsApplication> FindAllRenewLicensesApplications(DateTime AddedDateTime)
+        public static async Task<List<clsApplication>> FindAllRenewLicensesApplications(DateTime AddedDateTime)
         {
             if (AddedDateTime != default(DateTime))
             {
-                return ApplicationRepository.FindAllRenewLicensesApplications(AddedDateTime);
+                return await ApplicationRepository.FindAllRenewLicensesApplications(AddedDateTime);
             }
             else
             {
@@ -159,11 +146,11 @@ namespace DLMApp_BusinessLayer
             }
         }
 
-        public static bool IsStatusNew(int ApplicationID)
+        public static async Task<bool> IsStatusNew(int ApplicationID)
         {
             if (ApplicationID > 0)
             {
-                return ApplicationRepository.IsStatusNew(ApplicationID);
+                return await ApplicationRepository.IsStatusNew(ApplicationID);
             }
             else
             {
@@ -171,11 +158,11 @@ namespace DLMApp_BusinessLayer
             }
         }
 
-        public static int DoesHaveApplicationOfSameLicenseClassForNewLocalLicenseStatusNew(int PersonID, byte LicenseClass)
+        public static async Task<int> DoesHaveApplicationOfSameLicenseClassForNewLocalLicenseStatusNew(int PersonID, byte LicenseClass)
         {
             if (PersonID > 0 && LicenseClass > 0)
             {
-                return ApplicationRepository.DoesHaveApplicationOfSameLicenseClassForNewLocalLicenseStatusNew(PersonID, LicenseClass);
+                return await ApplicationRepository.DoesHaveApplicationOfSameLicenseClassForNewLocalLicenseStatusNew(PersonID, LicenseClass);
             }
             else
             {
@@ -183,11 +170,11 @@ namespace DLMApp_BusinessLayer
             }
         }
 
-        public static List<clsApplication> FindAllRenewLicenseApplicationsForNationalNumber(string NationalNumber)
+        public static async Task<List<clsApplication>> FindAllRenewLicenseApplicationsForNationalNumber(string NationalNumber)
         {
             if (!string.IsNullOrWhiteSpace(NationalNumber))
             {
-                return ApplicationRepository.FindAllRenewLicenseApplicationsForNationalNumber(NationalNumber);
+                return await ApplicationRepository.FindAllRenewLicenseApplicationsForNationalNumber(NationalNumber);
             }
             else
             {
@@ -195,11 +182,11 @@ namespace DLMApp_BusinessLayer
             }
         }
 
-        public static List<clsNewLocalLicenseApplication> FindAllNewLocalLicensesApplicationsForNationalNumber(string NationalNumber)
+        public static async Task<List<clsNewLocalLicenseApplication>> FindAllNewLocalLicensesApplicationsForNationalNumber(string NationalNumber)
         {
             if (!string.IsNullOrWhiteSpace(NationalNumber))
             {
-                return ApplicationRepository.FindAllNewLocalLicensesApplicationsForNationalNumber(NationalNumber);
+                return await ApplicationRepository.FindAllNewLocalLicensesApplicationsForNationalNumber(NationalNumber);
             }
             else
             {
@@ -207,20 +194,17 @@ namespace DLMApp_BusinessLayer
             }
         }
 
-        public static bool MakeFaildRenewLicenseApplicationsIsCompleted(List<clsPeopleRegisteredInAppointmentDTO> ListOfRegisteredPeopleRenewLicense)
+        public static async Task<bool> MakeFaildRenewLicenseApplicationsIsCompleted(List<clsPeopleRegisteredInAppointmentDTO> ListOfRegisteredPeopleRenewLicense)
         {
             if (ListOfRegisteredPeopleRenewLicense.Count > 0)
             {
-                return ApplicationRepository.MakeFaildRenewLicenseApplicationsIsCompleted(ListOfRegisteredPeopleRenewLicense);
+                return await ApplicationRepository.MakeFaildRenewLicenseApplicationsIsCompleted(ListOfRegisteredPeopleRenewLicense);
             }
             else
             {
                 return false;
             }
         }
-
-
-
 
 
 

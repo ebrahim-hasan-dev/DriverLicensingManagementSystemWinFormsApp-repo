@@ -1,14 +1,8 @@
 ﻿using DLMApp_BusinessLayer;
 using DLMApp_ModulesLayer;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+
 
 namespace DLMApp_PresentationLayer
 {
@@ -26,26 +20,26 @@ namespace DLMApp_PresentationLayer
             InitializeComponent();
         }
 
-        private void fmRenewLicenseScreen_Load(object sender, EventArgs e)
+        private async void fmRenewLicenseScreen_Load(object sender, EventArgs e)
         {
-            _ApplicationType = ApplicationService.GetApplicationType(enApplicationTypes.RenewLicense);
+            _ApplicationType = await ApplicationService.GetApplicationType(enApplicationTypes.RenewLicense);
 
             uctrlApplicationInfo1.SetApplicationInfo(_ApplicationType);
 
             clsGlobal.MakeTitleInCenterScreen(this.Width, lbRenewLicenseScreen);
         }
 
-        private void btFind_Click(object sender, EventArgs e)
+        private async void btFind_Click(object sender, EventArgs e)
         {
             if (!string.IsNullOrWhiteSpace(mtxtbLicenseID.Text))
             {
                 uctrlLisenseInfo1.Reset();
 
-                _License = LicenseService.Find(int.Parse(mtxtbLicenseID.Text));
+                _License = await LicenseService.Find(int.Parse(mtxtbLicenseID.Text));
 
                 if (_License != null)
                 {
-                    uctrlLisenseInfo1.SetLicenseInfo(_License, _License.ApplicationID, _License.LicenseClassInfo.LicenseClass);
+                    await uctrlLisenseInfo1.SetLicenseInfo(_License, _License.ApplicationID, _License.LicenseClassInfo.LicenseClass);
 
                     if (_License.IsValid() == false)
                     {
@@ -75,12 +69,12 @@ namespace DLMApp_PresentationLayer
             }
         }
 
-        private void btSave_Click(object sender, EventArgs e)
+        private async void btSave_Click(object sender, EventArgs e)
         {
             clsApplication Application = Utility.FillAndGetApplication(_License.PersonInfo.PersonID, enApplicationStatus.New, enApplicationTypes.RenewLicense,
                 _ApplicationType.ApplicationTypeFees, clsGlobal.CurrentUser.UserID);
 
-            if (ApplicationService.AddNewApplication(Application))
+            if (await ApplicationService.AddNewApplication(Application))
             {
                 uctrlApplicationInfo1.lbApplicationIDResult.Text = Application.ApplicationID.ToString();
 

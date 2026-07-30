@@ -1,19 +1,14 @@
 ﻿using DLMApp_ModulesLayer;
 using System;
-using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-
-
 
 
 namespace DLMApp_DataAccessLayer
 {
     public class DriverRepository
     {
-        public static int AddNewDriver(int PersonID, int CreatedByUserID)
+        public static async Task<int> AddNewDriver(int PersonID, int CreatedByUserID)
         {
             int DriverID = 0;
 
@@ -37,9 +32,9 @@ namespace DLMApp_DataAccessLayer
                     Command.Parameters.AddWithValue("@PersonID", PersonID);
                     Command.Parameters.AddWithValue("@CreatedByUserID", CreatedByUserID);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    object objPersonID = Command.ExecuteScalar();
+                    object objPersonID = await Command.ExecuteScalarAsync();
 
                     if (objPersonID != null)
                     {
@@ -68,7 +63,7 @@ namespace DLMApp_DataAccessLayer
             return DriverID;
         }
 
-        public static int GetDriverID(int PersonID)
+        public static async Task<int> GetDriverID(int PersonID)
         {
             int DriverID = 0;
 
@@ -87,9 +82,9 @@ namespace DLMApp_DataAccessLayer
 
                     Command.Parameters.AddWithValue("@PersonID", PersonID);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    object objPersonID = Command.ExecuteScalar();
+                    object objPersonID = await Command.ExecuteScalarAsync();
 
                     if (objPersonID != null)
                     {

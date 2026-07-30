@@ -1,15 +1,8 @@
 ﻿using DLMApp_BusinessLayer;
 using DLMApp_ModulesLayer;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Net.Mime.MediaTypeNames;
+
 
 namespace DLMApp_PresentationLayer
 {
@@ -30,29 +23,29 @@ namespace DLMApp_PresentationLayer
             InitializeComponent();
         }
 
-        private void fmRetakeTestScreen_Load(object sender, EventArgs e)
+        private async void fmRetakeTestScreen_Load(object sender, EventArgs e)
         {
-            clsApplicationType ApplicationType = ApplicationService.GetApplicationType(enApplicationTypes.RetakeTest);
+            clsApplicationType ApplicationType = await ApplicationService.GetApplicationType(enApplicationTypes.RetakeTest);
             uctrlApplicationInfo1.SetApplicationInfo(ApplicationType);
             _ApplicationFees = ApplicationType.ApplicationTypeFees;
 
             clsGlobal.MakeTitleInCenterScreen(this.Width, lbRetakeTestScreen);
         }
         
-        private void btSave_Click(object sender, EventArgs e)
+        private async void btSave_Click(object sender, EventArgs e)
         {
             if (!string.IsNullOrWhiteSpace(mtxtbOriginalApplicationID.Text))
             {
                 _OriginalApplicationID = int.Parse(mtxtbOriginalApplicationID.Text);
 
-                _Person = PersonService.FindByApplicationID(_OriginalApplicationID);
+                _Person = await PersonService.FindByApplicationID(_OriginalApplicationID);
 
                 if (_Person != null)
                 {
                     clsApplication Application = Utility.FillAndGetApplication(_Person.PersonID, enApplicationStatus.New,
                         enApplicationTypes.RetakeTest, _ApplicationFees, clsGlobal.CurrentUser.UserID);
 
-                    if (ApplicationService.AddNewApplication(Application))
+                    if (await ApplicationService.AddNewApplication(Application))
                     {
                         _RetakeTestApplicationID = Application.ApplicationID;
 
@@ -93,8 +86,6 @@ namespace DLMApp_PresentationLayer
         }
 
 
-
-        
 
 
     }

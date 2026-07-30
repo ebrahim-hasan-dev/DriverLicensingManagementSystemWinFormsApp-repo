@@ -2,15 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+
 
 namespace DLMApp_DataAccessLayer
 {
     public class TestRepository
     {
-        public static List<clsTest> GetAllTests()
+        public static async Task<List<clsTest>> GetAllTests()
         {
             List<clsTest> ListOfTests = new List<clsTest>();
 
@@ -26,11 +25,11 @@ namespace DLMApp_DataAccessLayer
 
                 Command = new SqlCommand(GetAllQuery, Connection);
 
-                Connection.Open();
+                await Connection.OpenAsync();
 
-                Reader = Command.ExecuteReader();
+                Reader = await Command.ExecuteReaderAsync();
 
-                while (Reader.Read())
+                while (await Reader.ReadAsync())
                 {
                     clsTest test = new clsTest();
 
@@ -78,7 +77,7 @@ namespace DLMApp_DataAccessLayer
             return ListOfTests;
         }
 
-        public static short GetMaxNumberOfPeople(byte TestID)
+        public static async Task<short> GetMaxNumberOfPeople(byte TestID)
         {
             short MaxNumberOfPeople = 0;
 
@@ -97,9 +96,14 @@ namespace DLMApp_DataAccessLayer
 
                     Command.Parameters.AddWithValue("@TestID", TestID);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    short.TryParse(Command.ExecuteScalar().ToString(), out MaxNumberOfPeople);
+                    object obj = await Command.ExecuteScalarAsync();
+
+                    if (obj != null)
+                    {
+                        short.TryParse(obj.ToString(), out MaxNumberOfPeople);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -123,7 +127,7 @@ namespace DLMApp_DataAccessLayer
             return MaxNumberOfPeople;
         }
 
-        public static bool UpdateTest(byte TestID, float TestFees, short MaxNumberOfPeople)
+        public static async Task<bool> UpdateTest(byte TestID, float TestFees, short MaxNumberOfPeople)
         {
             bool Updated = false;
 
@@ -144,9 +148,9 @@ namespace DLMApp_DataAccessLayer
                     Command.Parameters.AddWithValue("@TestFees", TestFees);
                     Command.Parameters.AddWithValue("@MaxNumberOfPeople", MaxNumberOfPeople);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    if (Command.ExecuteNonQuery() > 0)
+                    if (await Command.ExecuteNonQueryAsync() > 0)
                     {
                         Updated = true;
                     }

@@ -2,16 +2,9 @@
 using DLMApp_ModulesLayer;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Net.Mime.MediaTypeNames;
-
 
 
 namespace DLMApp_PresentationLayer
@@ -109,9 +102,9 @@ namespace DLMApp_PresentationLayer
             }
         }
 
-        void LoadAllTests()
+        async Task LoadAllTests()
         {
-            _ListOfTests = TestService.GetAllTests();
+            _ListOfTests = await TestService.GetAllTests();
 
             for (byte i = 0; i < _ListOfTests.Count; i++)
             {
@@ -164,11 +157,11 @@ namespace DLMApp_PresentationLayer
             }
         }
 
-        private void fmTestsScreen_Load(object sender, EventArgs e)
+        private async void fmTestsScreen_Load(object sender, EventArgs e)
         {
             clsGlobal.MakeTitleInCenterScreen(this.Width, lbTestsScreen);
 
-            LoadAllTests();
+            await LoadAllTests();
 
             SettingNewApplication();
 
@@ -189,13 +182,13 @@ namespace DLMApp_PresentationLayer
             dtpTestAppointment.Focus();
         }
 
-        private void btFindAvailableTestAppointment_Click(object sender, EventArgs e)
+        private async void btFindAvailableTestAppointment_Click(object sender, EventArgs e)
         {
             string CreatedByUser = "";
 
-            _ListOfRegisteredPeople = PeopleRegisteredInAppointmentDTOService.GetAllRegisteredPeopleInAppointment(_TestID, ref CreatedByUser);
+            (_ListOfRegisteredPeople, CreatedByUser) = await PeopleRegisteredInAppointmentDTOService.GetAllRegisteredPeopleInAppointment(_TestID);
 
-            _ListOfRegisteredPeopleRnewLicense = PeopleRegisteredInAppointmentDTOService.GetAllRegisteredPeopleInAppointmentTestDayRenewLicense(_TestID, ref CreatedByUser);
+            (_ListOfRegisteredPeopleRnewLicense, CreatedByUser) = await PeopleRegisteredInAppointmentDTOService.GetAllRegisteredPeopleInAppointmentTestDayRenewLicense(_TestID);
 
             bool List1 = false;
             bool List2 = false;
@@ -281,22 +274,22 @@ namespace DLMApp_PresentationLayer
 
         }
 
-        void NewApplicationProcess()
+        async Task NewApplicationProcess()
         {
-            short NumberOfPeopleRegistered = 0;
+            clsEnrollmentResult EnrollmentResult = await EnrollmentService.Enroll(_AppointmentID, _TestID, clsGlobal.CurrentUser.UserID,
+                   _NewLocalLicenseApplicationID, float.Parse(lbTestFeesResult.Text), txtbNotes.Text);
 
-            enEnrollmentResults Result = EnrollmentService.Enroll(_AppointmentID, _TestID, clsGlobal.CurrentUser.UserID,
-                   _NewLocalLicenseApplicationID, float.Parse(lbTestFeesResult.Text), ref NumberOfPeopleRegistered, txtbNotes.Text);
-
-            if (Result == enEnrollmentResults.Success)
+            if (EnrollmentResult.EnrollmentResult == enEnrollmentResults.Success)
             {
                 int PersonID = 0;
-                clsLicenseClass licenseClass = LicenseService.GetLicenseClass(_ApplicationID, ref PersonID);
+                clsLicenseClass licenseClass = null;
+
+                (licenseClass, PersonID) = await LicenseService.GetLicenseClass(_ApplicationID);
 
                 dgvPeopleRegisteredForTest.Rows.Add(new object[] { _ApplicationID, PersonID, _Person.GetFullName(), _Person.NationalNumber, 
                     licenseClass.LicenseClass, txtbNotes.Text});
 
-                lbNumberOfPeopleRegisteredResult.Text = NumberOfPeopleRegistered.ToString();
+                lbNumberOfPeopleRegisteredResult.Text = EnrollmentResult.NumberOfPeopleRegistered.ToString();
 
                 MessageBox.Show("Enrollment operation successfully", "success", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
@@ -304,28 +297,28 @@ namespace DLMApp_PresentationLayer
             }
             else
             {
-                ShowReasonForRegistrationFailure(Result);
+                ShowReasonForRegistrationFailure(EnrollmentResult.EnrollmentResult);
             }
         }
 
-        void RetakeTestProcess()
+        async Task RetakeTestProcess()
         {
-            short NumberOfPeopleRegistered = 0;
-
-            enEnrollmentResults Result = EnrollmentService.EnrollByApplicationID(_AppointmentID, _TestID, clsGlobal.CurrentUser.UserID, _ApplicationID,
-                                   float.Parse(lbTestFeesResult.Text), ref NumberOfPeopleRegistered, txtbNotes.Text, _RetakeTestApplicationID);
-
-            if (Result == enEnrollmentResults.Success)
+            clsEnrollmentResult EnrollmentResult = await EnrollmentService.EnrollByApplicationID(_AppointmentID, _TestID, clsGlobal.CurrentUser.UserID, _ApplicationID,
+                                   float.Parse(lbTestFeesResult.Text), txtbNotes.Text, _RetakeTestApplicationID);
+            
+            if (EnrollmentResult.EnrollmentResult == enEnrollmentResults.Success)
             {
-                ApplicationService.UpdateApplicationStatus(_RetakeTestApplicationID, enApplicationStatus.Completed);
+                await ApplicationService.UpdateApplicationStatus(_RetakeTestApplicationID, enApplicationStatus.Completed);
 
                 int PersonID = 0;
-                clsLicenseClass licenseClass = LicenseService.GetLicenseClass(_ApplicationID, ref PersonID);
+                clsLicenseClass licenseClass = null;
+
+                (licenseClass, PersonID) = await LicenseService.GetLicenseClass(_ApplicationID);
 
                 dgvPeopleRegisteredForTest.Rows.Add(new object[] { _ApplicationID, PersonID, _Person.GetFullName(), _Person.NationalNumber,
                 licenseClass?.LicenseClass, txtbNotes.Text });
 
-                lbNumberOfPeopleRegisteredResult.Text = NumberOfPeopleRegistered.ToString();
+                lbNumberOfPeopleRegisteredResult.Text = EnrollmentResult.NumberOfPeopleRegistered.ToString();
 
                 MessageBox.Show("Enrollment operation successfully", "success", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
@@ -333,39 +326,39 @@ namespace DLMApp_PresentationLayer
             }
             else
             {
-                ShowReasonForRegistrationFailure(Result);
+                ShowReasonForRegistrationFailure(EnrollmentResult.EnrollmentResult);
             }
         }
 
-        void RegisterProcess()
+        async Task RegisterProcess()
         {
             _ApplicationID = int.Parse(mtxtbApplicationID.Text);
 
-            _Person = PersonService.FindByApplicationID(_ApplicationID);
+            _Person = await PersonService.FindByApplicationID(_ApplicationID);
 
             if (_Person != null)
             {
-                short NumberOfPeopleRegistered = 0;
-
-                enEnrollmentResults Result = EnrollmentService.EnrollByApplicationID(_AppointmentID, _TestID, clsGlobal.CurrentUser.UserID, _ApplicationID,
-                                              float.Parse(lbTestFeesResult.Text), ref NumberOfPeopleRegistered, txtbNotes.Text);
+                clsEnrollmentResult EnrollmentResult = await EnrollmentService.EnrollByApplicationID(_AppointmentID, _TestID, clsGlobal.CurrentUser.UserID, _ApplicationID,
+                                              float.Parse(lbTestFeesResult.Text), txtbNotes.Text);
 
 
-                if (Result == enEnrollmentResults.Success)
+                if (EnrollmentResult.EnrollmentResult == enEnrollmentResults.Success)
                 {
                     int PersonID = 0;
-                    clsLicenseClass licenseClass = LicenseService.GetLicenseClass(_ApplicationID, ref PersonID);
+                    clsLicenseClass licenseClass = null;
+
+                    (licenseClass, PersonID) = await LicenseService.GetLicenseClass(_ApplicationID);
 
                     dgvPeopleRegisteredForTest.Rows.Add(new object[] { _ApplicationID, PersonID, _Person.GetFullName(), _Person.NationalNumber,
                                    licenseClass?.LicenseClass, txtbNotes.Text});
 
-                    lbNumberOfPeopleRegisteredResult.Text = NumberOfPeopleRegistered.ToString();
+                    lbNumberOfPeopleRegisteredResult.Text = EnrollmentResult.NumberOfPeopleRegistered.ToString();
 
                     MessageBox.Show("Enrollment operation successfully", "success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 else
                 {
-                    ShowReasonForRegistrationFailure(Result);
+                    ShowReasonForRegistrationFailure(EnrollmentResult.EnrollmentResult);
                 }
             }
             else
@@ -374,19 +367,17 @@ namespace DLMApp_PresentationLayer
             }
         }
 
-        void RenewLicenseProcess()
+        async Task RenewLicenseProcess()
         {
-            short NumberOfPeopleRegistered = 0;
+            clsEnrollmentResult EnrollmentResult = await EnrollmentService.Enroll(_AppointmentID, _TestID, clsGlobal.CurrentUser.UserID,
+                   float.Parse(lbTestFeesResult.Text), txtbNotes.Text, _ApplicationID);
 
-            enEnrollmentResults Result = EnrollmentService.Enroll(_AppointmentID, _TestID, clsGlobal.CurrentUser.UserID,
-                   float.Parse(lbTestFeesResult.Text), ref NumberOfPeopleRegistered, txtbNotes.Text, _ApplicationID);
-
-            if (Result == enEnrollmentResults.Success)
+            if (EnrollmentResult.EnrollmentResult == enEnrollmentResults.Success)
             {
                 dgvPeopleRegisteredForTest.Rows.Add(new object[] { _ApplicationID, _Person.PersonID, _Person.GetFullName(), _Person.NationalNumber,
                     "???", txtbNotes.Text });
 
-                lbNumberOfPeopleRegisteredResult.Text = NumberOfPeopleRegistered.ToString();
+                lbNumberOfPeopleRegisteredResult.Text = EnrollmentResult.NumberOfPeopleRegistered.ToString();
 
                 MessageBox.Show("Enrollment operation successfully", "success", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
@@ -394,11 +385,11 @@ namespace DLMApp_PresentationLayer
             }
             else
             {
-                ShowReasonForRegistrationFailure(Result);
+                ShowReasonForRegistrationFailure(EnrollmentResult.EnrollmentResult);
             }
         }
 
-        private void btRegister_Click(object sender, EventArgs e)
+        private async void btRegister_Click(object sender, EventArgs e)
         {
             if (!string.IsNullOrWhiteSpace(mtxtbApplicationID.Text))
             {
@@ -406,21 +397,21 @@ namespace DLMApp_PresentationLayer
                 {
                     if (_IsNewApplication)
                     {
-                        NewApplicationProcess();
+                        await NewApplicationProcess();
                     }
                     else
                     {
                         if (_IsRetakeTest)
                         {
-                            RetakeTestProcess();
+                            await RetakeTestProcess();
                         }
                         else if (_IsRenewLicense)
                         {
-                            RenewLicenseProcess();
+                            await RenewLicenseProcess();
                         }
                         else
                         {
-                            RegisterProcess();
+                            await RegisterProcess();
                         }
                     }
                 }
@@ -475,7 +466,7 @@ namespace DLMApp_PresentationLayer
             dgvPeopleRegisteredForTest.Rows.Clear();
         }
 
-        private void btCreateAppointment_Click(object sender, EventArgs e)
+        private async void btCreateAppointment_Click(object sender, EventArgs e)
         {
             if (dtpTestAppointment.Value > DateTime.Now)
             {
@@ -488,9 +479,9 @@ namespace DLMApp_PresentationLayer
                 Appointment.NumberOfPeople = 0;
                 Appointment.CreatedByUserID = clsGlobal.CurrentUser.UserID;
 
-                if (AppointmentService.IsExist(Appointment) == false)
+                if (await AppointmentService.IsExist(Appointment) == false)
                 {
-                    if (AppointmentService.AddNewAppointment(Appointment))
+                    if (await AppointmentService.AddNewAppointment(Appointment))
                     {
                         _AppointmentID = Appointment.ID;
 
@@ -577,14 +568,14 @@ namespace DLMApp_PresentationLayer
             }
         }
 
-        private void btFindTestDay_Click(object sender, EventArgs e)
+        private async void btFindTestDay_Click(object sender, EventArgs e)
         {
             DateTime Appointment = dtpTestAppointment.Value;
             string CreatedByUser = "";
             
-            _ListOfRegisteredPeople = PeopleRegisteredInAppointmentDTOService.GetAllRegisteredPeopleInAppointment(_TestID, ref CreatedByUser, Appointment, true);
+            (_ListOfRegisteredPeople, CreatedByUser) = await PeopleRegisteredInAppointmentDTOService.GetAllRegisteredPeopleInAppointment(_TestID, Appointment, true);
 
-            _ListOfRegisteredPeopleRnewLicense = PeopleRegisteredInAppointmentDTOService.GetAllRegisteredPeopleInAppointmentTestDayRenewLicense(_TestID, ref CreatedByUser, Appointment, true);
+            (_ListOfRegisteredPeopleRnewLicense, CreatedByUser) = await PeopleRegisteredInAppointmentDTOService.GetAllRegisteredPeopleInAppointmentTestDayRenewLicense(_TestID, Appointment, true);
 
             bool List1 = FillListOfPeopleRegistered(_ListOfRegisteredPeople, CreatedByUser, Appointment);
             bool List2 = FillListOfPeopleRegistered(_ListOfRegisteredPeopleRnewLicense, CreatedByUser, Appointment, false);
@@ -642,7 +633,7 @@ namespace DLMApp_PresentationLayer
             }
         }
 
-        private void btAdoptResult_Click(object sender, EventArgs e)
+        private async void btAdoptResult_Click(object sender, EventArgs e)
         {
             if (HaveAllPeopleHadTheirResultsDetermined() == true)
             {
@@ -687,8 +678,8 @@ namespace DLMApp_PresentationLayer
                         }
                     }
 
-                    bool Result1 = EnrollmentService.SetResults(_ListOfRegisteredPeople, _TestID);
-                    bool Result2 = EnrollmentService.SetResults(_ListOfRegisteredPeopleRnewLicense);
+                    bool Result1 = await EnrollmentService.SetResults(_ListOfRegisteredPeople, _TestID);
+                    bool Result2 = await EnrollmentService.SetResults(_ListOfRegisteredPeopleRnewLicense);
 
                     if (Result1 || Result2)
                     {
@@ -732,13 +723,13 @@ namespace DLMApp_PresentationLayer
             }
         }
 
-        private void showPersonInfoToolStripMenuItem_Click(object sender, EventArgs e)
+        private async void showPersonInfoToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (dgvPeopleRegisteredForTest.SelectedRows.Count > 0)
             {
                 int.TryParse(dgvPeopleRegisteredForTest.SelectedRows[0].Cells[1].Value.ToString(), out int PersonID);
 
-                clsPerson Person = PersonService.FindByPersonID(PersonID);
+                clsPerson Person = await PersonService.FindByPersonID(PersonID);
 
                 fmShowUserInfoScreen showUserInfoScreen = new fmShowUserInfoScreen(Person);
                 showUserInfoScreen.ShowDialog();

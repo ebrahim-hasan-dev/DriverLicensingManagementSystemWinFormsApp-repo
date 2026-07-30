@@ -1,13 +1,7 @@
 ﻿using DLMApp_ModulesLayer;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+
 
 namespace DLMApp_PresentationLayer
 {
@@ -23,7 +17,7 @@ namespace DLMApp_PresentationLayer
             lbUsernameResult.Visible = false;
             lbUserInfoScreen.Text = "Person Info Screen";
 
-            uctrlPersonInfo1.SetPersonInfo(Person);
+            SetPersonInfo(Person);
         }
 
         public fmShowUserInfoScreen(clsPerson Person, string Username, bool IsActive)
@@ -33,9 +27,9 @@ namespace DLMApp_PresentationLayer
             SetUserInfo(Person, Username, IsActive);
         }
 
-        void SetUserInfo(clsPerson Person, string Username, bool IsActive)
+        async void SetUserInfo(clsPerson Person, string Username, bool IsActive)
         {
-            uctrlPersonInfo1.SetPersonInfo(Person);
+            await uctrlPersonInfo1.SetPersonInfo(Person);
 
             lbUsernameResult.Text = Username;
 
@@ -45,13 +39,15 @@ namespace DLMApp_PresentationLayer
                 lbIsActiveResult.Text = "No";
         }
 
+        async void SetPersonInfo(clsPerson Person)
+        {
+            await uctrlPersonInfo1.SetPersonInfo(Person);
+        }
+
         private void fmShowPersonInfo_Load(object sender, EventArgs e)
         {
             clsGlobal.MakeTitleInCenterScreen(this.Width, lbUserInfoScreen);
         }
-
-
-
 
 
 

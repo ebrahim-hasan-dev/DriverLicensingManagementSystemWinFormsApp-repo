@@ -3,14 +3,14 @@ using DLMApp_ModulesLayer;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-
+using System.Threading.Tasks;
 
 
 namespace DLMApp_DataAccessLayer
 {
     public class CountryRepository
     {
-        public static List<clsCountry> GetAllCountries()
+        public static async Task<List<clsCountry>> GetAllCountries()
         {
             List <clsCountry> ListOfCountries = new List<clsCountry>();
 
@@ -26,11 +26,11 @@ namespace DLMApp_DataAccessLayer
 
                 Command = new SqlCommand(GetAllQuery, Connection);
 
-                Connection.Open();
+                await Connection.OpenAsync();
 
-                Reader = Command.ExecuteReader();
+                Reader = await Command.ExecuteReaderAsync();
 
-                while (Reader.Read())
+                while (await Reader.ReadAsync())
                 {
                     clsCountry country = new clsCountry();
 

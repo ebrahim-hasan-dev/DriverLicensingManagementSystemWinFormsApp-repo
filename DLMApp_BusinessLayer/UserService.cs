@@ -1,20 +1,18 @@
 ﻿using DLMApp_ModulesLayer;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using DLMApp_DataAccessLayer;
+
 
 namespace DLMApp_BusinessLayer
 {
     public class UserService
     {
-        static public clsUser Find(string UserName)
+        static public async Task<clsUser> Find(string UserName)
         {
             if (!string.IsNullOrWhiteSpace(UserName))
             {
-                return UserRepository.Find(UserName);
+                return await UserRepository.Find(UserName);
             }
             else
             {
@@ -22,16 +20,16 @@ namespace DLMApp_BusinessLayer
             }
         }
 
-        static public List<clsUser> GetAllUsers()
+        static public async Task<List<clsUser>> GetAllUsers()
         {
-            return UserRepository.GetAllUsers();
+            return await UserRepository.GetAllUsers();
         }
 
-        public static bool UpdateActiveUser(int UserID, bool Active)
+        public static async Task<bool> UpdateActiveUser(int UserID, bool Active)
         {
             if (UserID > 0)
             {
-                return UserRepository.UpdateActiveUser(UserID, Active);
+                return await UserRepository.UpdateActiveUser(UserID, Active);
             }
             else
             {
@@ -39,11 +37,11 @@ namespace DLMApp_BusinessLayer
             }
         }
 
-        public static bool ChangePassword(int UserID, string NewPassword)
+        public static async Task<bool> ChangePassword(int UserID, string NewPassword)
         {
             if (UserID > 0 && !string.IsNullOrWhiteSpace(NewPassword))
             {
-                return UserRepository.ChangePassword(UserID, NewPassword);
+                return await UserRepository.ChangePassword(UserID, NewPassword);
             }
             else
             {
@@ -51,11 +49,11 @@ namespace DLMApp_BusinessLayer
             }
         }
 
-        public static bool AddNewUser(clsUser User)
+        public static async Task<bool> AddNewUser(clsUser User)
         {
             if (User.IsFull())
             {
-                return UserRepository.AddNewUser(User);
+                return await UserRepository.AddNewUser(User);
             }
             else
             {
@@ -63,11 +61,11 @@ namespace DLMApp_BusinessLayer
             }
         }
 
-        public static bool UserNameExist(string UserName)
+        public static async Task<bool> UserNameExist(string UserName)
         {
             if (!string.IsNullOrWhiteSpace(UserName))
             {
-                return UserRepository.UserNameExist(UserName);
+                return await UserRepository.UserNameExist(UserName);
             }
             else
             {
@@ -75,11 +73,11 @@ namespace DLMApp_BusinessLayer
             }
         }
 
-        static public clsUser FindWithoutPass(string UserName)
+        static public async Task<clsUser> FindWithoutPass(string UserName)
         {
             if (!string.IsNullOrWhiteSpace(UserName))
             {
-                return UserRepository.FindWithoutPass(UserName);
+                return await UserRepository.FindWithoutPass(UserName);
             }
             else
             {
@@ -87,11 +85,11 @@ namespace DLMApp_BusinessLayer
             }
         }
 
-        static public clsUser Find(int UserID)
+        public static async Task<clsUser> Find(int UserID)
         {
             if (UserID > 0)
             {
-                return UserRepository.Find(UserID);
+                return await UserRepository.Find(UserID);
             }
             else
             {
@@ -99,11 +97,11 @@ namespace DLMApp_BusinessLayer
             }
         }
 
-        static public clsUser FindByNationalNumber(string NationalNumber)
+        static public async Task<clsUser> FindByNationalNumber(string NationalNumber)
         {
             if (!string.IsNullOrWhiteSpace(NationalNumber))
             {
-                return UserRepository.FindByNationalNumber(NationalNumber);
+                return await UserRepository.FindByNationalNumber(NationalNumber);
             }
             else
             {
@@ -111,11 +109,11 @@ namespace DLMApp_BusinessLayer
             }
         }
 
-        static public bool PersonIDExist(int PersonID)
+        static public async Task<bool> PersonIDExist(int PersonID)
         {
             if (PersonID > 0)
             {
-                return UserRepository.PersonIDExist(PersonID);
+                return await UserRepository.PersonIDExist(PersonID);
             }
             else
             {

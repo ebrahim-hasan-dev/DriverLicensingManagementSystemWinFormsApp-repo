@@ -47,6 +47,7 @@
     <Compile Include="clsAppointment.cs" />
     <Compile Include="clsCountry.cs" />
     <Compile Include="Applications\clsNewLocalLicenseApplication.cs" />
+    <Compile Include="clsEnrollmentResult.cs" />
     <Compile Include="clsEventLog.cs" />
     <Compile Include="Licenses\clsDetainedLicenseInfo.cs" />
     <Compile Include="Licenses\clsInternationalLicense.cs" />

@@ -2,13 +2,9 @@
 using DLMApp_ModulesLayer;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+
 
 namespace DLMApp_PresentationLayer
 {
@@ -29,9 +25,9 @@ namespace DLMApp_PresentationLayer
         }
 
 
-        void LoadAllTests()
+        async Task LoadAllTests()
         {
-            _ListOfTests = TestService.GetAllTests();
+            _ListOfTests = await TestService.GetAllTests();
 
             for (byte i = 0; i < _ListOfTests.Count; i++)
             {
@@ -52,11 +48,11 @@ namespace DLMApp_PresentationLayer
             lbMaxNubmerOfPeopleResult.Text = test.MaxNumberOfPeople.ToString();
         }
 
-        private void fmManageTestsScreen_Load(object sender, EventArgs e)
+        private async void fmManageTestsScreen_Load(object sender, EventArgs e)
         {
             clsGlobal.MakeTitleInCenterScreen(this.Width, lbManageTestsScreen);
 
-            LoadAllTests();
+            await LoadAllTests();
         }
 
         private void cbTests_SelectedIndexChanged(object sender, EventArgs e)
@@ -70,7 +66,7 @@ namespace DLMApp_PresentationLayer
             this.Close();
         }
 
-        private void btSave_Click(object sender, EventArgs e)
+        private async void btSave_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(mtxtbNewFees.Text) && string.IsNullOrWhiteSpace(mtxtbNewMaxNumberOfPeople.Text))
             {
@@ -88,7 +84,7 @@ namespace DLMApp_PresentationLayer
                 _MaxNumberOfPeople = short.Parse(mtxtbNewMaxNumberOfPeople.Text);
             }
 
-            if (TestService.UpdateTest(_TestID, _TestFees, _MaxNumberOfPeople))
+            if (await TestService.UpdateTest(_TestID, _TestFees, _MaxNumberOfPeople))
             {
                 UpdateUI();
                 MessageBox.Show("Operation completed successfully", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -114,8 +110,6 @@ namespace DLMApp_PresentationLayer
             Test.Fees = _TestFees;
             Test.MaxNumberOfPeople = _MaxNumberOfPeople;
         }
-
-
 
 
 

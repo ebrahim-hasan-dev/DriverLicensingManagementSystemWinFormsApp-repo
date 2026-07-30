@@ -1,15 +1,8 @@
 ﻿using DLMApp_BusinessLayer;
 using DLMApp_ModulesLayer;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Net.Mime.MediaTypeNames;
+
 
 namespace DLMApp_PresentationLayer
 {
@@ -47,17 +40,17 @@ namespace DLMApp_PresentationLayer
             lbTotalFeesResult.Text = (float.Parse(lbFineResult.Text) + float.Parse(uctrlApplicationInfo1.lbApplicationFeesResult.Text)).ToString();
         }
 
-        private void btFind_Click(object sender, EventArgs e)
+        private async void btFind_Click(object sender, EventArgs e)
         {
             if (!string.IsNullOrWhiteSpace(mtxtbLicenseID.Text))
             {
                 Reset();
                 
-                _License = LicenseService.Find(int.Parse(mtxtbLicenseID.Text));
+                _License = await LicenseService.Find(int.Parse(mtxtbLicenseID.Text));
 
                 if (_License != null)
                 {
-                    clsDetainedLicenseInfo DetainedLicenseInfo = DetainedLicenseService.GetDetainedLicenseInfo(_License.ID);
+                    clsDetainedLicenseInfo DetainedLicenseInfo = await DetainedLicenseService.GetDetainedLicenseInfo(_License.ID);
 
                     if (DetainedLicenseInfo != null)
                     {
@@ -90,14 +83,14 @@ namespace DLMApp_PresentationLayer
             }
         }
 
-        private void btRelease_Click(object sender, EventArgs e)
+        private async void btRelease_Click(object sender, EventArgs e)
         {
             clsApplication Application = Utility.FillAndGetApplication(_License.PersonInfo.PersonID, enApplicationStatus.Completed,
                 enApplicationTypes.ReleaseDetainedLicense, _ApplicationType.ApplicationTypeFees, clsGlobal.CurrentUser.UserID);
 
-            if (ApplicationService.AddNewApplication(Application))
+            if (await ApplicationService.AddNewApplication(Application))
             {
-                if (DetainedLicenseService.ReleaseDetainedLicense(_License.ID, clsGlobal.CurrentUser.UserID, Application.ApplicationID))
+                if (await DetainedLicenseService.ReleaseDetainedLicense(_License.ID, clsGlobal.CurrentUser.UserID, Application.ApplicationID))
                 {
                     _License.IsDetained = false;
 
@@ -105,7 +98,7 @@ namespace DLMApp_PresentationLayer
 
                     uctrlApplicationInfo1.lbApplicationIDResult.Text = Application.ApplicationID.ToString();
 
-                    uctrlLisenseInfo1.SetLicenseInfo(_License, _License.ApplicationID, _License.LicenseClass);
+                    await uctrlLisenseInfo1.SetLicenseInfo(_License, _License.ApplicationID, _License.LicenseClass);
 
                     mtxtbLicenseID.Clear();
 
@@ -118,9 +111,9 @@ namespace DLMApp_PresentationLayer
             }
         }
 
-        private void fmReleaseDetainedLicenseScreen_Load(object sender, EventArgs e)
+        private async void fmReleaseDetainedLicenseScreen_Load(object sender, EventArgs e)
         {
-            _ApplicationType = ApplicationService.GetApplicationType(enApplicationTypes.ReleaseDetainedLicense);
+            _ApplicationType = await ApplicationService.GetApplicationType(enApplicationTypes.ReleaseDetainedLicense);
 
             uctrlApplicationInfo1.SetApplicationInfo(_ApplicationType);
 

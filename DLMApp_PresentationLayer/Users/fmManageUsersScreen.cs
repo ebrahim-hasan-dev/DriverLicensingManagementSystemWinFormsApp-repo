@@ -3,12 +3,9 @@ using DLMApp_ModulesLayer;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+
 
 namespace DLMApp_PresentationLayer
 {
@@ -47,7 +44,7 @@ namespace DLMApp_PresentationLayer
             cbFilter.SelectedIndex = 0;
         }
 
-        private void fmManageUsersScreen_Load(object sender, EventArgs e)
+        private async void fmManageUsersScreen_Load(object sender, EventArgs e)
         {
             clsGlobal.MakeTitleInCenterScreen(this.Width, lbManageUsersScreen);
 
@@ -55,25 +52,25 @@ namespace DLMApp_PresentationLayer
 
             FillComboBox();
 
-            FillDataGridView(UserService.GetAllUsers());
+            FillDataGridView(await UserService.GetAllUsers());
         }
-     
-        private void showUserInfoToolStripMenuItem1_Click(object sender, EventArgs e)
+
+        private async void showUserInfoToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             int.TryParse(dgvUsers.SelectedRows[0].Cells[3].Value.ToString(), out int PersonID);
             bool IsActive = (bool)dgvUsers.SelectedRows[0].Cells[2].Value;
 
-            clsPerson Person = PersonService.FindByPersonID(PersonID);
+            clsPerson Person = await PersonService.FindByPersonID(PersonID);
 
             fmShowUserInfoScreen showPersonInfo = new fmShowUserInfoScreen(Person, dgvUsers.SelectedRows[0].Cells[1].Value.ToString(), IsActive);
             showPersonInfo.ShowDialog();
         }
 
-        private void makeUserInactiveToolStripMenuItem1_Click(object sender, EventArgs e)
+        private async void makeUserInactiveToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             int.TryParse(dgvUsers.SelectedRows[0].Cells[0].Value.ToString(), out int UserID);
 
-            if (UserService.UpdateActiveUser(UserID, false))
+            if (await UserService.UpdateActiveUser(UserID, false))
             {
                 MessageBox.Show("Operation completed successfully", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
@@ -81,11 +78,11 @@ namespace DLMApp_PresentationLayer
             }
         }
 
-        private void makeUserActiveToolStripMenuItem1_Click(object sender, EventArgs e)
+        private async void makeUserActiveToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             int.TryParse(dgvUsers.SelectedRows[0].Cells[0].Value.ToString(), out int UserID);
 
-            if (UserService.UpdateActiveUser(UserID, true))
+            if (await UserService.UpdateActiveUser(UserID, true))
             {
                 MessageBox.Show("Operation completed successfully", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
@@ -93,15 +90,15 @@ namespace DLMApp_PresentationLayer
             }
         }
 
-        private void changePasswordToolStripMenuItem1_Click(object sender, EventArgs e)
+        private async void changePasswordToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             int.TryParse(dgvUsers.SelectedRows[0].Cells[0].Value.ToString(), out int UserID);
 
             int.TryParse(dgvUsers.SelectedRows[0].Cells[3].Value.ToString(), out int PersonID);
 
-            clsPerson Person = PersonService.FindByPersonID(PersonID);
+            clsPerson Person = await PersonService.FindByPersonID(PersonID);
 
-            clsUser User = UserService.Find(UserID);
+            clsUser User = await UserService.Find(UserID);
 
             fmChangePasswordScreen udateUserScreen = new fmChangePasswordScreen(User, Person);
             udateUserScreen.ShowDialog();
@@ -152,11 +149,11 @@ namespace DLMApp_PresentationLayer
             addNewUserScreen.ShowDialog();
         }
 
-        private void btFind_Click(object sender, EventArgs e)
+        private async void btFind_Click(object sender, EventArgs e)
         {
             if (cbFilter.Text == "All")
             {
-                FillDataGridView(UserService.GetAllUsers());
+                FillDataGridView(await UserService.GetAllUsers());
             }
             else
             {
@@ -166,7 +163,7 @@ namespace DLMApp_PresentationLayer
                     {
                         dgvUsers.Rows.Clear();
 
-                        clsUser User = UserService.FindWithoutPass(mtxtbFilter.Text);
+                        clsUser User = await UserService.FindWithoutPass(mtxtbFilter.Text);
 
                         if (User != null)
                         {
@@ -190,7 +187,7 @@ namespace DLMApp_PresentationLayer
                     {
                         dgvUsers.Rows.Clear();
 
-                        clsUser User = UserService.FindByNationalNumber(mtxtbFilter.Text);
+                        clsUser User = await UserService.FindByNationalNumber(mtxtbFilter.Text);
 
                         if (User != null)
                         {
@@ -240,14 +237,6 @@ namespace DLMApp_PresentationLayer
             fmFindPersonScreen findPersonScreen = new fmFindPersonScreen();
             findPersonScreen.ShowDialog();
         }
-
-
-
-
-
-
-
-
 
 
 

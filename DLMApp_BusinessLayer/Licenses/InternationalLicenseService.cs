@@ -2,21 +2,20 @@
 using DLMApp_ModulesLayer;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+
 
 namespace DLMApp_BusinessLayer
 {
     public class InternationalLicenseService
     {
-        public static bool AddNewInternationalLicense(clsInternationalLicense InternationalLicense)
+        public static async Task<bool> AddNewInternationalLicense(clsInternationalLicense InternationalLicense)
         {
             if (InternationalLicense.IsFull())
             {
-                UpdateInternationalLicneseToInactive(InternationalLicense.DriverID);
+                await UpdateInternationalLicneseToInactive(InternationalLicense.DriverID);
 
-                return InternationalLicenseRepository.AddNewInternationalLicense(InternationalLicense);
+                return await InternationalLicenseRepository.AddNewInternationalLicense(InternationalLicense);
             }
             else
             {
@@ -29,11 +28,11 @@ namespace DLMApp_BusinessLayer
             return ReleaseDate.AddYears(1);
         }
 
-        public static bool UpdateInternationalLicneseToInactive(int DriverID)
+        public static async Task<bool> UpdateInternationalLicneseToInactive(int DriverID)
         {
             if (DriverID > 0)
             {
-                return InternationalLicenseRepository.UpdateInternationalLicneseToInactive(DriverID);
+                return await InternationalLicenseRepository.UpdateInternationalLicneseToInactive(DriverID);
             }
             else
             {
@@ -41,18 +40,17 @@ namespace DLMApp_BusinessLayer
             }
         }
 
-        public static List<clsInternationalLicense> GetInternationalLicnesesForDriver(int DriverID)
+        public static async Task<List<clsInternationalLicense>> GetInternationalLicnesesForDriver(int DriverID)
         {
             if (DriverID > 0)
             {
-                return InternationalLicenseRepository.GetInternationalLicnesesForDriver(DriverID);
+                return await InternationalLicenseRepository.GetInternationalLicnesesForDriver(DriverID);
             }
             else
             {
                 return new List<clsInternationalLicense>();
             }
         }
-
 
 
 

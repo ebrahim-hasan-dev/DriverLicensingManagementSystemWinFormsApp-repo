@@ -1,5 +1,4 @@
 ﻿
-
 namespace DLMApp_ModulesLayer
 {
     public enum enApplicationStatus : byte {None = 0, New = 1, Canceled = 2, Completed = 3 };

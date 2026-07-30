@@ -1,13 +1,8 @@
 ﻿using DLMApp_ModulesLayer;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+
 
 namespace DLMApp_PresentationLayer
 {
@@ -24,7 +19,7 @@ namespace DLMApp_PresentationLayer
         }
 
 
-        public void SetLicenseInfo(clsInternationalLicense InternationalLicense, clsPerson Person, int ApplicationID)
+        public async Task SetLicenseInfo(clsInternationalLicense InternationalLicense, clsPerson Person, int ApplicationID)
         {
             lbApplicationIDResult.Text = ApplicationID.ToString();
             lbDateOfBirthResult.Text = Person.DateOfBirth.ToString("d-M-yyyy");
@@ -40,7 +35,7 @@ namespace DLMApp_PresentationLayer
             lblbEndDateResult.Text = InternationalLicense.EndDate.ToString("d-M-yyyy");
             lbNameResult.Text = Person.GetFullName();
             lbNationalNumberResult.Text = Person.NationalNumber.ToString();
-            pbDriver.Image = clsGlobal.LoadImageNoLock(Person.ImagePath);
+            pbDriver.Image = await clsGlobal.LoadImageNoLockAsync(Person.ImagePath);
             lbInternationalLicenseIDResult.Text = InternationalLicense.InternationalLicenseID.ToString();
             lbLocalLicenseIDResult.Text = InternationalLicense.LocalLicenseID.ToString();
         }

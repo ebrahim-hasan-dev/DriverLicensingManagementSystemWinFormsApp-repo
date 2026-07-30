@@ -2,13 +2,9 @@
 using DLMApp_ModulesLayer;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+
 
 namespace DLMApp_PresentationLayer
 {
@@ -29,9 +25,9 @@ namespace DLMApp_PresentationLayer
         }
 
        
-        void LoadAllLicensesClasses()
+        async Task LoadAllLicensesClasses()
         {
-            _ListOfLicensesClasses = LicenseService.GetAllLicensesClasses();
+            _ListOfLicensesClasses = await LicenseService.GetAllLicensesClasses();
 
             for (int i = 0; i < _ListOfLicensesClasses.Count; i++)
             {
@@ -41,11 +37,11 @@ namespace DLMApp_PresentationLayer
             cbLicensesClasses.SelectedIndex = 2;
         }
 
-        private void fmLostReplacementScreen_Load(object sender, EventArgs e)
+        private async void fmLostReplacementScreen_Load(object sender, EventArgs e)
         {
-            LoadAllLicensesClasses();
+            await LoadAllLicensesClasses();
 
-            _ApplicationType = ApplicationService.GetApplicationType(enApplicationTypes.ReplacementForLostLicense);
+            _ApplicationType = await ApplicationService.GetApplicationType(enApplicationTypes.ReplacementForLostLicense);
 
             uctrlApplicationInfo1.SetApplicationInfo(_ApplicationType);
 
@@ -57,17 +53,17 @@ namespace DLMApp_PresentationLayer
             _LicenseClassID = _ListOfLicensesClasses.Find(x => x.LicenseClass == cbLicensesClasses.Text).ID;
         }
        
-        private void btIssue_Click(object sender, EventArgs e)
+        private async void btIssue_Click(object sender, EventArgs e)
         {
             if (mtxtbNationalNumber.MaskCompleted)
             {
                 uctrlLisenseInfo1.Reset();
 
-                clsPerson Person = PersonService.FindByNationalNumber(mtxtbNationalNumber.Text);
+                clsPerson Person = await PersonService.FindByNationalNumber(mtxtbNationalNumber.Text);
 
                 if (Person != null)
                 {
-                    clsLicense License = LicenseService.FindActiveAndValidLicense(Person.PersonID, _LicenseClassID);
+                    clsLicense License = await LicenseService.FindActiveAndValidLicense(Person.PersonID, _LicenseClassID);
 
                     if (License != null)
                     {
@@ -76,18 +72,18 @@ namespace DLMApp_PresentationLayer
                             clsApplication Application = Utility.FillAndGetApplication(Person.PersonID, enApplicationStatus.Completed,
                                 enApplicationTypes.ReplacementForLostLicense, _ApplicationType.ApplicationTypeFees, clsGlobal.CurrentUser.UserID);
 
-                            if (ApplicationService.AddNewApplication(Application))
+                            if (await ApplicationService.AddNewApplication(Application))
                             {
                                 LicenseService.UpdateToReplaceDamagedOrReplaceLost(License, Application.ApplicationID, clsGlobal.CurrentUser.UserID,
                                     enLicenseStatus.LostReplacement);
 
-                                if (LicenseService.AddNewLicense(License))
+                                if (await LicenseService.AddNewLicense(License))
                                 {
                                     MessageBox.Show("The operation was completed successfully", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                                     uctrlApplicationInfo1.lbApplicationIDResult.Text = Application.ApplicationID.ToString();
 
-                                    uctrlLisenseInfo1.SetLicenseInfo(License, Application.ApplicationID, cbLicensesClasses.Text);
+                                    await uctrlLisenseInfo1.SetLicenseInfo(License, Application.ApplicationID, cbLicensesClasses.Text);
 
                                     mtxtbNationalNumber.Clear();
                                 }
@@ -121,9 +117,6 @@ namespace DLMApp_PresentationLayer
         {
             this.Close();
         }
-
-
-
 
 
 

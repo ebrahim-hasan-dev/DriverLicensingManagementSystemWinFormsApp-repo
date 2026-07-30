@@ -1,8 +1,7 @@
-﻿
-using DLMApp_BusinessLayer;
+﻿using DLMApp_BusinessLayer;
 using DLMApp_ModulesLayer;
 using System;
-using System.Security.Cryptography; // مخصصة للتشفير
+using System.Security.Cryptography;
 using System.Text;
 using System.Windows.Forms;
 
@@ -25,11 +24,11 @@ namespace DLMApp_PresentationLayer
             clsEventLog.WriteToEventLog("One of the requirements is missing", enLogType.Warning);
         }
 
-        private void btLogin_Click(object sender, EventArgs e)
+        private async void btLogin_Click(object sender, EventArgs e)
         {
             if (!string.IsNullOrWhiteSpace(txtbUserName.Text) && !string.IsNullOrWhiteSpace(txtbPassword.Text))
             {
-                clsGlobal.CurrentUser = UserService.Find(txtbUserName.Text);
+                clsGlobal.CurrentUser = await UserService.Find(txtbUserName.Text);
 
                 if (clsGlobal.CurrentUser == null || !PasswordManager.VerifyPassword(txtbPassword.Text, clsGlobal.CurrentUser.Password))
                 {

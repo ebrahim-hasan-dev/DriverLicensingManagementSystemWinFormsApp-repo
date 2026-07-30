@@ -2,14 +2,8 @@
 using DLMApp_ModulesLayer;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
 
 
 namespace DLMApp_PresentationLayer
@@ -30,11 +24,11 @@ namespace DLMApp_PresentationLayer
 
         // ================================================================================================
 
-        void SetPersonInfo(clsPerson person)
+        async void SetPersonInfo(clsPerson person)
         {
             _Person = person;
 
-            uctrlPersonInfo1.SetPersonInfo(_Person);
+            await uctrlPersonInfo1.SetPersonInfo(_Person);
 
             _IsNewPerson = true;
         }
@@ -53,9 +47,9 @@ namespace DLMApp_PresentationLayer
             Add_UpdatePersonScreen.ShowDialog();
         }
 
-        void LoadAllLicensesClasses()
+        async Task LoadAllLicensesClasses()
         {
-            _ListOfLicensesClasses = LicenseService.GetAllLicensesClasses();
+            _ListOfLicensesClasses = await LicenseService.GetAllLicensesClasses();
 
             for (int i = 0; i < _ListOfLicensesClasses.Count; i++)
             {
@@ -65,15 +59,15 @@ namespace DLMApp_PresentationLayer
             cbLicensesClasses.SelectedIndex = 2;
         }
 
-        private void fmNewLocalLicense_Load(object sender, EventArgs e)
+        private async void fmNewLocalLicense_Load(object sender, EventArgs e)
         {
-            clsApplicationType ApplicationType = ApplicationService.GetApplicationType(enApplicationTypes.NewLocalLicense);
+            clsApplicationType ApplicationType = await ApplicationService.GetApplicationType(enApplicationTypes.NewLocalLicense);
             uctrlApplicationInfo1.SetApplicationInfo(ApplicationType);
             _ApplicationFees = ApplicationType.ApplicationTypeFees;
 
             this.AcceptButton = btNext;
 
-            LoadAllLicensesClasses();
+            await LoadAllLicensesClasses();
 
             clsGlobal.MakeTitleInCenterScreen(this.Width, lbNewLocalLicenseScreen);
         }
@@ -98,7 +92,7 @@ namespace DLMApp_PresentationLayer
             SetAllLicenseClassInfo(_ListOfLicensesClasses.Find(x => x.LicenseClass == cbLicensesClasses.Text));
         }
 
-        private void btSave_Click(object sender, EventArgs e)
+        private async void btSave_Click(object sender, EventArgs e)
         {
             if (_Person != null)
             {
@@ -108,13 +102,13 @@ namespace DLMApp_PresentationLayer
                     {
                         if (_IsNewPerson == false)
                         {
-                            if (LicenseService.DoesHaveLicenseOfSameClass(_Person.PersonID, _LicenseClassID))
+                            if (await LicenseService.DoesHaveLicenseOfSameClass(_Person.PersonID, _LicenseClassID))
                             {
                                 MessageBox.Show("This person has license of same class", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                 return;
                             }
 
-                            int ApplicationID = ApplicationService.DoesHaveApplicationOfSameLicenseClassForNewLocalLicenseStatusNew(_Person.PersonID, _LicenseClassID);
+                            int ApplicationID = await ApplicationService.DoesHaveApplicationOfSameLicenseClassForNewLocalLicenseStatusNew(_Person.PersonID, _LicenseClassID);
 
                             if (ApplicationID != 0)
                             {
@@ -130,7 +124,7 @@ namespace DLMApp_PresentationLayer
 
                         newLocalLicenseApplication.LicenseClassID = (enLicenseClasses)_LicenseClassID;
 
-                        if (ApplicationService.AddNewLocalLicenseApplication(newLocalLicenseApplication))
+                        if (await ApplicationService.AddNewLocalLicenseApplication(newLocalLicenseApplication))
                         {
                             uctrlApplicationInfo1.lbApplicationIDResult.Text = newLocalLicenseApplication.ApplicationInfo.ApplicationID.ToString();
                             MessageBox.Show($"The Save operation successfully with Application ID ({newLocalLicenseApplication.ApplicationInfo.ApplicationID})", "Successfully", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -161,7 +155,7 @@ namespace DLMApp_PresentationLayer
 
                     if (_IsNewPerson)
                     {
-                        PersonService.DeleteByID(_Person.PersonID);
+                        await PersonService.DeleteByID(_Person.PersonID);
                     }
                 }
             }
@@ -176,15 +170,15 @@ namespace DLMApp_PresentationLayer
             this.Close();
         }
 
-        private void btSearch_Click(object sender, EventArgs e)
+        private async void btSearch_Click(object sender, EventArgs e)
         {
             if (mtxtbNationalNumber.MaskCompleted)
             {
-                _Person = PersonService.FindByNationalNumber(mtxtbNationalNumber.Text);
+                _Person = await PersonService.FindByNationalNumber(mtxtbNationalNumber.Text);
 
                 if (_Person != null)
                 {
-                    uctrlPersonInfo1.SetPersonInfo(_Person);
+                    await uctrlPersonInfo1.SetPersonInfo(_Person);
                     _IsNewPerson = false;
                     this.AcceptButton = btNext;
                 }
@@ -198,10 +192,6 @@ namespace DLMApp_PresentationLayer
                 MessageBox.Show("The field is empty or not completed", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
-
-
-
 
 
 

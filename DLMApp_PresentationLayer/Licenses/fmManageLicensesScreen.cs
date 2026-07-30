@@ -3,13 +3,9 @@ using DLMApp_ModulesLayer;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Reflection.Emit;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+
 
 namespace DLMApp_PresentationLayer
 {
@@ -62,7 +58,7 @@ namespace DLMApp_PresentationLayer
             PersonInfo.Location = new Point((Width / 2) - (PersonInfo.Size.Width / 2), PersonInfo.Location.Y);
         }
 
-        private void fmManageLicensesScreen_Load(object sender, EventArgs e)
+        private async void fmManageLicensesScreen_Load(object sender, EventArgs e)
         {
             dgvLicenses.ForeColor = Color.Black;
 
@@ -78,7 +74,7 @@ namespace DLMApp_PresentationLayer
             }
             else
             {
-                FillDataGridView(LicenseService.GetAllLicenses());
+                FillDataGridView(await LicenseService.GetAllLicenses());
             }
         }
 
@@ -104,7 +100,7 @@ namespace DLMApp_PresentationLayer
             }
         }
 
-        private void btFilter_Click(object sender, EventArgs e)
+        private async void btFilter_Click(object sender, EventArgs e)
         {
             List<clsLicense> ListOfLicenses = new List<clsLicense>();
 
@@ -112,7 +108,7 @@ namespace DLMApp_PresentationLayer
             {
                 dgvLicenses.Rows.Clear();
 
-                ListOfLicenses = LicenseService.GetAllLicenses();
+                ListOfLicenses = await LicenseService.GetAllLicenses();
 
                 FillDataGridView(ListOfLicenses);
             }
@@ -124,7 +120,7 @@ namespace DLMApp_PresentationLayer
 
                     if (cbFilter.Text == "License ID")
                     {
-                        clsLicense License = LicenseService.Find(int.Parse(mtxtbFilter.Text));
+                        clsLicense License = await LicenseService.Find(int.Parse(mtxtbFilter.Text));
 
                         if (License != null)
                         {
@@ -133,13 +129,13 @@ namespace DLMApp_PresentationLayer
                     }
                     else if (cbFilter.Text == "Driver ID")
                     {
-                        ListOfLicenses = LicenseService.FindAllByDriverID(int.Parse(mtxtbFilter.Text));
+                        ListOfLicenses = await LicenseService.FindAllByDriverID(int.Parse(mtxtbFilter.Text));
                     }
                     else if (cbFilter.Text == "National Number")
                     {
                         if (mtxtbFilter.MaskCompleted)
                         {
-                            ListOfLicenses = LicenseService.FindAllByNationalNumber(mtxtbFilter.Text);
+                            ListOfLicenses = await LicenseService.FindAllByNationalNumber(mtxtbFilter.Text);
                         }
                         else
                         {
@@ -171,15 +167,15 @@ namespace DLMApp_PresentationLayer
             }
         }
 
-        private void dgvLicenses_SelectionChanged(object sender, EventArgs e)
+        private async void dgvLicenses_SelectionChanged(object sender, EventArgs e)
         {
             if (dgvLicenses.SelectedRows.Count > 0)
             {
                 _DriverID = int.Parse(dgvLicenses.SelectedRows[0].Cells[0].Value.ToString());
 
-                _Person = PersonService.FindByDriverID(_DriverID);
+                _Person = await PersonService.FindByDriverID(_DriverID);
 
-                uctrlPersonInfo1.SetPersonInfo(_Person);
+                await uctrlPersonInfo1.SetPersonInfo(_Person);
             }
         }
 

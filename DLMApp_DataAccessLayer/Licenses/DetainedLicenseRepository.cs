@@ -1,17 +1,14 @@
 ﻿using DLMApp_ModulesLayer;
 using System;
-using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using static System.Net.Mime.MediaTypeNames;
+
 
 namespace DLMApp_DataAccessLayer
 {
     public class DetainedLicenseRepository
     {
-        public static bool AddDetainedLicense(int LicenseID, float Fine, string Reason, DateTime DetainedDate, int CreatedByUserID)
+        public static async Task<bool> AddDetainedLicense(int LicenseID, float Fine, string Reason, DateTime DetainedDate, int CreatedByUserID)
         {
             bool Detained = false;
 
@@ -37,9 +34,9 @@ namespace DLMApp_DataAccessLayer
                     Command.Parameters.AddWithValue("@LicenseID", LicenseID);
                     Command.Parameters.AddWithValue("@CreatedByUserID", CreatedByUserID);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    if (Command.ExecuteNonQuery() > 0)
+                    if (await Command.ExecuteNonQueryAsync() > 0)
                     {
                         Detained = true;
                     }
@@ -66,64 +63,7 @@ namespace DLMApp_DataAccessLayer
             return Detained;
         }
 
-        public static bool IsDetained(int LicenseID)
-        {
-            bool IsDetained = false;
-
-            if (LicenseID > 0)
-            {
-                SqlConnection Connection = null;
-                SqlCommand Command = null;
-                SqlDataReader Reader = null;
-
-                try
-                {
-                    Connection = new SqlConnection(clsConnectionString.ConnectionString);
-
-                    string AddedQuery = "select [License_ID] from [Release_Licenses_Reservation_Order] where [License_ID] = @LicenseID and [Paid] = 0";
-
-                    Command = new SqlCommand(AddedQuery, Connection);
-
-                    Command.Parameters.AddWithValue("@LicenseID", LicenseID);
-
-                    Connection.Open();
-
-                    Reader = Command.ExecuteReader();
-
-                    if (Reader.HasRows)
-                    {
-                        IsDetained = true;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
-                }
-                finally
-                {
-                    if (Reader != null)
-                    {
-                        Reader.Close();
-                        Reader.Dispose();
-                    }
-
-                    if (Command != null)
-                    {
-                        Command.Dispose();
-                    }
-
-                    if (Connection != null)
-                    {
-                        Connection.Close();
-                        Connection.Dispose();
-                    }
-                }
-            }
-
-            return IsDetained;
-        }
-
-        public static clsDetainedLicenseInfo GetDetainedLicenseInfo(int LicenseID)
+        public static async Task<clsDetainedLicenseInfo> GetDetainedLicenseInfo(int LicenseID)
         {
             clsDetainedLicenseInfo DetainedLicenseInfo = null;
 
@@ -146,11 +86,11 @@ namespace DLMApp_DataAccessLayer
 
                     Command.Parameters.AddWithValue("@LicenseID", LicenseID);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    Reader = Command.ExecuteReader();
+                    Reader = await Command.ExecuteReaderAsync();
 
-                    if (Reader.Read())
+                    if (await Reader.ReadAsync())
                     {
                         DetainedLicenseInfo = new clsDetainedLicenseInfo();
 
@@ -192,7 +132,7 @@ namespace DLMApp_DataAccessLayer
             return DetainedLicenseInfo;
         }
 
-        public static bool ReleaseDetainedLicense(int LicenseID, int ReleasedByUserID, int ApplicationID)
+        public static async Task<bool> ReleaseDetainedLicense(int LicenseID, int ReleasedByUserID, int ApplicationID)
         {
             bool Released = false;
 
@@ -216,9 +156,9 @@ namespace DLMApp_DataAccessLayer
                     Command.Parameters.AddWithValue("@ReleasedByUserID", ReleasedByUserID);
                     Command.Parameters.AddWithValue("@OrderID", ApplicationID);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    if (Command.ExecuteNonQuery() > 0)
+                    if (await Command.ExecuteNonQueryAsync() > 0)
                     {
                         Released = true;
                     }

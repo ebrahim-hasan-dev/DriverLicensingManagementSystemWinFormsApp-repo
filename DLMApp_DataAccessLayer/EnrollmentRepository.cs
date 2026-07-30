@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DLMApp_ModulesLayer;
+
 
 namespace DLMApp_DataAccessLayer
 {
     public class EnrollmentRepository
     {
-        public static bool Enroll(int AppointmentID, byte TestID, int CreatedByUserID, int NewLocalLicenseID, float TestFees, string Notes, int RetakeTestOrderID = 0)
+        public static async Task<bool> Enroll(int AppointmentID, byte TestID, int CreatedByUserID, int NewLocalLicenseID, float TestFees, string Notes, int RetakeTestOrderID = 0)
         {
             bool IsAdded = false;
 
@@ -49,11 +49,9 @@ namespace DLMApp_DataAccessLayer
                         Command.Parameters.AddWithValue("@RetakeTestOrderID", DBNull.Value);
 
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    int AffectedRows = Command.ExecuteNonQuery();
-
-                    if (AffectedRows > 0)
+                    if (await Command.ExecuteNonQueryAsync() > 0)
                     {
                         IsAdded = true;
                     }
@@ -80,7 +78,7 @@ namespace DLMApp_DataAccessLayer
             return IsAdded;
         }
 
-        public static bool Enroll(int AppointmentID, byte TestID, int CreatedByUserID, float TestFees, string Notes, int RenewLicenseApplicationID)
+        public static async Task<bool> Enroll(int AppointmentID, byte TestID, int CreatedByUserID, float TestFees, string Notes, int RenewLicenseApplicationID)
         {
             bool IsAdded = false;
 
@@ -112,13 +110,11 @@ namespace DLMApp_DataAccessLayer
                     Command.Parameters.AddWithValue("@AppointmentID", AppointmentID);
                     Command.Parameters.AddWithValue("@CreatedByUserID", CreatedByUserID);
                     Command.Parameters.AddWithValue("@RenewLicenseApplicationID", RenewLicenseApplicationID);
-                  
 
-                    Connection.Open();
 
-                    int AffectedRows = Command.ExecuteNonQuery();
+                    await Connection.OpenAsync();
 
-                    if (AffectedRows > 0)
+                    if (await Command.ExecuteNonQueryAsync() > 0)
                     {
                         IsAdded = true;
                     }
@@ -146,7 +142,7 @@ namespace DLMApp_DataAccessLayer
             return IsAdded;
         }
 
-        public static bool IsSameApplicationIDExistInSameAppointment(int AppointmentID, int NewLocalLicenseApplicationID)
+        public static async Task<bool> IsSameApplicationIDExistInSameAppointment(int AppointmentID, int NewLocalLicenseApplicationID)
         {
             bool Exist = false;
 
@@ -167,9 +163,9 @@ namespace DLMApp_DataAccessLayer
                     Command.Parameters.AddWithValue("@AppointmentID", AppointmentID);
                     Command.Parameters.AddWithValue("@NewLocalLicenseApplicationID", NewLocalLicenseApplicationID);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    Reader = Command.ExecuteReader();
+                    Reader = await Command.ExecuteReaderAsync();
 
                     if (Reader.HasRows)
                     {
@@ -204,7 +200,7 @@ namespace DLMApp_DataAccessLayer
             return Exist;
         }
 
-        public static bool SetResults(List<clsPeopleRegisteredInAppointmentDTO> ListOfRegisteredPeople, byte TestID)
+        public static async Task<bool> SetResults(List<clsPeopleRegisteredInAppointmentDTO> ListOfRegisteredPeople, byte TestID)
         {
             bool Success = false;
 
@@ -241,9 +237,9 @@ namespace DLMApp_DataAccessLayer
                         Command.Parameters.AddWithValue("@" + ListOfRegisteredPeople[i].LocalLicenseApplicationID, ListOfRegisteredPeople[i].LocalLicenseApplicationID);
                     }
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    if (Command.ExecuteNonQuery() > 0)
+                    if (await Command.ExecuteNonQueryAsync() > 0)
                     {
                         Success = true;
                     }
@@ -270,7 +266,7 @@ namespace DLMApp_DataAccessLayer
             return Success;
         }
 
-        public static bool SetResults(List<clsPeopleRegisteredInAppointmentDTO> ListOfRegisteredPeopleRenewLicense)
+        public static async Task<bool> SetResults(List<clsPeopleRegisteredInAppointmentDTO> ListOfRegisteredPeopleRenewLicense)
         {
             bool Success = false;
 
@@ -305,9 +301,9 @@ namespace DLMApp_DataAccessLayer
                         Command.Parameters.AddWithValue("@" + ListOfRegisteredPeopleRenewLicense[i].ApplicationID, ListOfRegisteredPeopleRenewLicense[i].ApplicationID);
                     }
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    if (Command.ExecuteNonQuery() > 0)
+                    if (await Command.ExecuteNonQueryAsync() > 0)
                     {
                         Success = true;
                     }
@@ -334,7 +330,7 @@ namespace DLMApp_DataAccessLayer
             return Success;
         }
 
-        public static bool IsPassInTest(int NewLocalLicenseApplicationID, byte TestID)
+        public static async Task<bool> IsPassInTest(int NewLocalLicenseApplicationID, byte TestID)
         {
             bool Pass = false;
 
@@ -355,9 +351,9 @@ namespace DLMApp_DataAccessLayer
                     Command.Parameters.AddWithValue("@NewLocalLicenseApplicationID", NewLocalLicenseApplicationID);
                     Command.Parameters.AddWithValue("@TestID", TestID);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    Reader = Command.ExecuteReader();
+                    Reader = await Command.ExecuteReaderAsync();
 
                     if (Reader.HasRows)
                     {
@@ -392,7 +388,7 @@ namespace DLMApp_DataAccessLayer
             return Pass;
         }
 
-        public static bool IsPassedInVisionTestRenewLicense(int ApplicationID)
+        public static async Task<bool> IsPassedInVisionTestRenewLicense(int ApplicationID)
         {
             bool Pass = false;
 
@@ -413,9 +409,9 @@ namespace DLMApp_DataAccessLayer
                     Command.Parameters.AddWithValue("@ApplicationID", ApplicationID);
                     Command.Parameters.AddWithValue("@TestID", (byte)enTests.eVisionTest);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    Reader = Command.ExecuteReader();
+                    Reader = await Command.ExecuteReaderAsync();
 
                     if (Reader.HasRows)
                     {
@@ -450,7 +446,7 @@ namespace DLMApp_DataAccessLayer
             return Pass;
         }
 
-        public static bool DeleteByNewLocalLicenseApplicationID(int NewLocalLicenseApplicationID)
+        public static async Task<bool> DeleteByNewLocalLicenseApplicationID(int NewLocalLicenseApplicationID)
         {
             bool Deleted = false;
 
@@ -469,9 +465,9 @@ namespace DLMApp_DataAccessLayer
 
                     Command.Parameters.AddWithValue("@NewLocalLicenseApplicationID", NewLocalLicenseApplicationID);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    if (Command.ExecuteNonQuery() > 0)
+                    if (await Command.ExecuteNonQueryAsync() > 0)
                     {
                         Deleted = true;
                     }
@@ -498,7 +494,7 @@ namespace DLMApp_DataAccessLayer
             return Deleted;
         }
 
-        public static bool DeleteByApplicationID(int ApplicationID)
+        public static async Task<bool> DeleteByApplicationID(int ApplicationID)
         {
             bool Deleted = false;
 
@@ -517,9 +513,9 @@ namespace DLMApp_DataAccessLayer
 
                     Command.Parameters.AddWithValue("@ApplicationID", ApplicationID);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    if (Command.ExecuteNonQuery() > 0)
+                    if (await Command.ExecuteNonQueryAsync() > 0)
                     {
                         Deleted = true;
                     }
@@ -546,7 +542,7 @@ namespace DLMApp_DataAccessLayer
             return Deleted;
         }
 
-        public static bool IsEnrollmentFoFutureAppointment(int NewLocalLicenseApplicationID, int TestID)
+        public static async Task<bool> IsEnrollmentFoFutureAppointment(int NewLocalLicenseApplicationID, int TestID)
         {
             bool Exist = false;
 
@@ -570,9 +566,9 @@ namespace DLMApp_DataAccessLayer
                     Command.Parameters.AddWithValue("@DateNow", DateTime.Now.Date);
                     Command.Parameters.AddWithValue("@NewLocalLicenseApplicationID", NewLocalLicenseApplicationID);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    Reader = Command.ExecuteReader();
+                    Reader = await Command.ExecuteReaderAsync();
 
                     if (Reader.HasRows)
                     {

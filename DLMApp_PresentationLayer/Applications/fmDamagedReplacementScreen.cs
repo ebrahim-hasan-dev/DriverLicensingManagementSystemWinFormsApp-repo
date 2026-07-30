@@ -1,16 +1,7 @@
 ﻿using DLMApp_BusinessLayer;
 using DLMApp_ModulesLayer;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Net.Mime.MediaTypeNames;
-
 
 
 namespace DLMApp_PresentationLayer
@@ -30,7 +21,7 @@ namespace DLMApp_PresentationLayer
         }
 
 
-        private void btIssue_Click(object sender, EventArgs e)
+        private async void btIssue_Click(object sender, EventArgs e)
         {
             if (!string.IsNullOrWhiteSpace(mtxtbLicenseID.Text))
             {
@@ -38,7 +29,7 @@ namespace DLMApp_PresentationLayer
 
                 int LicenseID = int.Parse(mtxtbLicenseID.Text);
 
-                clsLicense License = LicenseService.Find(LicenseID);
+                clsLicense License = await LicenseService.Find(LicenseID);
 
                 if (License != null)
                 {
@@ -49,11 +40,11 @@ namespace DLMApp_PresentationLayer
                             clsApplication Application = Utility.FillAndGetApplication(License.PersonInfo.PersonID, enApplicationStatus.Completed,
                             enApplicationTypes.ReplacementForDamagedLicense, _ApplicationType.ApplicationTypeFees, clsGlobal.CurrentUser.UserID);
 
-                            if (ApplicationService.AddNewApplication(Application))
+                            if (await ApplicationService.AddNewApplication(Application))
                             {
                                 LicenseService.UpdateToReplaceDamagedOrReplaceLost(License, Application.ApplicationID, clsGlobal.CurrentUser.UserID, enLicenseStatus.DamagedReplacement);
 
-                                if (LicenseService.AddNewLicense(License))
+                                if (await LicenseService.AddNewLicense(License))
                                 {
                                     MessageBox.Show("The operation was completed successfully", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
@@ -61,7 +52,7 @@ namespace DLMApp_PresentationLayer
 
                                     mtxtbLicenseID.Clear();
 
-                                    uctrlLisenseInfo1.SetLicenseInfo(License, Application.ApplicationID, License.LicenseClassInfo.LicenseClass);
+                                    await uctrlLisenseInfo1.SetLicenseInfo(License, Application.ApplicationID, License.LicenseClassInfo.LicenseClass);
                                 }
                             }
                         }
@@ -88,9 +79,9 @@ namespace DLMApp_PresentationLayer
             mtxtbLicenseID.Focus();
         }
 
-        private void fmDamagedReplacementScreen_Load(object sender, EventArgs e)
+        private async void fmDamagedReplacementScreen_Load(object sender, EventArgs e)
         {
-            _ApplicationType = ApplicationService.GetApplicationType(enApplicationTypes.ReplacementForDamagedLicense);
+            _ApplicationType = await ApplicationService.GetApplicationType(enApplicationTypes.ReplacementForDamagedLicense);
 
             uctrlApplicationInfo1.SetApplicationInfo(_ApplicationType);
 

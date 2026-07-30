@@ -3,14 +3,9 @@ using DLMApp_ModulesLayer;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.Diagnostics.Eventing.Reader;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Net.Mime.MediaTypeNames;
+
 
 namespace DLMApp_PresentationLayer
 {
@@ -49,7 +44,7 @@ namespace DLMApp_PresentationLayer
             cbFilter.SelectedIndex = 0;
         }
 
-        private void fmManageApplicationsScreen_Load(object sender, EventArgs e)
+        private async void fmManageApplicationsScreen_Load(object sender, EventArgs e)
         {
             clsGlobal.MakeTitleInCenterScreen(this.Width, lbManageApplicationsScreen);
 
@@ -57,7 +52,7 @@ namespace DLMApp_PresentationLayer
 
             FillComboBox();
 
-            FillDataGridViewNewLocalLicense(ApplicationService.FindAllNewLocalLicensesApplications());
+            FillDataGridViewNewLocalLicense(await ApplicationService.FindAllNewLocalLicensesApplications());
         }
 
         void FillDataGridViewRenewLicense(List<clsApplication> ListOfApplications)
@@ -145,7 +140,7 @@ namespace DLMApp_PresentationLayer
             }
         }
 
-        private void btFilter_Click(object sender, EventArgs e)
+        private async void btFilter_Click(object sender, EventArgs e)
         {
             List<clsNewLocalLicenseApplication> ListOfNewLocalLicenseApplications = new List<clsNewLocalLicenseApplication>();
             List<clsApplication> ListOfApplications = new List<clsApplication>();
@@ -157,7 +152,7 @@ namespace DLMApp_PresentationLayer
             {
                 if (!string.IsNullOrWhiteSpace(mtxtbFilter.Text))
                 {
-                    clsApplication Application = ApplicationService.Find(int.Parse(mtxtbFilter.Text));
+                    clsApplication Application = await ApplicationService.Find(int.Parse(mtxtbFilter.Text));
 
                     if (Application != null)
                     {
@@ -173,29 +168,29 @@ namespace DLMApp_PresentationLayer
             {
                 if (cbFilter.Text == _AllNewLocalLicenseApplications)
                 {
-                    ListOfNewLocalLicenseApplications = ApplicationService.FindAllNewLocalLicensesApplications();
+                    ListOfNewLocalLicenseApplications = await ApplicationService.FindAllNewLocalLicensesApplications();
                 }
 
                 else if (cbFilter.Text == _NewLocalLicenseApplicationsWithDate)
                 {
-                    ListOfNewLocalLicenseApplications = ApplicationService.FindAllNewLocalLicensesApplications(DateTime.Parse(dtpDate.Value.ToString()));
+                    ListOfNewLocalLicenseApplications = await ApplicationService.FindAllNewLocalLicensesApplications(DateTime.Parse(dtpDate.Value.ToString()));
                 }
 
                 else if (cbFilter.Text == _AllRenewLicenseApplications)
                 {
-                    ListOfApplications = ApplicationService.FindAllRenewLicensesApplications();
+                    ListOfApplications = await ApplicationService.FindAllRenewLicensesApplications();
                 }
 
                 else if (cbFilter.Text == _RenewLicenseApplicationsWithDate)
                 {
-                    ListOfApplications = ApplicationService.FindAllRenewLicensesApplications(DateTime.Parse(dtpDate.Value.ToString()));
+                    ListOfApplications = await ApplicationService.FindAllRenewLicensesApplications(DateTime.Parse(dtpDate.Value.ToString()));
                 }
 
                 else if (cbFilter.Text == _NewLocalLicenseApplicationsForNationalNumber)
                 {
                     if (mtxtbFilter.MaskCompleted)
                     {
-                        ListOfNewLocalLicenseApplications = ApplicationService.FindAllNewLocalLicensesApplicationsForNationalNumber(mtxtbFilter.Text);
+                        ListOfNewLocalLicenseApplications = await ApplicationService.FindAllNewLocalLicensesApplicationsForNationalNumber(mtxtbFilter.Text);
                     }
                     else
                     {
@@ -208,7 +203,7 @@ namespace DLMApp_PresentationLayer
                 {
                     if (mtxtbFilter.MaskCompleted)
                     {
-                        ListOfApplications = ApplicationService.FindAllRenewLicenseApplicationsForNationalNumber(mtxtbFilter.Text);
+                        ListOfApplications = await ApplicationService.FindAllRenewLicenseApplicationsForNationalNumber(mtxtbFilter.Text);
                     }
                     else
                     {
@@ -221,13 +216,13 @@ namespace DLMApp_PresentationLayer
             FillDataGridView(ListOfApplications, ListOfNewLocalLicenseApplications);
         }
 
-        private void dgvApplications_SelectionChanged(object sender, EventArgs e)
+        private async void dgvApplications_SelectionChanged(object sender, EventArgs e)
         {
             if (dgvApplications.SelectedRows.Count > 0)
             {
-                _Person = PersonService.FindByPersonID(int.Parse(dgvApplications.SelectedRows[0].Cells[7].Value.ToString()));
+                _Person = await PersonService.FindByPersonID(int.Parse(dgvApplications.SelectedRows[0].Cells[7].Value.ToString()));
 
-                uctrlPersonInfo1.SetPersonInfo(_Person);
+                await uctrlPersonInfo1.SetPersonInfo(_Person);
             }
         }
 
@@ -255,7 +250,7 @@ namespace DLMApp_PresentationLayer
             mtxtbFilter.Clear();
         }
 
-        private void cancelToolStripMenuItem_Click(object sender, EventArgs e)
+        private async void cancelToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (dgvApplications.SelectedRows.Count > 0)
             {
@@ -265,13 +260,13 @@ namespace DLMApp_PresentationLayer
 
                     if (ApplicationType == enApplicationTypes.NewLocalLicense)
                     {
-                        if (ApplicationService.UpdateApplicationStatus(ApplicationID, enApplicationStatus.Canceled))
+                        if (await ApplicationService.UpdateApplicationStatus(ApplicationID, enApplicationStatus.Canceled))
                         {
                             dgvApplications.SelectedRows[0].Cells[3].Value = enApplicationStatus.Canceled.ToString();
 
-                            int NewLocalLicenseApplicationID = ApplicationService.FindNewLocalLicenseID(ApplicationID);
+                            int NewLocalLicenseApplicationID = await ApplicationService.FindNewLocalLicenseID(ApplicationID);
 
-                            if (EnrollmentService.DeleteByNewLocalLicenseApplicationID(NewLocalLicenseApplicationID))
+                            if (await EnrollmentService.DeleteByNewLocalLicenseApplicationID(NewLocalLicenseApplicationID))
                             {
                                 MessageBox.Show("Cancelled opreration successfully", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                             }
@@ -279,11 +274,11 @@ namespace DLMApp_PresentationLayer
                     }
                     else if (ApplicationType == enApplicationTypes.RenewLicense)
                     {
-                        if (ApplicationService.UpdateApplicationStatus(ApplicationID, enApplicationStatus.Canceled))
+                        if (await ApplicationService.UpdateApplicationStatus(ApplicationID, enApplicationStatus.Canceled))
                         {
                             dgvApplications.SelectedRows[0].Cells[3].Value = enApplicationStatus.Canceled.ToString();
 
-                            if (EnrollmentService.DeleteByApplicationID(ApplicationID))
+                            if (await EnrollmentService.DeleteByApplicationID(ApplicationID))
                             {
                                 MessageBox.Show("Cancelled opreration successfully", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                             }

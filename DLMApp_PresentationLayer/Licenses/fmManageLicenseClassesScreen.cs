@@ -2,13 +2,9 @@
 using DLMApp_ModulesLayer;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+
 
 namespace DLMApp_PresentationLayer
 {
@@ -31,9 +27,9 @@ namespace DLMApp_PresentationLayer
         }
 
 
-        void LoadAllLicensesClasses()
+        async Task LoadAllLicensesClasses()
         {
-            _ListOfLicensesClasses = LicenseService.GetAllLicensesClasses();
+            _ListOfLicensesClasses = await LicenseService.GetAllLicensesClasses();
 
             for (byte i = 0; i < _ListOfLicensesClasses.Count; i++)
             {
@@ -43,9 +39,9 @@ namespace DLMApp_PresentationLayer
             cbLicensesClasses.SelectedIndex = 2;
         }
 
-        private void fmManageLicenseClassesScreen_Load(object sender, EventArgs e)
+        private async void fmManageLicenseClassesScreen_Load(object sender, EventArgs e)
         {
-            LoadAllLicensesClasses();
+            await LoadAllLicensesClasses();
 
             clsGlobal.MakeTitleInCenterScreen(this.Width, lbManageLicenseClassesScreen);
         }
@@ -69,7 +65,7 @@ namespace DLMApp_PresentationLayer
             mtxtbNewMinimumAllowedAge.Focus();
         }
 
-        private void btSave_Click(object sender, EventArgs e)
+        private async void btSave_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(mtxtbNewFees.Text) && string.IsNullOrWhiteSpace(mtxtbNewMinimumAllowedAge.Text) &&
                 string.IsNullOrWhiteSpace(mtxtbNewValidityPeriod.Text))
@@ -93,7 +89,7 @@ namespace DLMApp_PresentationLayer
                 _MinimumAllowedAge = byte.Parse(mtxtbNewMinimumAllowedAge.Text);
             }
 
-            if (LicenseService.UpdateLicenseClass(_LicenseClassID, _LicenseFees, _ValidityPeriod, _MinimumAllowedAge))
+            if (await LicenseService.UpdateLicenseClass(_LicenseClassID, _LicenseFees, _ValidityPeriod, _MinimumAllowedAge))
             {
                 UpdateUI();
                 MessageBox.Show("Operation completed successfully", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);

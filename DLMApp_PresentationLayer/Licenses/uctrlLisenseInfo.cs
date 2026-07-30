@@ -1,14 +1,9 @@
 ﻿using DLMApp_BusinessLayer;
 using DLMApp_ModulesLayer;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+
 
 namespace DLMApp_PresentationLayer
 {
@@ -24,13 +19,13 @@ namespace DLMApp_PresentationLayer
             clsGlobal.MakeTitleInCenterScreen(this.Width, lbLicenseInfo);
         }
 
-        public void SetLicenseInfo(clsLicense License, int ApplicationID, string LicenseClass)
+        public async Task SetLicenseInfo(clsLicense License, int ApplicationID, string LicenseClass)
         {
             lbApplicationIDResult.Text = ApplicationID.ToString();
 
             if (License.PersonInfo == null)
             {
-                License.PersonInfo = PersonService.FindByDriverID(License.DriverID);
+                License.PersonInfo = await PersonService.FindByDriverID(License.DriverID);
             }
 
             lbDateOfBirthResult.Text = License.PersonInfo.DateOfBirth.ToString("d-M-yyyy");
@@ -54,7 +49,7 @@ namespace DLMApp_PresentationLayer
             lbNameResult.Text = License.PersonInfo.GetFullName();
             lbNationalNumberResult.Text = License.PersonInfo.NationalNumber.ToString();
             lbStatusResult.Text = License.LicenseStatusID.ToString();
-            pbDriver.Image = clsGlobal.LoadImageNoLock(License.PersonInfo.ImagePath);
+            pbDriver.Image = await clsGlobal.LoadImageNoLockAsync(License.PersonInfo.ImagePath);
             lbLicenseIDResult.Text = License.ID.ToString();
 
             if (string.IsNullOrWhiteSpace(License.Notes))

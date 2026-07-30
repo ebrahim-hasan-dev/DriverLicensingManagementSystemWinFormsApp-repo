@@ -2,13 +2,9 @@
 using DLMApp_ModulesLayer;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+
 
 namespace DLMApp_PresentationLayer
 {
@@ -34,13 +30,13 @@ namespace DLMApp_PresentationLayer
             FillDataGridView(DriverID);
         }
 
-        void FillDataGridView(int DriverID)
+        async void FillDataGridView(int DriverID)
         {
-            _ListOfInternationalLicenses = InternationalLicenseService.GetInternationalLicnesesForDriver(DriverID);
+            _ListOfInternationalLicenses = await InternationalLicenseService.GetInternationalLicnesesForDriver(DriverID);
 
             if (_ListOfInternationalLicenses.Count > 0)
             {
-                uctrlPersonInfo1.SetPersonInfo(_Person);
+                await uctrlPersonInfo1.SetPersonInfo(_Person);
 
                 for (short i = 0; i < _ListOfInternationalLicenses.Count; i++)
                 {

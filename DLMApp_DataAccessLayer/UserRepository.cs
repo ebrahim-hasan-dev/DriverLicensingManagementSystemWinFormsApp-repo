@@ -2,13 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Threading.Tasks;
 
 
 namespace DLMApp_DataAccessLayer
 {
     public class UserRepository
     {
-        static public clsUser Find(string UserName)
+        static public async Task<clsUser> Find(string UserName)
         {
             clsUser User = null;
 
@@ -30,11 +31,11 @@ namespace DLMApp_DataAccessLayer
 
                     //Command.Parameters.AddWithValue("@UserName", UserName);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    Reader = Command.ExecuteReader();
+                    Reader = await Command.ExecuteReaderAsync();
 
-                    if (Reader.Read())
+                    if (await Reader.ReadAsync())
                     {
                         User = new clsUser();
 
@@ -80,7 +81,7 @@ namespace DLMApp_DataAccessLayer
             return User;
         }
 
-        static public List<clsUser> GetAllUsers()
+        static public async Task<List<clsUser>> GetAllUsers()
         {
             List<clsUser> ListOfUsers = new List<clsUser>();
 
@@ -96,11 +97,11 @@ namespace DLMApp_DataAccessLayer
 
                 Command = new SqlCommand(FindQuery, Connection);
 
-                Connection.Open();
+                await Connection.OpenAsync();
 
-                Reader = Command.ExecuteReader();
+                Reader = await Command.ExecuteReaderAsync();
 
-                while (Reader.Read())
+                while (await Reader.ReadAsync())
                 {
                     clsUser User = new clsUser();
 
@@ -146,7 +147,7 @@ namespace DLMApp_DataAccessLayer
             return ListOfUsers;
         }
 
-        public static bool UpdateActiveUser(int UserID, bool Active)
+        public static async Task<bool> UpdateActiveUser(int UserID, bool Active)
         {
             bool Updated = false;
 
@@ -171,9 +172,9 @@ namespace DLMApp_DataAccessLayer
                         Command.Parameters.AddWithValue("@Active", 0);
 
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    if (Command.ExecuteNonQuery() > 0)
+                    if (await Command.ExecuteNonQueryAsync() > 0)
                     {
                         Updated = true;
                     }
@@ -200,7 +201,7 @@ namespace DLMApp_DataAccessLayer
             return Updated;
         }
 
-        public static bool ChangePassword(int UserID, string NewPassword)
+        public static async Task<bool> ChangePassword(int UserID, string NewPassword)
         {
             bool Updated = false;
 
@@ -220,9 +221,9 @@ namespace DLMApp_DataAccessLayer
                     Command.Parameters.AddWithValue("@UserID", UserID);
                     Command.Parameters.AddWithValue("@NewPassword", NewPassword);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    if (Command.ExecuteNonQuery() > 0)
+                    if (await Command.ExecuteNonQueryAsync() > 0)
                     {
                         Updated = true;
                     }
@@ -249,7 +250,7 @@ namespace DLMApp_DataAccessLayer
             return Updated;
         }
 
-        public static bool AddNewUser(clsUser User)
+        public static async Task<bool> AddNewUser(clsUser User)
         {
             bool Added = false;
 
@@ -279,9 +280,9 @@ namespace DLMApp_DataAccessLayer
 
                     Command.Parameters.AddWithValue("@PersonID", User.PersonID);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    object UserIDobj = Command.ExecuteScalar();
+                    object UserIDobj = await Command.ExecuteScalarAsync();
 
                     if (UserIDobj != null)
                     {
@@ -311,7 +312,7 @@ namespace DLMApp_DataAccessLayer
             return Added;
         }
 
-        public static bool UserNameExist(string UserName)
+        public static async Task<bool> UserNameExist(string UserName)
         {
             bool Exist = false;
 
@@ -331,9 +332,9 @@ namespace DLMApp_DataAccessLayer
 
                     Command.Parameters.AddWithValue("@UserName", UserName);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    Reader = Command.ExecuteReader();
+                    Reader = await Command.ExecuteReaderAsync();
 
                     if (Reader.HasRows)
                     {
@@ -368,7 +369,7 @@ namespace DLMApp_DataAccessLayer
             return Exist;
         }
 
-        static public clsUser FindWithoutPass(string UserName)
+        static public async Task<clsUser> FindWithoutPass(string UserName)
         {
             clsUser User = null;
 
@@ -390,11 +391,11 @@ namespace DLMApp_DataAccessLayer
 
                     //Command.Parameters.AddWithValue("@UserName", UserName);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    Reader = Command.ExecuteReader();
+                    Reader = await Command.ExecuteReaderAsync();
 
-                    if (Reader.Read())
+                    if (await Reader.ReadAsync())
                     {
                         User = new clsUser();
 
@@ -440,7 +441,7 @@ namespace DLMApp_DataAccessLayer
             return User;
         }
 
-        static public clsUser Find(int UserID)
+        static public async Task<clsUser> Find(int UserID)
         {
             clsUser User = null;
 
@@ -460,11 +461,11 @@ namespace DLMApp_DataAccessLayer
 
                     Command.Parameters.AddWithValue("@UserID", UserID);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    Reader = Command.ExecuteReader();
+                    Reader = await Command.ExecuteReaderAsync();
 
-                    if (Reader.Read())
+                    if (await Reader.ReadAsync())
                     {
                         User = new clsUser();
 
@@ -510,7 +511,7 @@ namespace DLMApp_DataAccessLayer
             return User;
         }
 
-        static public clsUser FindByNationalNumber(string NationalNumber)
+        static public async Task<clsUser> FindByNationalNumber(string NationalNumber)
         {
             clsUser User = null;
 
@@ -531,11 +532,11 @@ namespace DLMApp_DataAccessLayer
 
                     Command.Parameters.AddWithValue("@NationalNumber", NationalNumber);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    Reader = Command.ExecuteReader();
+                    Reader = await Command.ExecuteReaderAsync();
 
-                    if (Reader.Read())
+                    if (await Reader.ReadAsync())
                     {
                         User = new clsUser();
 
@@ -581,7 +582,7 @@ namespace DLMApp_DataAccessLayer
             return User;
         }
 
-        static public bool PersonIDExist(int PersonID)
+        static public async Task<bool> PersonIDExist(int PersonID)
         {
             bool Exist = false;
 
@@ -601,9 +602,9 @@ namespace DLMApp_DataAccessLayer
 
                     Command.Parameters.AddWithValue("@PersonID", PersonID);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    Reader = Command.ExecuteReader();
+                    Reader = await Command.ExecuteReaderAsync();
 
                     if (Reader.HasRows)
                     {

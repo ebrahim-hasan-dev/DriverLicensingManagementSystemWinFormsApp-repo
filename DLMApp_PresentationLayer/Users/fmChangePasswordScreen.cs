@@ -4,7 +4,6 @@ using System;
 using System.Windows.Forms;
 
 
-
 namespace DLMApp_PresentationLayer
 {
     public partial class fmChangePasswordScreen : Form
@@ -33,7 +32,7 @@ namespace DLMApp_PresentationLayer
             txtbCurrentPassword.Clear();
         }
 
-        private void btSave_Click(object sender, EventArgs e)
+        private async void btSave_Click(object sender, EventArgs e)
         {
             if (!string.IsNullOrWhiteSpace(txtbConfirmNewPassword.Text) && !string.IsNullOrWhiteSpace(txtbNewPassword.Text) &&
                !string.IsNullOrWhiteSpace(txtbCurrentPassword.Text))
@@ -44,7 +43,7 @@ namespace DLMApp_PresentationLayer
                     {
                         string HashPassword = PasswordManager.HashPassword(txtbNewPassword.Text);
 
-                        if (UserService.ChangePassword(_User.UserID, HashPassword))
+                        if (await UserService.ChangePassword(_User.UserID, HashPassword))
                         {
                             _User.Password = txtbNewPassword.Text;
 
@@ -75,11 +74,11 @@ namespace DLMApp_PresentationLayer
             this.Close();
         }
 
-        private void fmUdateUserScreen_Load(object sender, EventArgs e)
+        private async void fmUdateUserScreen_Load(object sender, EventArgs e)
         {
             clsGlobal.MakeTitleInCenterScreen(this.Width, lbChangePasswordScreen);
 
-            uctrlPersonInfo1.SetPersonInfo(_Person);
+            await uctrlPersonInfo1.SetPersonInfo(_Person);
 
             lbUsernameResult.Text = _User.UserName;
 
@@ -88,12 +87,6 @@ namespace DLMApp_PresentationLayer
             else
                 lbIsActiveResult.Text = "No";
         }
-
-
-
-
-
-
 
 
 

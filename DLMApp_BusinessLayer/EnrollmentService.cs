@@ -1,21 +1,18 @@
 ﻿using DLMApp_DataAccessLayer;
 using DLMApp_ModulesLayer;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading.Tasks;
+
 
 namespace DLMApp_BusinessLayer
 {
     public class EnrollmentService
     {
-        static enEnrollmentResults IsPasssedInThisTest(byte TestID, int NewLocalLicenseApplicationID)
+        static async Task<enEnrollmentResults> IsPasssedInThisTest(byte TestID, int NewLocalLicenseApplicationID)
         {
             if (TestID == (byte)enTests.eVisionTest)
             {
-                if (EnrollmentRepository.IsPassInTest(NewLocalLicenseApplicationID, (byte)enTests.eVisionTest) == true)
+                if (await EnrollmentRepository.IsPassInTest(NewLocalLicenseApplicationID, (byte)enTests.eVisionTest) == true)
                 {
                     return enEnrollmentResults.eAlreadyPassedInVisionTest;
                 }
@@ -23,7 +20,7 @@ namespace DLMApp_BusinessLayer
 
             else if (TestID == (byte)enTests.eWrittenTest)
             {
-                if (EnrollmentRepository.IsPassInTest(NewLocalLicenseApplicationID, (byte)enTests.eWrittenTest) == true)
+                if (await EnrollmentRepository.IsPassInTest(NewLocalLicenseApplicationID, (byte)enTests.eWrittenTest) == true)
                 {
                     return enEnrollmentResults.eAlreadyPassedInWrittenTest;
                 }
@@ -31,7 +28,7 @@ namespace DLMApp_BusinessLayer
 
             else if (TestID == (byte)enTests.eStreetTest)
             {
-                if (EnrollmentRepository.IsPassInTest(NewLocalLicenseApplicationID, (byte)enTests.eStreetTest) == true)
+                if (await EnrollmentRepository.IsPassInTest(NewLocalLicenseApplicationID, (byte)enTests.eStreetTest) == true)
                 {
                     return enEnrollmentResults.eAlreadyPassedInStreetTest;
                 }
@@ -40,111 +37,114 @@ namespace DLMApp_BusinessLayer
             return enEnrollmentResults.eNone;
         }
 
-        public static enEnrollmentResults Enroll(int AppointmentID, byte TestID, int CreatedByUserID, int NewLocalLicenseApplicationID, float TestFees, ref short NumberOfPeopleRegistered, string Notes, int RetakeTestOrderID = 0)
+        public static async Task<clsEnrollmentResult> Enroll(int AppointmentID, byte TestID, int CreatedByUserID, int NewLocalLicenseApplicationID, float TestFees, string Notes, int RetakeTestOrderID = 0)
         {
             if (AppointmentID > 0 && TestID > 0 && CreatedByUserID > 0 && NewLocalLicenseApplicationID > 0 && TestFees > 0)
             {
-                if (EnrollmentRepository.IsSameApplicationIDExistInSameAppointment(AppointmentID, NewLocalLicenseApplicationID) == false)
+                if (await EnrollmentRepository.IsSameApplicationIDExistInSameAppointment(AppointmentID, NewLocalLicenseApplicationID) == false)
                 {
-                    enEnrollmentResults IsPassed = IsPasssedInThisTest(TestID, NewLocalLicenseApplicationID);
+                    enEnrollmentResults IsPassed = await IsPasssedInThisTest(TestID, NewLocalLicenseApplicationID);
 
                     if (IsPassed != enEnrollmentResults.eNone)
                     {
-                        return IsPassed;
+                        return new clsEnrollmentResult(IsPassed);
                     }
 
                     if (TestID == (byte)enTests.eWrittenTest)
                     {
-                        if (EnrollmentRepository.IsPassInTest(NewLocalLicenseApplicationID, (byte)enTests.eVisionTest) == false)
+                        if (await EnrollmentRepository.IsPassInTest(NewLocalLicenseApplicationID, (byte)enTests.eVisionTest) == false)
                         {
-                            return enEnrollmentResults.eFailInVisionTest;
+                            return new clsEnrollmentResult(enEnrollmentResults.eFailInVisionTest);
                         }
                     }
 
                     else if (TestID == (byte)enTests.eStreetTest)
                     {
-                        if (EnrollmentRepository.IsPassInTest(NewLocalLicenseApplicationID, (byte)enTests.eWrittenTest) == false)
+                        if (await EnrollmentRepository.IsPassInTest(NewLocalLicenseApplicationID, (byte)enTests.eWrittenTest) == false)
                         {
-                            return enEnrollmentResults.eFailInWrittenTest;
+                            return new clsEnrollmentResult(enEnrollmentResults.eFailInWrittenTest);
                         }
                     }
 
-                    if (EnrollmentRepository.IsEnrollmentFoFutureAppointment(NewLocalLicenseApplicationID, TestID))
+                    if (await EnrollmentRepository.IsEnrollmentFoFutureAppointment(NewLocalLicenseApplicationID, TestID))
                     {
-                        return enEnrollmentResults.eAlreadyEnrollBefor;
+                        return new clsEnrollmentResult(enEnrollmentResults.eAlreadyEnrollBefor);
                     }
 
-                    short MaxNumberOfPeople = TestService.GetMaxNumberOfPeople(TestID);
+                    short MaxNumberOfPeople = await TestService.GetMaxNumberOfPeople(TestID);
 
                     if (MaxNumberOfPeople > 0)
                     {
-                        if (AppointmentService.AppointmentUpdate(AppointmentID, MaxNumberOfPeople, ref NumberOfPeopleRegistered))
+                        clsEnrollmentResult EnrollmentResult = new clsEnrollmentResult();
+
+                        if (await AppointmentService.AppointmentUpdate(AppointmentID, MaxNumberOfPeople, EnrollmentResult))
                         {
-                            if (EnrollmentRepository.Enroll(AppointmentID, TestID, CreatedByUserID, NewLocalLicenseApplicationID, TestFees, Notes, RetakeTestOrderID))
+                            if (await EnrollmentRepository.Enroll(AppointmentID, TestID, CreatedByUserID, NewLocalLicenseApplicationID, TestFees, Notes, RetakeTestOrderID))
                             {
-                                return enEnrollmentResults.Success;
+                                EnrollmentResult.EnrollmentResult = enEnrollmentResults.Success;
+                                return EnrollmentResult;
                             }
                             else
                             {
-                                return enEnrollmentResults.eFail;
+                                return new clsEnrollmentResult(enEnrollmentResults.eFail);
                             }
                         }
                         else
                         {
-                            return enEnrollmentResults.AppointmentCompleted;
+                            return new clsEnrollmentResult(enEnrollmentResults.AppointmentCompleted);
                         }
                     }
                     else
                     {
-                        return enEnrollmentResults.eFail;
+                        return new clsEnrollmentResult(enEnrollmentResults.eFail);
                     }
                 }
                 else
                 {
-                    return enEnrollmentResults.eSameApplicationInSameApplointment;
+                    return new clsEnrollmentResult(enEnrollmentResults.eSameApplicationInSameApplointment);
                 }
             }
             else
             {
-                return enEnrollmentResults.eFail;
+                return new clsEnrollmentResult(enEnrollmentResults.eFail);
             }
         }
 
-        public static enEnrollmentResults EnrollByApplicationID(int AppointmentID, byte TestID, int CreatedByUserID, int ApplicationID, float TestFees, ref short NumberOfPeopleRegistered, string Notes, int RetakeTestOrderID = 0)
+        public static async Task<clsEnrollmentResult> EnrollByApplicationID(int AppointmentID, byte TestID, int CreatedByUserID, int ApplicationID, float TestFees, string Notes, int RetakeTestOrderID = 0)
         {
             if (AppointmentID > 0 && TestID > 0 && CreatedByUserID > 0 && ApplicationID > 0 && TestFees > 0)
             {
-                if (ApplicationService.IsStatusNew(ApplicationID))
+                if (await ApplicationService.IsStatusNew(ApplicationID))
                 {
-                    int NewLocalLicenseID = ApplicationService.FindNewLocalLicenseID(ApplicationID);
+                    int NewLocalLicenseID = await ApplicationService.FindNewLocalLicenseID(ApplicationID);
 
                     if (NewLocalLicenseID > 0)
                     {
-                        return EnrollmentService.Enroll(AppointmentID, TestID, CreatedByUserID, NewLocalLicenseID, TestFees, ref NumberOfPeopleRegistered, Notes, RetakeTestOrderID);
+                        return await EnrollmentService.Enroll(AppointmentID, TestID, CreatedByUserID, NewLocalLicenseID, TestFees, Notes, RetakeTestOrderID);
                     }
                     else
                     {
-                        return enEnrollmentResults.eNoNewLocalLicenseID;
+                        return new clsEnrollmentResult(enEnrollmentResults.eNoNewLocalLicenseID);
                     }
                 }
                 else
                 {
-                    return enEnrollmentResults.StatusNotNew;
+                    return new clsEnrollmentResult(enEnrollmentResults.StatusNotNew);
                 }
             }
             else
             {
-                return enEnrollmentResults.eFail;
+                return new clsEnrollmentResult(enEnrollmentResults.eFail);
             }
         }
 
-        public static bool SetResults(List<clsPeopleRegisteredInAppointmentDTO> ListOfRegisteredPeople, byte TestID)
+        public static async Task<bool> SetResults(List<clsPeopleRegisteredInAppointmentDTO> ListOfRegisteredPeople, byte TestID)
         {
             if (ListOfRegisteredPeople.Count > 0)
             {
-                if (ApplicationRepository.UpdateNumberOfPassedTests(ListOfRegisteredPeople))
+                if (await ApplicationRepository.UpdateNumberOfPassedTests(ListOfRegisteredPeople))
                 {
-                    return EnrollmentRepository.SetResults(ListOfRegisteredPeople, TestID);
+                    return await EnrollmentRepository.SetResults(ListOfRegisteredPeople, TestID);
                 }
                 else
                 {
@@ -158,13 +158,13 @@ namespace DLMApp_BusinessLayer
             }
         }
 
-        public static bool SetResults(List<clsPeopleRegisteredInAppointmentDTO> ListOfRegisteredPeopleRenewLicense)
+        public static async Task<bool> SetResults(List<clsPeopleRegisteredInAppointmentDTO> ListOfRegisteredPeopleRenewLicense)
         {
             if (ListOfRegisteredPeopleRenewLicense.Count > 0)
             {
-                ApplicationService.MakeFaildRenewLicenseApplicationsIsCompleted(ListOfRegisteredPeopleRenewLicense);
+                await ApplicationService.MakeFaildRenewLicenseApplicationsIsCompleted(ListOfRegisteredPeopleRenewLicense);
 
-                return EnrollmentRepository.SetResults(ListOfRegisteredPeopleRenewLicense);
+                return await EnrollmentRepository.SetResults(ListOfRegisteredPeopleRenewLicense);
             }
             else
             {
@@ -172,23 +172,23 @@ namespace DLMApp_BusinessLayer
             }
         }
 
-        public static bool IsPassedInAllTests(int ApplicationID)
+        public static async Task<bool> IsPassedInAllTests(int ApplicationID)
         {
             if (ApplicationID > 0)
             {
-                int NewLocalLicenseID = ApplicationService.FindNewLocalLicenseID(ApplicationID);
+                int NewLocalLicenseID = await ApplicationService.FindNewLocalLicenseID(ApplicationID);
 
                 if (NewLocalLicenseID > 0)
                 {
-                    if (EnrollmentRepository.IsPassInTest(NewLocalLicenseID, (byte)enTests.eVisionTest) == false)
+                    if (await EnrollmentRepository.IsPassInTest(NewLocalLicenseID, (byte)enTests.eVisionTest) == false)
                     {
                         return false;
                     }
-                    if (EnrollmentRepository.IsPassInTest(NewLocalLicenseID, (byte)enTests.eWrittenTest) == false)
+                    if (await EnrollmentRepository.IsPassInTest(NewLocalLicenseID, (byte)enTests.eWrittenTest) == false)
                     {
                         return false;
                     }
-                    if (EnrollmentRepository.IsPassInTest(NewLocalLicenseID, (byte)enTests.eStreetTest) == false)
+                    if (await EnrollmentRepository.IsPassInTest(NewLocalLicenseID, (byte)enTests.eStreetTest) == false)
                     {
                         return false;
                     }
@@ -206,53 +206,56 @@ namespace DLMApp_BusinessLayer
             }
         }
 
-        public static enEnrollmentResults Enroll(int AppointmentID, byte TestID, int CreatedByUserID, float TestFees, ref short NumberOfPeopleRegistered, string Notes, int RenewLicenseApplicationID)
+        public static async Task<clsEnrollmentResult> Enroll(int AppointmentID, byte TestID, int CreatedByUserID, float TestFees, string Notes, int RenewLicenseApplicationID)
         {
             if (AppointmentID > 0 && TestID > 0 && CreatedByUserID > 0 && TestFees > 0 && RenewLicenseApplicationID > 0)
             {
-                if (ApplicationService.IsStatusNew(RenewLicenseApplicationID))
+                if (await ApplicationService.IsStatusNew(RenewLicenseApplicationID))
                 {
-                    short MaxNumberOfPeople = TestService.GetMaxNumberOfPeople(TestID);
+                    short MaxNumberOfPeople = await TestService.GetMaxNumberOfPeople(TestID);
 
                     if (MaxNumberOfPeople > 0)
                     {
-                        if (AppointmentService.AppointmentUpdate(AppointmentID, MaxNumberOfPeople, ref NumberOfPeopleRegistered))
+                        clsEnrollmentResult EnrollmentResult = new clsEnrollmentResult();
+
+                        if (await AppointmentService.AppointmentUpdate(AppointmentID, MaxNumberOfPeople, EnrollmentResult))
                         {
-                            if (EnrollmentRepository.Enroll(AppointmentID, TestID, CreatedByUserID, TestFees, Notes, RenewLicenseApplicationID))
+                            if (await EnrollmentRepository.Enroll(AppointmentID, TestID, CreatedByUserID, TestFees, Notes, RenewLicenseApplicationID))
                             {
-                                return enEnrollmentResults.Success;
+                                EnrollmentResult.EnrollmentResult = enEnrollmentResults.Success;
+                                return EnrollmentResult;
                             }
                             else
                             {
-                                return enEnrollmentResults.eAlreadyEnrollBefor;
+                                return new clsEnrollmentResult(enEnrollmentResults.eAlreadyEnrollBefor);
                             }
                         }
                         else
                         {
-                            return enEnrollmentResults.AppointmentCompleted;
+                            return new clsEnrollmentResult(enEnrollmentResults.AppointmentCompleted);
                         }
                     }
                     else
                     {
-                        return enEnrollmentResults.eFail;
+                        return new clsEnrollmentResult(enEnrollmentResults.eFail);
                     }
                 }
                 else
                 {
-                    return enEnrollmentResults.StatusNotNew;
+                    return new clsEnrollmentResult(enEnrollmentResults.StatusNotNew);
                 }
             }
             else
             {
-                return enEnrollmentResults.eFail;
+                return new clsEnrollmentResult(enEnrollmentResults.eFail);
             }
         }
 
-        public static bool IsPassedInVisionTestRenewLicense(int ApplicationID)
+        public static async Task<bool> IsPassedInVisionTestRenewLicense(int ApplicationID)
         {
             if (ApplicationID > 0)
             {
-                return EnrollmentRepository.IsPassedInVisionTestRenewLicense(ApplicationID);
+                return await EnrollmentRepository.IsPassedInVisionTestRenewLicense(ApplicationID);
             }
             else
             {
@@ -260,11 +263,11 @@ namespace DLMApp_BusinessLayer
             }
         }
 
-        public static bool DeleteByNewLocalLicenseApplicationID(int NewLocalLicenseApplicationID)
+        public static async Task<bool> DeleteByNewLocalLicenseApplicationID(int NewLocalLicenseApplicationID)
         {
             if (NewLocalLicenseApplicationID > 0)
             {
-                return EnrollmentRepository.DeleteByNewLocalLicenseApplicationID(NewLocalLicenseApplicationID);
+                return await EnrollmentRepository.DeleteByNewLocalLicenseApplicationID(NewLocalLicenseApplicationID);
             }
             else
             {
@@ -272,11 +275,11 @@ namespace DLMApp_BusinessLayer
             }
         }
 
-        public static bool DeleteByApplicationID(int ApplicationID)
+        public static async Task<bool> DeleteByApplicationID(int ApplicationID)
         {
             if (ApplicationID > 0)
             {
-                return EnrollmentRepository.DeleteByApplicationID(ApplicationID);
+                return await EnrollmentRepository.DeleteByApplicationID(ApplicationID);
             }
             else
             {

@@ -1,14 +1,8 @@
 ﻿using DLMApp_BusinessLayer;
 using DLMApp_ModulesLayer;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+
 
 namespace DLMApp_PresentationLayer
 {
@@ -37,12 +31,12 @@ namespace DLMApp_PresentationLayer
             mtxtbFine.Focus();
         }
 
-        private void btDetained_Click(object sender, EventArgs e)
+        private async void btDetained_Click(object sender, EventArgs e)
         {
             if (!string.IsNullOrWhiteSpace(mtxtbFine.Text) && !string.IsNullOrWhiteSpace(mtxtbLicenseID.Text) &&
                 !string.IsNullOrWhiteSpace(txtbReason.Text))
             {
-                clsLicense license = LicenseService.Find(int.Parse(mtxtbLicenseID.Text));
+                clsLicense license = await LicenseService.Find(int.Parse(mtxtbLicenseID.Text));
 
                 if (license != null)
                 {
@@ -52,7 +46,7 @@ namespace DLMApp_PresentationLayer
                         {
                             if (float.Parse(mtxtbFine.Text) > 0)
                             {
-                                if (DetainedLicenseService.AddDetainedLicense(license.ID, float.Parse(mtxtbFine.Text), txtbReason.Text,
+                                if (await DetainedLicenseService.AddDetainedLicense(license.ID, float.Parse(mtxtbFine.Text), txtbReason.Text,
                                     dtpDetainedDate.Value, clsGlobal.CurrentUser.UserID))
                                 {
                                     MessageBox.Show("The operation was completed successfully", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -91,12 +85,6 @@ namespace DLMApp_PresentationLayer
         {
             this.Close();
         }
-
-
-
-
-
-
 
 
 

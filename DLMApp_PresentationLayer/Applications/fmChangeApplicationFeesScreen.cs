@@ -2,13 +2,9 @@
 using DLMApp_ModulesLayer;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+
 
 namespace DLMApp_PresentationLayer
 {
@@ -30,9 +26,9 @@ namespace DLMApp_PresentationLayer
         }
 
 
-        void LoadAllApplicationTypes()
+        async Task LoadAllApplicationTypes()
         {
-            _ListOfApplicationTypes = ApplicationService.GetAllApplicationTypes();
+            _ListOfApplicationTypes = await ApplicationService.GetAllApplicationTypes();
 
             for (byte i = 0; i < _ListOfApplicationTypes.Count; i++)
             {
@@ -42,11 +38,11 @@ namespace DLMApp_PresentationLayer
             cbApplicationTypes.SelectedIndex = 0;
         }
 
-        private void fmChangeApplicationFeesScreen_Load(object sender, EventArgs e)
+        private async void fmChangeApplicationFeesScreen_Load(object sender, EventArgs e)
         {
             clsGlobal.MakeTitleInCenterScreen(this.Width, lbChangeApplicationsFeesScreen);
 
-            LoadAllApplicationTypes();
+            await LoadAllApplicationTypes();
         }
 
         void SetApplicationTypeInfo(clsApplicationType ApplicationType)
@@ -68,7 +64,7 @@ namespace DLMApp_PresentationLayer
             this.Close();
         }
         
-        private void btSave_Click(object sender, EventArgs e)
+        private async void btSave_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(mtxtbNewFees.Text))
             {
@@ -79,7 +75,7 @@ namespace DLMApp_PresentationLayer
             {
                 _ApplicationTypeFees = float.Parse(mtxtbNewFees.Text);
 
-                if (ApplicationService.UpdateApplicationTypeFees(_ApplicationTypeID, _ApplicationTypeFees))
+                if (await ApplicationService.UpdateApplicationTypeFees(_ApplicationTypeID, _ApplicationTypeFees))
                 {
                     UpdateUI();
                     MessageBox.Show("Operation completed successfully", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);

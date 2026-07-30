@@ -3,12 +3,9 @@ using DLMApp_ModulesLayer;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+
 
 namespace DLMApp_PresentationLayer
 {
@@ -19,7 +16,6 @@ namespace DLMApp_PresentationLayer
         clsPerson _Person = null;
 
         // ============================================
-
 
 
         public fmManagePeopleScreen()
@@ -52,26 +48,26 @@ namespace DLMApp_PresentationLayer
             cbFilter.SelectedIndex = 0;
         }
 
-        void fmManagePeopleScreen_Load(object sender, EventArgs e)
+        async void fmManagePeopleScreen_Load(object sender, EventArgs e)
         {
             clsGlobal.MakeTitleInCenterScreen(this.Width, lbManagePeopleScreen);
 
             dgvPeople.ForeColor = Color.Black;
 
-            FillDataGirdView(PersonService.GetAllPeople());
+            FillDataGirdView(await PersonService.GetAllPeople());
 
             FillComboBox();
         }
 
-        private void dgvPeople_SelectionChanged(object sender, EventArgs e)
+        private async void dgvPeople_SelectionChanged(object sender, EventArgs e)
         {
             if (dgvPeople.SelectedRows.Count > 0)
             {
                 int.TryParse(dgvPeople.SelectedRows[0].Cells[0].Value.ToString(), out int PersonID);
 
-                _Person = PersonService.FindByPersonID(PersonID);
+                _Person = await PersonService.FindByPersonID(PersonID);
 
-                uctrlPersonInfo1.SetPersonInfo(_Person);
+                await uctrlPersonInfo1.SetPersonInfo(_Person);
             }
         }
 
@@ -81,9 +77,9 @@ namespace DLMApp_PresentationLayer
             manageLicensesScreen.ShowDialog();
         }
 
-        private void showAllInternationalLicensesToolStripMenuItem_Click(object sender, EventArgs e)
+        private async void showAllInternationalLicensesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            int DriverID = DriverService.GetDriverID(int.Parse(dgvPeople.SelectedRows[0].Cells[0].Value.ToString()));
+            int DriverID = await DriverService.GetDriverID(int.Parse(dgvPeople.SelectedRows[0].Cells[0].Value.ToString()));
 
             fmShowInternationalLicensesForDriverScreen showInternationalLicensesForDriverScreen = new fmShowInternationalLicensesForDriverScreen(DriverID, _Person);
             showInternationalLicensesForDriverScreen.ShowDialog();
@@ -106,7 +102,7 @@ namespace DLMApp_PresentationLayer
             add_UpdatePersonScreen.ShowDialog();
         }
 
-        void UpdatePerson(clsPerson Person)
+        async void UpdatePerson(clsPerson Person)
         {
             dgvPeople.SelectedRows[0].Cells[0].Value = Person.PersonID;
             dgvPeople.SelectedRows[0].Cells[1].Value = Person.GetFullName();
@@ -115,7 +111,7 @@ namespace DLMApp_PresentationLayer
             dgvPeople.SelectedRows[0].Cells[4].Value = Person.DateOfBirth.ToString("d-M-yyyy");
             dgvPeople.SelectedRows[0].Cells[5].Value = Person.Country;
 
-            uctrlPersonInfo1.SetPersonInfo(Person);
+            await uctrlPersonInfo1.SetPersonInfo(Person);
         }
 
         private void updatePersonToolStripMenuItem_Click(object sender, EventArgs e)
@@ -130,11 +126,11 @@ namespace DLMApp_PresentationLayer
             mtxtbNationalNumber.Clear();
         }
 
-        void btFind_Click(object sender, EventArgs e)
+        async void btFind_Click(object sender, EventArgs e)
         {
             if (cbFilter.Text == "All")
             {
-                FillDataGirdView(PersonService.GetAllPeople());
+                FillDataGirdView(await PersonService.GetAllPeople());
             }
             else
             {
@@ -142,7 +138,7 @@ namespace DLMApp_PresentationLayer
                 {
                     dgvPeople.Rows.Clear();
 
-                    clsPerson Person = PersonService.FindByNationalNumber(mtxtbNationalNumber.Text);
+                    clsPerson Person = await PersonService.FindByNationalNumber(mtxtbNationalNumber.Text);
 
                     if (Person != null)
                     {

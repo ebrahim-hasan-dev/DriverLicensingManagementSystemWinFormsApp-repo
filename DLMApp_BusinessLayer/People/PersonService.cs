@@ -1,20 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using DLMApp_ModulesLayer;
 using DLMApp_DataAccessLayer;
+
 
 namespace DLMApp_BusinessLayer
 {
     public class PersonService
     {
-        public static bool AddNewPerson(clsPerson Person)
+        public static async Task<bool> AddNewPerson(clsPerson Person)
         {
             if (Person.IsFull())
             {
-                return PersonRepository.AddNewPerson(Person);
+                return await PersonRepository.AddNewPerson(Person);
             }
             else
             {
@@ -22,11 +21,11 @@ namespace DLMApp_BusinessLayer
             }
         }
 
-        public static bool NationalNumberExist(string NationalNumber)
+        public static async Task<bool> NationalNumberExist(string NationalNumber)
         {
             if (!string.IsNullOrWhiteSpace(NationalNumber))
             {
-                return PersonRepository.NationalNubmerExist(NationalNumber);
+                return await PersonRepository.NationalNubmerExist(NationalNumber);
             }
             else
             {
@@ -34,11 +33,11 @@ namespace DLMApp_BusinessLayer
             }
         }
 
-        public static bool PhoneExist(string PhoneNumber)
+        public static async Task<bool> PhoneExist(string PhoneNumber)
         {
             if (!string.IsNullOrWhiteSpace(PhoneNumber))
             {
-                return PersonRepository.PhoneNumberExist(PhoneNumber);
+                return await PersonRepository.PhoneNumberExist(PhoneNumber);
             }
             else
             {
@@ -46,11 +45,11 @@ namespace DLMApp_BusinessLayer
             }
         }
 
-        public static bool EmailExist(string Email)
+        public static async Task<bool> EmailExist(string Email)
         {
             if (!string.IsNullOrWhiteSpace(Email))
             {
-                return PersonRepository.EmailExist(Email);
+                return await PersonRepository.EmailExist(Email);
             }
             else
             {
@@ -58,11 +57,11 @@ namespace DLMApp_BusinessLayer
             }
         }
 
-        public static clsPerson FindByApplicationID(int ApplicationID)
+        public static async Task<clsPerson> FindByApplicationID(int ApplicationID)
         {
             if (ApplicationID > 0)
             {
-                return PersonRepository.FindByApplicationID(ApplicationID);
+                return await PersonRepository.FindByApplicationID(ApplicationID);
             }
             else
             {
@@ -70,23 +69,11 @@ namespace DLMApp_BusinessLayer
             }
         }
 
-        public static clsPerson FindByLicenseID(int LicenseID)
-        {
-            if (LicenseID > 0)
-            {
-                return PersonRepository.FindByLicenseID(LicenseID);
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        public static clsPerson FindByNationalNumber(string NationalNumber)
+        public static async Task<clsPerson> FindByNationalNumber(string NationalNumber)
         {
             if (!string.IsNullOrWhiteSpace(NationalNumber))
             {
-                return PersonRepository.FindByNationalNumber(NationalNumber);
+                return await PersonRepository.FindByNationalNumber(NationalNumber);
             }
             else
             {
@@ -94,11 +81,11 @@ namespace DLMApp_BusinessLayer
             }
         }
 
-        public static clsPerson FindByPersonID(int PersonID)
+        public static async Task<clsPerson> FindByPersonID(int PersonID)
         {
             if (PersonID > 0)
             {
-                return PersonRepository.FindByPersonID(PersonID);
+                return await PersonRepository.FindByPersonID(PersonID);
             }
             else
             {
@@ -106,22 +93,23 @@ namespace DLMApp_BusinessLayer
             }
         }
 
-        public static clsPerson FindByDriverID(int DriverID)
+        public static async Task<clsPerson> FindByDriverID(int DriverID)
         {
             if (DriverID > 0)
             {
-                return PersonRepository.FindByDriverID(DriverID);
+                return await PersonRepository.FindByDriverID(DriverID);
             }
             else
             {
                 return null;
             }
         }
-        public static bool DeleteByID(int PersonID)
+
+        public static async Task<bool> DeleteByID(int PersonID)
         {
             if (PersonID > 0)
             {
-                return PersonRepository.DeleteByID(PersonID);
+                return await PersonRepository.DeleteByID(PersonID);
             }
             else
             {
@@ -134,16 +122,16 @@ namespace DLMApp_BusinessLayer
             return (byte)(DateTime.Now.Year - DateOfBirth.Year);
         }
 
-        public static List<clsPerson> GetAllPeople()
+        public static async Task<List<clsPerson>> GetAllPeople()
         {
-            return PersonRepository.GetAllPeople();
+            return await PersonRepository.GetAllPeople();
         }
 
-        public static bool UpdatePerson(int PersonID, string OldPhone1, string OldPhone2, clsPerson Person)
+        public static async Task<bool> UpdatePerson(int PersonID, string OldPhone1, string OldPhone2, clsPerson Person)
         {
             if (PersonID > 0 && Person.IsFull())
             {
-                return PersonRepository.UpdatePerson(PersonID, OldPhone1, OldPhone2, Person);
+                return await PersonRepository.UpdatePerson(PersonID, OldPhone1, OldPhone2, Person);
             }
             else
             {

@@ -4,13 +4,11 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using DLMApp_PresentationLayer.Properties;
+using System.Threading.Tasks;
+
 
 namespace DLMApp_PresentationLayer
 {
@@ -49,13 +47,13 @@ namespace DLMApp_PresentationLayer
         public uctrlAddOrUpdatePerson()
         {
             InitializeComponent();
-            
+
             LoadAllCountries();
         }
 
-        void LoadAllCountries()
+        async void LoadAllCountries()
         {
-            _ListOfCountries = CountryService.GetAllCountries();
+            _ListOfCountries = await CountryService.GetAllCountries();
 
             for (int i = 0; i < _ListOfCountries.Count; i++)
             {
@@ -140,7 +138,7 @@ namespace DLMApp_PresentationLayer
             }
         }
 
-        void AddNewPersonProcess()
+        async Task AddNewPersonProcess()
         {
             clsPerson Person = new clsPerson();
 
@@ -148,7 +146,7 @@ namespace DLMApp_PresentationLayer
 
             if (Person.IsFull())
             {
-                if (PersonService.AddNewPerson(Person))
+                if (await PersonService.AddNewPerson(Person))
                 {
                     lbPersonIDResult.Text = Person.PersonID.ToString();
 
@@ -208,13 +206,13 @@ namespace DLMApp_PresentationLayer
             }
         }
 
-        void UpdatePersonProcess()
+        async Task UpdatePersonProcess()
         {
             UpdatePersonHelper();
 
             if (_Person.IsFull())
             {
-                if (PersonService.UpdatePerson(_Person.PersonID, _OldPhone1, _OldPhone2,  _Person))
+                if (await PersonService.UpdatePerson(_Person.PersonID, _OldPhone1, _OldPhone2,  _Person))
                 {
                     OnAddedEventHandler(_Person);
 
@@ -233,8 +231,8 @@ namespace DLMApp_PresentationLayer
                 fmLoginScreen.ShowMissingMessage();
             }
         }
-        
-        private void btSave_Click(object sender, EventArgs e)
+
+        public async Task PerformSave()
         {
             if (!string.IsNullOrWhiteSpace(txtbFirstName.Text) && !string.IsNullOrWhiteSpace(txtbSecondName.Text) &&
                 !string.IsNullOrWhiteSpace(txtbThirdName.Text) && !string.IsNullOrWhiteSpace(txtbLastName.Text) &&
@@ -244,11 +242,11 @@ namespace DLMApp_PresentationLayer
             {
                 if (_IsUpdatePerson == true)
                 {
-                    UpdatePersonProcess();
+                    await UpdatePersonProcess();
                 }
                 else
                 {
-                    AddNewPersonProcess();
+                    await AddNewPersonProcess();
                 }
             }
             else
@@ -256,28 +254,57 @@ namespace DLMApp_PresentationLayer
                 fmLoginScreen.ShowMissingMessage();
             }
         }
-        
-        private void llbSetImage_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+
+        private async void btSave_Click(object sender, EventArgs e)
         {
-            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            await PerformSave();
+        }
+
+        static async Task CopyFileAsync(string sourcePath, string destinationPath, bool overwrite = true)
+        {
+            // تحديد وضع إنشاء الملف الجديد (هل نمسح القديم ونكتب مكانه؟ أم لا)
+            FileMode mode = overwrite ? FileMode.Create : FileMode.CreateNew;
+
+            // 1. فتح الملف المصدر للقراءة بشكل غير متزامن
+            using (FileStream sourceStream = new FileStream(sourcePath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true))
             {
-                if (_IsUpdatePerson == true && _Person != null)
+                // 2. إنشاء الملف الجديد للكتابة بشكل غير متزامن
+                using (FileStream destinationStream = new FileStream(destinationPath, mode, FileAccess.Write, FileShare.None, 4096, true))
                 {
-                    if (File.Exists(_Person.ImagePath))
-                    {
-                        File.Delete(_Person.ImagePath);
-                    }
+                    // 3. نسخ البيانات من الملف الأول للثاني بشكل Async وبدون تجميد واجهة المستخدم
+                    await sourceStream.CopyToAsync(destinationStream);
                 }
+            }
+        }
 
-                //pctbNewPerson.ImageLocation = openFileDialog1.FileName;
-                pctbNewPerson.Image = clsGlobal.LoadImageNoLock(openFileDialog1.FileName);
-                
-                string ImagesPath = $"D:\\Visual Studio 2022 Projects\\DLMApp_WindowsForms\\People Images\\Guid{Guid.NewGuid()}" + Path.GetExtension(openFileDialog1.FileName);
+        private async void llbSetImage_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            try
+            {
+                if (openFileDialog1.ShowDialog() == DialogResult.OK)
+                {
+                    if (_IsUpdatePerson == true && _Person != null)
+                    {
+                        if (File.Exists(_Person.ImagePath))
+                        {
+                            File.Delete(_Person.ImagePath);
+                        }
+                    }
 
+                    //pctbNewPerson.ImageLocation = openFileDialog1.FileName;
+                    pctbNewPerson.Image = await clsGlobal.LoadImageNoLockAsync(openFileDialog1.FileName);
 
-                File.Copy(openFileDialog1.FileName, ImagesPath, true);
+                    string ImagesPath = $"D:\\Visual Studio 2022 Projects\\DLMApp_WindowsForms\\People Images\\Guid{Guid.NewGuid()}" + Path.GetExtension(openFileDialog1.FileName);
 
-                openFileDialog1.FileName = ImagesPath;
+                    await CopyFileAsync(openFileDialog1.FileName, ImagesPath, true);
+
+                    openFileDialog1.FileName = ImagesPath;
+                }
+            }
+            catch (Exception ex)
+            {
+                clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
+                MessageBox.Show("Error", ex.Message, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -315,7 +342,7 @@ namespace DLMApp_PresentationLayer
             return IsUnique;
         }
 
-        private void mtxtbNationalNumber_Validating(object sender, CancelEventArgs e)
+        private async void mtxtbNationalNumber_Validating(object sender, CancelEventArgs e)
         {
             if (_IsUpdatePerson && _Person.NationalNumber == mtxtbNationalNumber.Text)
             {
@@ -326,7 +353,7 @@ namespace DLMApp_PresentationLayer
             {
                 if (mtxtbNationalNumber.MaskCompleted)
                 {
-                    if (PersonService.NationalNumberExist(mtxtbNationalNumber.Text))
+                    if (await PersonService.NationalNumberExist(mtxtbNationalNumber.Text))
                     {
                         errorProvider1.SetError(mtxtbNationalNumber, $"this national number ({mtxtbNationalNumber.Text}) is already exist");
                         btSave.Enabled = false;
@@ -347,7 +374,7 @@ namespace DLMApp_PresentationLayer
             }
         }
 
-        private void mtxtbPhone1_Validating(object sender, CancelEventArgs e)
+        private async void mtxtbPhone1_Validating(object sender, CancelEventArgs e)
         {
             if (_IsUpdatePerson && _Person.Phone1 == mtxtbPhone1.Text)
             {
@@ -365,7 +392,7 @@ namespace DLMApp_PresentationLayer
                         return;
                     }
 
-                    if (PersonService.PhoneExist(mtxtbPhone1.Text))
+                    if (await PersonService.PhoneExist(mtxtbPhone1.Text))
                     {
                         errorProvider1.SetError(mtxtbPhone1, $"this phone number ({mtxtbPhone1.Text}) is already exist");
                         btSave.Enabled = false;
@@ -386,7 +413,7 @@ namespace DLMApp_PresentationLayer
             }
         }
 
-        private void mtxtbPhone2_Validating(object sender, CancelEventArgs e)
+        private async void mtxtbPhone2_Validating(object sender, CancelEventArgs e)
         {
             if (_IsUpdatePerson && _Person.Phone2 == mtxtbPhone2.Text)
             {
@@ -404,7 +431,7 @@ namespace DLMApp_PresentationLayer
                         return;
                     }
 
-                    if (PersonService.PhoneExist(mtxtbPhone2.Text))
+                    if (await PersonService.PhoneExist(mtxtbPhone2.Text))
                     {
                         errorProvider1.SetError(mtxtbPhone2, $"this phone number ({mtxtbPhone2.Text}) is already exist");
                         btSave.Enabled = false;
@@ -425,7 +452,7 @@ namespace DLMApp_PresentationLayer
             }
         }
 
-        private void txtbEmail_Validating(object sender, CancelEventArgs e)
+        private async void txtbEmail_Validating(object sender, CancelEventArgs e)
         {
             if (_IsUpdatePerson && _Person.Email == txtbEmail.Text)
             {
@@ -437,7 +464,7 @@ namespace DLMApp_PresentationLayer
             {
                 if (!string.IsNullOrWhiteSpace(txtbEmail.Text))
                 {
-                    if (PersonService.EmailExist(txtbEmail.Text))
+                    if (await PersonService.EmailExist(txtbEmail.Text))
                     {
                         errorProvider1.SetError(txtbEmail, $"this email ({txtbEmail.Text}) is already exist");
                         btSave.Enabled = false;
@@ -481,7 +508,7 @@ namespace DLMApp_PresentationLayer
             _EmailExist = false;
         }
 
-        public void SetPersonInfoToUpdate(clsPerson Person)
+        public async void SetPersonInfoToUpdate(clsPerson Person)
         {
             lbPersonIDResult.Text = Person.PersonID.ToString();
 
@@ -522,7 +549,7 @@ namespace DLMApp_PresentationLayer
                 txtbEmail.Text = Person.Email;
             }
 
-            pctbNewPerson.Image = clsGlobal.LoadImageNoLock(Person.ImagePath);
+            pctbNewPerson.Image = await clsGlobal.LoadImageNoLockAsync(Person.ImagePath);
             openFileDialog1.FileName = Person.ImagePath;
 
             short index = (short)cbCountries.FindString(Person.Country);
@@ -554,5 +581,8 @@ namespace DLMApp_PresentationLayer
             if (rbFemale.Checked)
                 pctbNewPerson.Image = Resources.Female_512;
         }
+
+
+
     }
 }

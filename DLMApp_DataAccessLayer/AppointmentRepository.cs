@@ -1,16 +1,14 @@
 ﻿using DLMApp_ModulesLayer;
 using System;
-using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+
 
 namespace DLMApp_DataAccessLayer
 {
     public class AppointmentRepository
     {
-        public static bool AddNewAppointment(clsAppointment Appointment)
+        public static async Task<bool> AddNewAppointment(clsAppointment Appointment)
         {
             bool IsAdded = false;
 
@@ -35,10 +33,10 @@ namespace DLMApp_DataAccessLayer
                     Command.Parameters.AddWithValue("@IsCompleted", Appointment.IsCompleted);
                     Command.Parameters.AddWithValue("@CreatedByUserID", Appointment.CreatedByUserID);
                     Command.Parameters.AddWithValue("@NumberOfPeople", Appointment.NumberOfPeople);
+                    
+                    await Connection.OpenAsync();
 
-                    Connection.Open();
-
-                    object objAppointmentID = Command.ExecuteScalar();
+                    object objAppointmentID = await Command.ExecuteScalarAsync();
 
                     if (objAppointmentID != null)
                     {
@@ -68,7 +66,7 @@ namespace DLMApp_DataAccessLayer
             return IsAdded;
         }
 
-        public static short GetNumberOfPeopleRegistered(int AppointmentID)
+        public static async Task<short> GetNumberOfPeopleRegistered(int AppointmentID)
         {
             short NumberOfPeople = -1;
 
@@ -87,9 +85,14 @@ namespace DLMApp_DataAccessLayer
 
                     Command.Parameters.AddWithValue("@AppointmentID", AppointmentID);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    short.TryParse(Command.ExecuteScalar().ToString(), out NumberOfPeople);
+                    object obj = await Command.ExecuteScalarAsync();
+
+                    if (obj != null)
+                    {
+                        short.TryParse(obj.ToString(), out NumberOfPeople);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -113,7 +116,7 @@ namespace DLMApp_DataAccessLayer
             return NumberOfPeople;
         }
 
-        public static bool SetAppointmentComplete(int AppointmentID)
+        public static async Task<bool> SetAppointmentComplete(int AppointmentID)
         {
             bool IsUpdated = false;
 
@@ -132,9 +135,9 @@ namespace DLMApp_DataAccessLayer
 
                     Command.Parameters.AddWithValue("@AppointmentID", AppointmentID);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    if (Command.ExecuteNonQuery() > 0)
+                    if (await Command.ExecuteNonQueryAsync() > 0)
                     {
                         IsUpdated = true;
                     }
@@ -161,7 +164,7 @@ namespace DLMApp_DataAccessLayer
             return IsUpdated;
         }
 
-        public static bool IncreaseNumberOfPeople(int AppointmentID)
+        public static async Task<bool> IncreaseNumberOfPeople(int AppointmentID)
         {
             bool IsUpdated = false;
 
@@ -180,9 +183,9 @@ namespace DLMApp_DataAccessLayer
 
                     Command.Parameters.AddWithValue("@AppointmentID", AppointmentID);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    if (Command.ExecuteNonQuery() > 0)
+                    if (await Command.ExecuteNonQueryAsync() > 0)
                     {
                         IsUpdated = true;
                     }
@@ -209,7 +212,7 @@ namespace DLMApp_DataAccessLayer
             return IsUpdated;
         }
 
-        public static bool IsExist(clsAppointment Appointment)
+        public static async Task<bool> IsExist(clsAppointment Appointment)
         {
             bool Exist = false;
 
@@ -229,11 +232,11 @@ namespace DLMApp_DataAccessLayer
 
                     Command.Parameters.AddWithValue("@Appointment", Appointment.Appointment.Date);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    Reader = Command.ExecuteReader();
+                    Reader = await Command.ExecuteReaderAsync();
 
-                    if (Reader.Read())
+                    if (await Reader.ReadAsync())
                     {
                         Appointment.NumberOfPeople = short.Parse(Reader["NumberOfPeople"].ToString());
 

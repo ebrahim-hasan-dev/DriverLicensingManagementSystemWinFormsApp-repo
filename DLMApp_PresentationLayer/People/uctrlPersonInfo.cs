@@ -1,14 +1,8 @@
 ﻿using DLMApp_ModulesLayer;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+
 
 namespace DLMApp_PresentationLayer
 {
@@ -24,7 +18,7 @@ namespace DLMApp_PresentationLayer
             clsGlobal.MakeTitleInCenterScreen(this.Width, lbPersonInfo);
         }
 
-        public void SetPersonInfo(clsPerson Person)
+        public async Task SetPersonInfo(clsPerson Person)
         {
             if (Person != null)
             {
@@ -57,7 +51,7 @@ namespace DLMApp_PresentationLayer
                 lbCreatedByUserRseult.Text = Person.CreatedByUser;
                 lblbAddedDateResult.Text = Person.AddedDate.ToString("d-M-yyyy h:m");
 
-                pctbPerson.Image = clsGlobal.LoadImageNoLock(Person.ImagePath);
+                pctbPerson.Image = await clsGlobal.LoadImageNoLockAsync(Person.ImagePath);
             }
         }
 
@@ -77,9 +71,6 @@ namespace DLMApp_PresentationLayer
 
             pctbPerson.Image = null;
         }
-
-
-
 
 
 

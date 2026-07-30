@@ -1,13 +1,9 @@
 ﻿using DLMApp_ModulesLayer;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data.SqlClient;
-using System.Data.SqlTypes;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+
 
 namespace DLMApp_DataAccessLayer
 {
@@ -15,7 +11,7 @@ namespace DLMApp_DataAccessLayer
     {
         // =====================================================================================
 
-        public static List<clsLicenseClass> GetAllLicensesClasses()
+        public static async Task<List<clsLicenseClass>> GetAllLicensesClasses()
         {
             List<clsLicenseClass> ListOfLicensesClasses = new List<clsLicenseClass>();
 
@@ -31,11 +27,11 @@ namespace DLMApp_DataAccessLayer
 
                 Command = new SqlCommand(GetAllQuery, Connection);
 
-                Connection.Open();
+                await Connection.OpenAsync();
 
-                Reader = Command.ExecuteReader();
+                Reader = await Command.ExecuteReaderAsync();
 
-                while (Reader.Read())
+                while (await Reader.ReadAsync())
                 {
                     clsLicenseClass LicenseClass = new clsLicenseClass();
 
@@ -85,9 +81,10 @@ namespace DLMApp_DataAccessLayer
             return ListOfLicensesClasses;
         }
 
-        public static clsLicenseClass GetLicenseClass(int ApplicationID, ref int PersonID)
+        public static async Task<(clsLicenseClass, int)> GetLicenseClass(int ApplicationID)
         {
             clsLicenseClass LicenseClass = null;
+            int PersonID = 0;
 
             if (ApplicationID > 0)
             {
@@ -105,19 +102,19 @@ namespace DLMApp_DataAccessLayer
 
                     Command.Parameters.AddWithValue("@ApplicationID", ApplicationID);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    Reader = Command.ExecuteReader();
+                    Reader = await Command.ExecuteReaderAsync();
 
-                    if (Reader.Read())
+                    if (await Reader.ReadAsync())
                     {
                         LicenseClass = new clsLicenseClass();
 
                         byte.TryParse(Reader["License_Category_ID"].ToString(), out byte ID);
                         LicenseClass.ID = ID;
 
-                        int.TryParse(Reader["Person_ID"].ToString(), out int PersonId);
-                        PersonID = PersonId;
+                        int.TryParse(Reader["Person_ID"].ToString(), out int Id);
+                        PersonID = Id;
 
                         LicenseClass.LicenseClass = Reader["Category_Name"] as string ?? "";
                         LicenseClass.Description = Reader["Category_Description"] as string ?? "";
@@ -157,10 +154,10 @@ namespace DLMApp_DataAccessLayer
                 }
             }
 
-            return LicenseClass;
+            return (LicenseClass, PersonID);
         }
 
-        public static clsLicenseClass GetLicenseClass(byte LicenseClassID)
+        public static async Task<clsLicenseClass> GetLicenseClass(byte LicenseClassID)
         {
             clsLicenseClass LicenseClass = null;
 
@@ -180,11 +177,11 @@ namespace DLMApp_DataAccessLayer
 
                     Command.Parameters.AddWithValue("@LicenseClassID", LicenseClassID);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    Reader = Command.ExecuteReader();
+                    Reader = await Command.ExecuteReaderAsync();
 
-                    if (Reader.Read())
+                    if (await Reader.ReadAsync())
                     {
                         LicenseClass = new clsLicenseClass();
 
@@ -231,64 +228,7 @@ namespace DLMApp_DataAccessLayer
             return LicenseClass;
         }
 
-        public static float GetLicenseClassFees(byte LicenseClassID)
-        {
-            float Fees = 0;
-
-            if (LicenseClassID > 0)
-            {
-                SqlConnection Connection = null;
-                SqlCommand Command = null;
-                SqlDataReader Reader = null;
-
-                try
-                {
-                    Connection = new SqlConnection(clsConnectionString.ConnectionString);
-
-                    string GetQuery = "select [Fees] from [License_Categories] where [License_Category_ID] = @LicenseClassID;";
-
-                    Command = new SqlCommand(GetQuery, Connection);
-
-                    Command.Parameters.AddWithValue("@LicenseClassID", LicenseClassID);
-
-                    Connection.Open();
-
-                    Reader = Command.ExecuteReader();
-
-                    if (Reader.Read())
-                    {
-                        float.TryParse(Reader["Fees"].ToString(), out Fees);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
-                }
-                finally
-                {
-                    if (Reader != null)
-                    {
-                        Reader.Close();
-                        Reader.Dispose();
-                    }
-
-                    if (Command != null)
-                    {
-                        Command.Dispose();
-                    }
-
-                    if (Connection != null)
-                    {
-                        Connection.Close();
-                        Connection.Dispose();
-                    }
-                }
-            }
-
-            return Fees;
-        }
-
-        public static bool UpdateLicenseClass(byte LicenseClassID, float LicenseFees, byte ValidityPeriod, byte MinimumAllowedAge)
+        public static async Task<bool> UpdateLicenseClass(byte LicenseClassID, float LicenseFees, byte ValidityPeriod, byte MinimumAllowedAge)
         {
             bool Update = false;
 
@@ -311,9 +251,9 @@ namespace DLMApp_DataAccessLayer
                     Command.Parameters.AddWithValue("@ValidityPeriod", ValidityPeriod);
                     Command.Parameters.AddWithValue("@LicenseFees", LicenseFees);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    if (Command.ExecuteNonQuery() > 0)
+                    if (await Command.ExecuteNonQueryAsync() > 0)
                     {
                         Update = true;
                     }
@@ -342,7 +282,7 @@ namespace DLMApp_DataAccessLayer
 
         // =====================================================================================
 
-        public static bool DoesHaveLicenseOfSameClass(int PersonID, byte LicenseClassID)
+        public static async Task<bool> DoesHaveLicenseOfSameClass(int PersonID, byte LicenseClassID)
         {
             bool IsHave = false;
 
@@ -363,9 +303,9 @@ namespace DLMApp_DataAccessLayer
                     Command.Parameters.AddWithValue("@PersonID", PersonID);
                     Command.Parameters.AddWithValue("@LicenseClassID", LicenseClassID);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    Reader = Command.ExecuteReader();
+                    Reader = await Command.ExecuteReaderAsync();
 
                     if (Reader.HasRows)
                     {
@@ -400,7 +340,7 @@ namespace DLMApp_DataAccessLayer
             return IsHave;
         }
 
-        public static bool AddNewLicense(clsLicense license)
+        public static async Task<bool> AddNewLicense(clsLicense license)
         {
             bool Added = false;
 
@@ -436,9 +376,9 @@ namespace DLMApp_DataAccessLayer
                     Command.Parameters.AddWithValue("@OrderID", license.ApplicationID);
                     Command.Parameters.AddWithValue("@LicenseCategoryID", license.LicenseClassID);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    object LicenseIDobj = Command.ExecuteScalar();
+                    object LicenseIDobj = await Command.ExecuteScalarAsync();
 
                     if (LicenseIDobj != null)
                     {
@@ -468,7 +408,7 @@ namespace DLMApp_DataAccessLayer
             return Added;
         }
 
-        public static clsLicense Find(int LicenseID)
+        public static async Task<clsLicense> Find(int LicenseID)
         {
             clsLicense license = null;
 
@@ -489,11 +429,11 @@ namespace DLMApp_DataAccessLayer
 
                     Command.Parameters.AddWithValue("@LicenseID", LicenseID);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    Reader = Command.ExecuteReader();
+                    Reader = await Command.ExecuteReaderAsync();
 
-                    if (Reader.Read())
+                    if (await Reader.ReadAsync())
                     {
                         license = new clsLicense();
 
@@ -561,7 +501,7 @@ namespace DLMApp_DataAccessLayer
             return license;
         }
 
-        public static bool UpdateActiveLicense(int LicenseID, bool Active)
+        public static async Task<bool> UpdateActiveLicense(int LicenseID, bool Active)
         {
             bool Updated = false;
 
@@ -586,9 +526,9 @@ namespace DLMApp_DataAccessLayer
                         Command.Parameters.AddWithValue("@Active", 0);
 
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    if (Command.ExecuteNonQuery() > 0)
+                    if (await Command.ExecuteNonQueryAsync() > 0)
                     {
                         Updated = true;
                     }
@@ -615,7 +555,7 @@ namespace DLMApp_DataAccessLayer
             return Updated;
         }
 
-        public static clsLicense FindActiveAndValidLicense(int PersonID, byte LicenseClassID)
+        public static async Task<clsLicense> FindActiveAndValidLicense(int PersonID, byte LicenseClassID)
         {
             clsLicense license = null;
 
@@ -637,11 +577,11 @@ namespace DLMApp_DataAccessLayer
                     Command.Parameters.AddWithValue("@LicenseClassID", LicenseClassID);
                     Command.Parameters.AddWithValue("@DateNow", DateTime.Now.Date);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    Reader = Command.ExecuteReader();
+                    Reader = await Command.ExecuteReaderAsync();
 
-                    if (Reader.Read())
+                    if (await Reader.ReadAsync())
                     {
                         license = new clsLicense();
 
@@ -707,7 +647,7 @@ namespace DLMApp_DataAccessLayer
             return license;
         }
 
-        public static bool UpdateDetainedLicense(int LicenseID, bool Detained)
+        public static async Task<bool> UpdateDetainedLicense(int LicenseID, bool Detained)
         {
             bool Updated = false;
 
@@ -732,9 +672,9 @@ namespace DLMApp_DataAccessLayer
                         Command.Parameters.AddWithValue("@Detained", 0);
 
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    if (Command.ExecuteNonQuery() > 0)
+                    if (await Command.ExecuteNonQueryAsync() > 0)
                     {
                         Updated = true;
                     }
@@ -761,7 +701,7 @@ namespace DLMApp_DataAccessLayer
             return Updated;
         }
 
-        public static List<clsLicense> GetAllLicenses()
+        public static async Task<List<clsLicense>> GetAllLicenses()
         {
             List<clsLicense> ListOfLicenses = new List<clsLicense>();
 
@@ -777,11 +717,11 @@ namespace DLMApp_DataAccessLayer
 
                 Command = new SqlCommand(GetAll, Connection);
 
-                Connection.Open();
+                await Connection.OpenAsync();
 
-                Reader = Command.ExecuteReader();
+                Reader = await Command.ExecuteReaderAsync();
 
-                while (Reader.Read())
+                while (await Reader.ReadAsync())
                 {
                     clsLicense license = new clsLicense();
 
@@ -845,7 +785,7 @@ namespace DLMApp_DataAccessLayer
             return ListOfLicenses;
         }
 
-        public static List<clsLicense> FindAllByDriverID(int DriverID)
+        public static async Task<List<clsLicense>> FindAllByDriverID(int DriverID)
         {
             List<clsLicense> ListOfLicenses = new List<clsLicense>();
 
@@ -865,11 +805,11 @@ namespace DLMApp_DataAccessLayer
 
                     Command.Parameters.AddWithValue("@DriverID", DriverID);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    Reader = Command.ExecuteReader();
+                    Reader = await Command.ExecuteReaderAsync();
 
-                    while (Reader.Read())
+                    while (await Reader.ReadAsync())
                     {
                         clsLicense license = new clsLicense();
 
@@ -934,7 +874,7 @@ namespace DLMApp_DataAccessLayer
             return ListOfLicenses;
         }
 
-        public static List<clsLicense> FindAllByNationalNumber(string NationalNumber)
+        public static async Task<List<clsLicense>> FindAllByNationalNumber(string NationalNumber)
         {
             List<clsLicense> ListOfLicenses = new List<clsLicense>();
 
@@ -954,11 +894,11 @@ namespace DLMApp_DataAccessLayer
 
                     Command.Parameters.AddWithValue("@NationalNumber", NationalNumber);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    Reader = Command.ExecuteReader();
+                    Reader = await Command.ExecuteReaderAsync();
 
-                    while (Reader.Read())
+                    while (await Reader.ReadAsync())
                     {
                         clsLicense license = new clsLicense();
 

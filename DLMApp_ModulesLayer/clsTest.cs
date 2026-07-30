@@ -1,5 +1,4 @@
 ﻿
-
 namespace DLMApp_ModulesLayer
 {
     public class clsTest
@@ -10,4 +9,5 @@ namespace DLMApp_ModulesLayer
         public float Fees { get; set; }
         public short MaxNumberOfPeople { get; set; }
     }
+
 }

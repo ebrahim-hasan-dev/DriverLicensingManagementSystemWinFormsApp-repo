@@ -2,15 +2,14 @@
 using DLMApp_ModulesLayer;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+
 
 namespace DLMApp_BusinessLayer
 {
     public class PeopleRegisteredInAppointmentDTOService
     {
-        public static List<clsPeopleRegisteredInAppointmentDTO> GetAllRegisteredPeopleInAppointment(byte TestID, ref string CreatedByUser, DateTime Appointment = new DateTime(), bool IsTestDay = false)
+        public static async Task<(List<clsPeopleRegisteredInAppointmentDTO>, string)> GetAllRegisteredPeopleInAppointment(byte TestID, DateTime Appointment = new DateTime(), bool IsTestDay = false)
         {
             if (TestID > 0)
             {
@@ -18,25 +17,25 @@ namespace DLMApp_BusinessLayer
                 {
                     if (Appointment != default(DateTime))
                     {
-                        return PeopleRegisteredInAppointmentDTORepository.GetAllRegisteredPeopleInAppointmentTestDay(TestID, ref CreatedByUser, Appointment);
+                        return await PeopleRegisteredInAppointmentDTORepository.GetAllRegisteredPeopleInAppointmentTestDay(TestID, Appointment);
                     }
                     else
                     {
-                        return new List<clsPeopleRegisteredInAppointmentDTO>();
+                        return (new List<clsPeopleRegisteredInAppointmentDTO>(), "");
                     }
                 }
                 else
                 {
-                    return PeopleRegisteredInAppointmentDTORepository.GetAllRegisteredPeopleInAppointment(TestID, ref CreatedByUser);
+                    return await PeopleRegisteredInAppointmentDTORepository.GetAllRegisteredPeopleInAppointment(TestID);
                 }
             }
             else
             {
-                return new List<clsPeopleRegisteredInAppointmentDTO>();
+                return (new List<clsPeopleRegisteredInAppointmentDTO>(), "");
             }
         }
 
-        public static List<clsPeopleRegisteredInAppointmentDTO> GetAllRegisteredPeopleInAppointmentTestDayRenewLicense(byte TestID, ref string CreatedByUser, DateTime Appointment = new DateTime(), bool IsTestDay = false)
+        public static async Task<(List<clsPeopleRegisteredInAppointmentDTO>, string)> GetAllRegisteredPeopleInAppointmentTestDayRenewLicense(byte TestID, DateTime Appointment = new DateTime(), bool IsTestDay = false)
         {
             if (TestID > 0)
             {
@@ -44,21 +43,21 @@ namespace DLMApp_BusinessLayer
                 {
                     if (Appointment != default(DateTime))
                     {
-                        return PeopleRegisteredInAppointmentDTORepository.GetAllRegisteredPeopleInAppointmentTestDayRenewLicenseTestDay(TestID, ref CreatedByUser, Appointment);
+                        return await PeopleRegisteredInAppointmentDTORepository.GetAllRegisteredPeopleInAppointmentTestDayRenewLicenseTestDay(TestID, Appointment);
                     }
                     else
                     {
-                        return new List<clsPeopleRegisteredInAppointmentDTO>();
+                        return (new List<clsPeopleRegisteredInAppointmentDTO>(), "");
                     }
                 }
                 else
                 {
-                    return PeopleRegisteredInAppointmentDTORepository.GetAllRegisteredPeopleInAppointmentTestDayRenewLicense(TestID, ref CreatedByUser);
+                    return await PeopleRegisteredInAppointmentDTORepository.GetAllRegisteredPeopleInAppointmentTestDayRenewLicense(TestID);
                 }
             }
             else
             {
-                return new List<clsPeopleRegisteredInAppointmentDTO>();
+                return (new List<clsPeopleRegisteredInAppointmentDTO>(), "");
             }
         }
 

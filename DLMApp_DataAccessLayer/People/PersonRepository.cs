@@ -2,13 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Threading.Tasks;
 
 
 namespace DLMApp_DataAccessLayer
 {
     public class PersonRepository
     {
-        static bool AddPersonPhones(string Phone1, string Phone2, int PersonID, SqlConnection Connection, SqlCommand Command)
+        static async Task<bool> AddPersonPhones(string Phone1, string Phone2, int PersonID, SqlConnection Connection, SqlCommand Command)
         {
             bool IsAdded = false;
 
@@ -38,7 +39,7 @@ namespace DLMApp_DataAccessLayer
                 Command.Parameters.AddWithValue("@PhoneNumber2", Phone2);
             }
 
-            byte NumberOfRowsAffected = (byte)Command.ExecuteNonQuery();
+            byte NumberOfRowsAffected = (byte)await Command.ExecuteNonQueryAsync();
 
             if (NumberOfRowsAffected > 0)
             {
@@ -48,7 +49,7 @@ namespace DLMApp_DataAccessLayer
             return IsAdded;
         }
 
-        public static bool AddNewPerson(clsPerson Person)
+        public static async Task<bool> AddNewPerson(clsPerson Person)
         {
             bool IsAdded = false;
 
@@ -93,9 +94,9 @@ namespace DLMApp_DataAccessLayer
                         Command.Parameters.AddWithValue("@Email", Person.Email);
                     }
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    object objPersonID = Command.ExecuteScalar();
+                    object objPersonID = await Command.ExecuteScalarAsync();
 
                     if (objPersonID != null)
                     {
@@ -103,7 +104,7 @@ namespace DLMApp_DataAccessLayer
 
                         Person.PersonID = int.Parse(objPersonID.ToString());
 
-                        if (AddPersonPhones(Person.Phone1, Person.Phone2, Person.PersonID, Connection, Command))
+                        if (await AddPersonPhones(Person.Phone1, Person.Phone2, Person.PersonID, Connection, Command))
                         {
                             IsAdded = true;
                         }
@@ -131,7 +132,7 @@ namespace DLMApp_DataAccessLayer
             return IsAdded;
         }
 
-        public static bool NationalNubmerExist(string NationalNumber)
+        public static async Task<bool> NationalNubmerExist(string NationalNumber)
         {
             bool Exist = false;
 
@@ -151,9 +152,9 @@ namespace DLMApp_DataAccessLayer
 
                     Command.Parameters.AddWithValue("@NationalNumber", NationalNumber);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    Reader = Command.ExecuteReader();
+                    Reader = await Command.ExecuteReaderAsync();
 
                     if (Reader.HasRows)
                     {
@@ -188,7 +189,7 @@ namespace DLMApp_DataAccessLayer
             return Exist;
         }
 
-        public static bool PhoneNumberExist(string PhoneNumber)
+        public static async Task<bool> PhoneNumberExist(string PhoneNumber)
         {
             bool Exist = false;
 
@@ -208,9 +209,9 @@ namespace DLMApp_DataAccessLayer
 
                     Command.Parameters.AddWithValue("@PhoneNumber", PhoneNumber);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    Reader = Command.ExecuteReader();
+                    Reader = await Command.ExecuteReaderAsync();
 
                     if (Reader.HasRows)
                     {
@@ -245,7 +246,7 @@ namespace DLMApp_DataAccessLayer
             return Exist;
         }
 
-        public static bool EmailExist(string Email)
+        public static async Task<bool> EmailExist(string Email)
         {
             bool Exist = false;
 
@@ -265,9 +266,9 @@ namespace DLMApp_DataAccessLayer
 
                     Command.Parameters.AddWithValue("@Email", Email);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    Reader = Command.ExecuteReader();
+                    Reader = await Command.ExecuteReaderAsync();
 
                     if (Reader.HasRows)
                     {
@@ -302,12 +303,14 @@ namespace DLMApp_DataAccessLayer
             return Exist;
         }
 
-        public static bool GetPeoplePhonesHelper(int PersonID, ref string Phone1, ref string Phone2, SqlConnection Connection)
+        static async Task<(string, string, bool)> GetPeoplePhonesHelper(int PersonID, SqlConnection Connection)
         {
             SqlCommand Command = null;
             SqlDataReader Reader = null;
 
             bool Success = false;
+            string Phone1 = "";
+            string Phone2 = "";
 
             if (PersonID > 0 && Connection != null)
             {
@@ -319,11 +322,11 @@ namespace DLMApp_DataAccessLayer
 
                     Command.Parameters.AddWithValue("@PersonID", PersonID);
 
-                    Reader = Command.ExecuteReader();
+                    Reader = await Command.ExecuteReaderAsync();
 
                     List<string> ListOfPhones = new List<string>();
 
-                    while (Reader.Read())
+                    while (await Reader.ReadAsync())
                     {
                         ListOfPhones.Add(Reader["Phone_Number"].ToString());
                     }
@@ -360,10 +363,10 @@ namespace DLMApp_DataAccessLayer
                 }
             }
 
-            return Success;
+            return (Phone1, Phone2, Success);
         }
 
-        static public clsPerson FindByApplicationID(int ApplicationID)
+        static public async Task<clsPerson> FindByApplicationID(int ApplicationID)
         {
             clsPerson Person = null;
 
@@ -387,11 +390,11 @@ namespace DLMApp_DataAccessLayer
 
                     Command.Parameters.AddWithValue("@OrderID", ApplicationID);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    Reader = Command.ExecuteReader();
+                    Reader = await Command.ExecuteReaderAsync();
 
-                    if (Reader.Read())
+                    if (await Reader.ReadAsync())
                     {
                         Person = new clsPerson();
 
@@ -448,7 +451,7 @@ namespace DLMApp_DataAccessLayer
                         string Phone1 = "";
                         string Phone2 = "";
 
-                        GetPeoplePhonesHelper(Person.PersonID, ref Phone1, ref Phone2, Connection);
+                        (Phone1, Phone2, _) = await GetPeoplePhonesHelper(Person.PersonID, Connection);
 
                         Person.Phone1 = Phone1;
                         Person.Phone2 = Phone2;
@@ -466,7 +469,7 @@ namespace DLMApp_DataAccessLayer
             return Person;
         }
 
-        static public clsPerson FindByNationalNumber(string NationalNumber)
+        static public async Task<clsPerson> FindByNationalNumber(string NationalNumber)
         {
             clsPerson Person = null;
 
@@ -489,11 +492,11 @@ namespace DLMApp_DataAccessLayer
 
                     Command.Parameters.AddWithValue("@NationalNumber", NationalNumber);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    Reader = Command.ExecuteReader();
+                    Reader = await Command.ExecuteReaderAsync();
 
-                    if (Reader.Read())
+                    if (await Reader.ReadAsync())
                     {
                         Person = new clsPerson();
 
@@ -548,7 +551,7 @@ namespace DLMApp_DataAccessLayer
                         string Phone1 = "";
                         string Phone2 = "";
 
-                        GetPeoplePhonesHelper(Person.PersonID, ref Phone1, ref Phone2, Connection);
+                        (Phone1, Phone2, _) = await GetPeoplePhonesHelper(Person.PersonID, Connection);
 
                         Person.Phone1 = Phone1;
                         Person.Phone2 = Phone2;
@@ -565,7 +568,7 @@ namespace DLMApp_DataAccessLayer
             return Person;
         }
 
-        static public clsPerson FindByPersonID(int PersonID)
+        static public async Task<clsPerson> FindByPersonID(int PersonID)
         {
             clsPerson Person = null;
 
@@ -588,11 +591,11 @@ namespace DLMApp_DataAccessLayer
 
                     Command.Parameters.AddWithValue("@PersonID", PersonID);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    Reader = Command.ExecuteReader();
+                    Reader = await Command.ExecuteReaderAsync();
 
-                    if (Reader.Read())
+                    if (await Reader.ReadAsync())
                     {
                         Person = new clsPerson();
 
@@ -650,7 +653,7 @@ namespace DLMApp_DataAccessLayer
                         string Phone1 = "";
                         string Phone2 = "";
 
-                        GetPeoplePhonesHelper(Person.PersonID, ref Phone1, ref Phone2, Connection);
+                        (Phone1, Phone2, _) = await GetPeoplePhonesHelper(Person.PersonID, Connection);
 
                         Person.Phone1 = Phone1;
                         Person.Phone2 = Phone2;
@@ -667,101 +670,7 @@ namespace DLMApp_DataAccessLayer
             return Person;
         }
 
-        static public clsPerson FindByLicenseID(int LicenseID)
-        {
-            clsPerson Person = null;
-
-            if (LicenseID > 0)
-            {
-                SqlConnection Connection = null;
-                SqlCommand Command = null;
-                SqlDataReader Reader = null;
-
-                try
-                {
-                    Connection = new SqlConnection(clsConnectionString.ConnectionString);
-
-                    string FindQuery = "select * from [vFindPersonByLicenseID] where [License_ID] = @LicenseID;";
-
-                    Command = new SqlCommand(FindQuery, Connection);
-
-                    Command.Parameters.AddWithValue("@LicenseID", LicenseID);
-
-                    Connection.Open();
-
-                    Reader = Command.ExecuteReader();
-
-                    if (Reader.Read())
-                    {
-                        Person = new clsPerson();
-
-                        int.TryParse(Reader["Person_ID"].ToString(), out int ID);
-                        Person.PersonID = ID;
-
-                        Person.FirstName = Reader["First_Name"] as string ?? "";
-                        Person.SecondName = Reader["Second_Name"] as string ?? "";
-                        Person.ThirdName = Reader["Third_Name"] as string ?? "";
-                        Person.LastName = Reader["Last_Name"] as string ?? "";
-                        Person.Address = Reader["Address"] as string ?? "";
-
-                        if (Reader["Email"] == DBNull.Value)
-                            Person.Email = "";
-                        else
-                            Person.Email = Reader["Email"] as string ?? "";
-
-                        Person.ImagePath = Reader["Image_Path"] as string ?? "";
-                        Person.Gender = Reader["Gender"] as string ?? "";
-                        Person.NationalNumber = Reader["National_Number"] as string ?? "";
-                        Person.CreatedByUser = Reader["User_Name"] as string ?? "";
-
-                        DateTime.TryParse(Reader["DateOfBirth"].ToString(), out DateTime Date);
-                        Person.DateOfBirth = Date;
-
-                        DateTime.TryParse(Reader["Added_DateTime"].ToString(), out Date);
-                        Person.AddedDate = Date;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
-                    Person = null;
-                }
-                finally
-                {
-                    if (Reader != null)
-                    {
-                        Reader.Close();
-                        Reader.Dispose();
-                    }
-
-                    if (Command != null)
-                    {
-                        Command.Dispose();
-                    }
-
-                    if (Person != null)
-                    {
-                        string Phone1 = "";
-                        string Phone2 = "";
-
-                        GetPeoplePhonesHelper(Person.PersonID, ref Phone1, ref Phone2, Connection);
-
-                        Person.Phone1 = Phone1;
-                        Person.Phone2 = Phone2;
-                    }
-
-                    if (Connection != null)
-                    {
-                        Connection.Close();
-                        Connection.Dispose();
-                    }
-                }
-            }
-
-            return Person;
-        }
-
-        static public clsPerson FindByDriverID(int DriverID)
+        static public async Task<clsPerson> FindByDriverID(int DriverID)
         {
             clsPerson Person = null;
 
@@ -785,11 +694,11 @@ namespace DLMApp_DataAccessLayer
 
                     Command.Parameters.AddWithValue("@DriverID", DriverID);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    Reader = Command.ExecuteReader();
+                    Reader = await Command.ExecuteReaderAsync();
 
-                    if (Reader.Read())
+                    if (await Reader.ReadAsync())
                     {
                         Person = new clsPerson();
 
@@ -844,7 +753,7 @@ namespace DLMApp_DataAccessLayer
                         string Phone1 = "";
                         string Phone2 = "";
 
-                        GetPeoplePhonesHelper(Person.PersonID, ref Phone1, ref Phone2, Connection);
+                        (Phone1, Phone2, _) = await GetPeoplePhonesHelper(Person.PersonID, Connection);
 
                         Person.Phone1 = Phone1;
                         Person.Phone2 = Phone2;
@@ -861,7 +770,7 @@ namespace DLMApp_DataAccessLayer
             return Person;
         }
 
-        static bool DeletePersonPhones(int PersonID, SqlConnection Connection)
+        static async Task<bool> DeletePersonPhones(int PersonID, SqlConnection Connection)
         {
             bool Deleted = false;
 
@@ -877,9 +786,9 @@ namespace DLMApp_DataAccessLayer
 
                     Command.Parameters.AddWithValue("@PersonID", PersonID);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    if (Command.ExecuteNonQuery() > 0)
+                    if (await Command.ExecuteNonQueryAsync() > 0)
                     {
                         Deleted = true;
                     }
@@ -900,7 +809,7 @@ namespace DLMApp_DataAccessLayer
             return Deleted;
         }
 
-        static public bool DeleteByID(int PersonID)
+        static public async Task<bool> DeleteByID(int PersonID)
         {
             bool Deleted = false;
 
@@ -913,7 +822,7 @@ namespace DLMApp_DataAccessLayer
                 {
                     Connection = new SqlConnection(clsConnectionString.ConnectionString);
 
-                    DeletePersonPhones(PersonID, Connection);
+                    await DeletePersonPhones(PersonID, Connection);
 
                     string DeletedQuery = "delete from [People] where [Person_ID] = @PersonID;";
 
@@ -921,7 +830,7 @@ namespace DLMApp_DataAccessLayer
 
                     Command.Parameters.AddWithValue("@PersonID", PersonID);
 
-                    if (Command.ExecuteNonQuery() > 0)
+                    if (await Command.ExecuteNonQueryAsync() > 0)
                     {
                        Deleted = true;
                     }
@@ -948,21 +857,21 @@ namespace DLMApp_DataAccessLayer
             return Deleted;
         }
 
-        static void SetPeoplePhones(List<clsPerson> ListOfPeople, SqlConnection Connection)
+        static async Task SetPeoplePhones(List<clsPerson> ListOfPeople, SqlConnection Connection)
         {
             string Phone1 = "";
             string Phone2 = "";
 
             for (int i = 0; i < ListOfPeople.Count; i++)
             {
-                GetPeoplePhonesHelper(ListOfPeople[i].PersonID, ref Phone1, ref Phone2, Connection);
+                (Phone1, Phone2, _) = await GetPeoplePhonesHelper(ListOfPeople[i].PersonID, Connection);
 
                 ListOfPeople[i].Phone1 = Phone1;
                 ListOfPeople[i].Phone2 = Phone2;
             }
         }
 
-        static public List<clsPerson> GetAllPeople()
+        static public async Task<List<clsPerson>> GetAllPeople()
         {
             List<clsPerson> ListOfPeople = new List<clsPerson>();
 
@@ -981,11 +890,11 @@ namespace DLMApp_DataAccessLayer
 
                 Command = new SqlCommand(FindQuery, Connection);
 
-                Connection.Open();
+                await Connection.OpenAsync();
 
-                Reader = Command.ExecuteReader();
+                Reader = await Command.ExecuteReaderAsync();
 
-                while (Reader.Read())
+                while (await Reader.ReadAsync())
                 {
                     clsPerson Person = new clsPerson();
 
@@ -1038,7 +947,7 @@ namespace DLMApp_DataAccessLayer
 
                 if (ListOfPeople.Count > 0)
                 {
-                    SetPeoplePhones(ListOfPeople, Connection);
+                    await SetPeoplePhones(ListOfPeople, Connection);
                 }
 
                 if (Connection != null)
@@ -1051,7 +960,7 @@ namespace DLMApp_DataAccessLayer
             return ListOfPeople;
         }
 
-        static bool UpdatePersonPhones(string NewPhone1, string NewPhone2, string OldPhone1, string OldPhone2, int PersonID, SqlConnection Connection, SqlCommand Command)
+        static async Task<bool> UpdatePersonPhones(string NewPhone1, string NewPhone2, string OldPhone1, string OldPhone2, int PersonID, SqlConnection Connection, SqlCommand Command)
         {
             bool Updated = false;
 
@@ -1099,7 +1008,7 @@ namespace DLMApp_DataAccessLayer
                 }
 
 
-                if (Command.ExecuteNonQuery() > 0)
+                if (await Command.ExecuteNonQueryAsync() > 0)
                 {
                     Updated = true;
                 }
@@ -1108,7 +1017,7 @@ namespace DLMApp_DataAccessLayer
             return Updated;
         }
 
-        public static bool UpdatePerson(int PersonID, string OldPhone1, string OldPhone2, clsPerson Person)
+        public static async Task<bool> UpdatePerson(int PersonID, string OldPhone1, string OldPhone2, clsPerson Person)
         {
             bool Updated = false;
 
@@ -1151,13 +1060,13 @@ namespace DLMApp_DataAccessLayer
 
                     Command.Parameters.AddWithValue("@PersonID", PersonID);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    if (Command.ExecuteNonQuery() > 0)
+                    if (await Command.ExecuteNonQueryAsync() > 0)
                     {
                         Command.Dispose();
 
-                        UpdatePersonPhones(Person.Phone1, Person.Phone2, OldPhone1, OldPhone2, Person.PersonID, Connection, Command);
+                        await UpdatePersonPhones(Person.Phone1, Person.Phone2, OldPhone1, OldPhone2, Person.PersonID, Connection, Command);
 
                         Updated = true;
                     }

@@ -1,7 +1,7 @@
 ﻿using DLMApp_ModulesLayer;
-using System;
 using System.Drawing;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 
@@ -16,16 +16,23 @@ namespace DLMApp_PresentationLayer
         //====================================================
 
 
-        public static Image LoadImageNoLock(string path)
+        public static async Task<Image> LoadImageNoLockAsync(string Path)
         {
-            // نقرأ الملف بالكامل في مصفوفة بايتات
-            byte[] bytes = File.ReadAllBytes(path);
-
-            // نستخدم MemoryStream لتحويل البايتات إلى صورة
-            using (MemoryStream ms = new MemoryStream(bytes))
+            // استخدام FileStream لفتح الملف للقراءة فقط
+            using (FileStream fs = new FileStream(Path, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true))
             {
-                // نستخدم Clone لضمان استقلال الصورة عن الـ stream تماماً
-                return (Image)Image.FromStream(ms).Clone();
+                // تجهيز مصفوفة البايتات بنفس حجم الملف
+                byte[] bytes = new byte[fs.Length];
+
+                //قراءة الملف بشكل غير متزامن (Async) في الـ .NET Framework
+                await fs.ReadAsync(bytes, 0, (int)fs.Length);
+
+                // تحويل البايتات إلى صورة باستخدام MemoryStream و Clone
+                using (MemoryStream ms = new MemoryStream(bytes))
+                {
+                    // نستخدم Clone لضمان استقلال الصورة عن الـ stream تماماً
+                    return (Image)Image.FromStream(ms).Clone();
+                }
             }
         }
 

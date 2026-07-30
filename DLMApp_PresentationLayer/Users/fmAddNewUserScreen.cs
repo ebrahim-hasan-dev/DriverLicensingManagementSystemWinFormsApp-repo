@@ -22,18 +22,16 @@ namespace DLMApp_PresentationLayer
             InitializeComponent();
         }
 
+
         protected virtual void OnAddedEventHandler(clsUser User)
         {
             AddedEventHandler?.Invoke(User);
         }
 
-
         private void fmAddNewUserScreen_Load(object sender, EventArgs e)
         {
             uctrlAddOrUpdatePerson1.btSave.Location = new Point(uctrlAddOrUpdatePerson1.Width + 50, 0); 
         }
-
-       
 
         void FillUser(clsUser User)
         {
@@ -59,14 +57,14 @@ namespace DLMApp_PresentationLayer
             this.Close();
         }
        
-        private void btSave_Click(object sender, EventArgs e)
+        private async void btSave_Click(object sender, EventArgs e)
         {
             if (!string.IsNullOrWhiteSpace(txtbConfirmPassword.Text) && !string.IsNullOrWhiteSpace(txtbPassword.Text) &&
                 !string.IsNullOrWhiteSpace(txtbUserName.Text))
             {
                 if (txtbConfirmPassword.Text == txtbPassword.Text)
                 {
-                    uctrlAddOrUpdatePerson1.btSave.PerformClick();
+                    await uctrlAddOrUpdatePerson1.PerformSave();
 
                     if (uctrlAddOrUpdatePerson1.AddedSuccessfully == true)
                     {
@@ -74,7 +72,7 @@ namespace DLMApp_PresentationLayer
 
                         FillUser(User);
 
-                        if (UserService.AddNewUser(User))
+                        if (await UserService.AddNewUser(User))
                         {
                             MessageBox.Show($"Operation completed successfully with ID ({User.UserID})", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
@@ -95,11 +93,11 @@ namespace DLMApp_PresentationLayer
             }
         }
 
-        private void txtbUserName_Validating(object sender, CancelEventArgs e)
+        private async void txtbUserName_Validating(object sender, CancelEventArgs e)
         {
             if (!string.IsNullOrWhiteSpace(txtbUserName.Text))
             {
-                if (UserService.UserNameExist(txtbUserName.Text) == true)
+                if (await UserService.UserNameExist(txtbUserName.Text) == true)
                 {
                     errorProvider1.SetError(txtbUserName, $"This user name ({txtbUserName.Text}) is already exist");
                     btSave.Enabled = false;
@@ -111,9 +109,6 @@ namespace DLMApp_PresentationLayer
                 }
             }
         }
-
-
-
 
 
 

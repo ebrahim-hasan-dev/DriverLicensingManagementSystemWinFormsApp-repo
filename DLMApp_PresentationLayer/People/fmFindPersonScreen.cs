@@ -1,14 +1,8 @@
 ﻿using DLMApp_BusinessLayer;
 using DLMApp_ModulesLayer;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+
 
 namespace DLMApp_PresentationLayer
 {
@@ -31,15 +25,15 @@ namespace DLMApp_PresentationLayer
             clsGlobal.MakeTitleInCenterScreen(this.Width, lbFindPersonScreen);
         }
 
-        private void btSearch_Click(object sender, EventArgs e)
+        private async void btSearch_Click(object sender, EventArgs e)
         {
             if (mtxtbNationalNumber.MaskCompleted)
             {
-                _Person = PersonService.FindByNationalNumber(mtxtbNationalNumber.Text);
+                _Person = await PersonService.FindByNationalNumber(mtxtbNationalNumber.Text);
 
                 if (_Person != null)
                 {
-                    uctrlPersonInfo1.SetPersonInfo(_Person);
+                    await uctrlPersonInfo1.SetPersonInfo(_Person);
 
                     btSave.Enabled = true;
                     this.AcceptButton = btSave;
@@ -64,7 +58,9 @@ namespace DLMApp_PresentationLayer
         void FillUser(clsUser User)
         {
             User.UserName = txtbUserName.Text;
-            User.Password = txtbPassword.Text;
+
+            User.Password = PasswordManager.HashPassword(txtbPassword.Text);
+            
             User.IsActive = chbActive.Checked;
             User.PersonID = _Person.PersonID;
         }
@@ -86,7 +82,7 @@ namespace DLMApp_PresentationLayer
             uctrlPersonInfo1.Reset();
         }
 
-        private void btSave_Click(object sender, EventArgs e)
+        private async void btSave_Click(object sender, EventArgs e)
         {
             if (!string.IsNullOrWhiteSpace(txtbConfirmPassword.Text) && !string.IsNullOrWhiteSpace(txtbPassword.Text) &&
                !string.IsNullOrWhiteSpace(txtbUserName.Text))
@@ -95,13 +91,13 @@ namespace DLMApp_PresentationLayer
                 {
                     if (txtbConfirmPassword.Text == txtbPassword.Text)
                     {
-                        if (UserService.PersonIDExist(_Person.PersonID) == false)
+                        if (await UserService.PersonIDExist(_Person.PersonID) == false)
                         {
                             clsUser User = new clsUser();
 
                             FillUser(User);
 
-                            if (UserService.AddNewUser(User))
+                            if (await UserService.AddNewUser(User))
                             {
                                 MessageBox.Show($"Operation completed successfully with ID ({User.UserID})", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                 Reset();

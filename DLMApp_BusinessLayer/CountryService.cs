@@ -1,5 +1,5 @@
-﻿
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using DLMApp_DataAccessLayer;
 using DLMApp_ModulesLayer;
 
@@ -8,9 +8,11 @@ namespace DLMApp_BusinessLayer
 {
     public class CountryService
     {
-        public static List<clsCountry> GetAllCountries()
+        public static async Task<List<clsCountry>> GetAllCountries()
         {
-            return CountryRepository.GetAllCountries();
+            return await CountryRepository.GetAllCountries();
         }
+
+
     }
 }

@@ -1,14 +1,9 @@
 ﻿using DLMApp_BusinessLayer;
 using DLMApp_ModulesLayer;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+
 
 namespace DLMApp_PresentationLayer
 {
@@ -43,13 +38,13 @@ namespace DLMApp_PresentationLayer
         }
 
 
-        void FillLicense(clsLicense license, clsPerson Person)
+        async Task FillLicense(clsLicense license, clsPerson Person)
         {
-            license.DriverID = DriverService.GetDriverID(Person.PersonID);
+            license.DriverID = await DriverService.GetDriverID(Person.PersonID);
 
             if (license.DriverID == 0)
             {
-                license.DriverID = DriverService.AddNewDriver(_PersonID, clsGlobal.CurrentUser.UserID);
+                license.DriverID = await DriverService.AddNewDriver(_PersonID, clsGlobal.CurrentUser.UserID);
             }
 
             license.Notes = txtbNotes.Text;
@@ -66,25 +61,25 @@ namespace DLMApp_PresentationLayer
             license.LicenseClassID = _LicenseClass.ID;
         }
         
-        void IssueNewLicenseProcess()
+        async Task IssueNewLicenseProcess()
         {
-            if (LicenseService.DoesHaveLicenseOfSameClass(_PersonID, _LicenseClass.ID) == false)
+            if (await LicenseService.DoesHaveLicenseOfSameClass(_PersonID, _LicenseClass.ID) == false)
             {
-                clsPerson Person = PersonService.FindByPersonID(_PersonID);
+                clsPerson Person = await PersonService.FindByPersonID(_PersonID);
 
-                if (EnrollmentService.IsPassedInAllTests(_ApplicationID) == true)
+                if (await EnrollmentService.IsPassedInAllTests(_ApplicationID) == true)
                 {
                     if (_PersonID > 0 && Person != null)
                     {
                         clsLicense license = new clsLicense();
 
-                        FillLicense(license, Person);
+                        await FillLicense(license, Person);
 
-                        if (LicenseService.AddNewLicense(license))
+                        if (await LicenseService.AddNewLicense(license))
                         {
                             MessageBox.Show($"License Added Successfully with License ID {license.ID}", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                            uctrlLisenseInfo1.SetLicenseInfo(license, _ApplicationID, _LicenseClass.LicenseClass);
+                            await uctrlLisenseInfo1.SetLicenseInfo(license, _ApplicationID, _LicenseClass.LicenseClass);
 
                             mtxtxbApplicationID.Clear();
                             mtxtxbApplicationID.Focus();
@@ -116,21 +111,21 @@ namespace DLMApp_PresentationLayer
             license.ApplicationID = _ApplicationID;
         }
 
-        void IssueRenewLicenseProcess()
+        async Task IssueRenewLicenseProcess()
         {
             if (_License.IsValid() == false)
             {
                 if (_License.IsActive == true)
                 {
-                    if (EnrollmentService.IsPassedInVisionTestRenewLicense(_ApplicationID) == true)
+                    if (await EnrollmentService.IsPassedInVisionTestRenewLicense(_ApplicationID) == true)
                     {
                         FillRenewLicense(_License);
 
-                        if (LicenseService.AddNewLicense(_License))
+                        if (await LicenseService.AddNewLicense(_License))
                         {
                             MessageBox.Show($"License Added Successfully with License ID {_License.ID}", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                            uctrlLisenseInfo1.SetLicenseInfo(_License, _ApplicationID, _License.LicenseClass);
+                            await uctrlLisenseInfo1.SetLicenseInfo(_License, _ApplicationID, _License.LicenseClass);
 
                             mtxtxbApplicationID.Clear();
                             mtxtbLicenseID.Clear();
@@ -154,7 +149,7 @@ namespace DLMApp_PresentationLayer
             }
         }
 
-        private void btIssue_Click(object sender, EventArgs e)
+        private async void btIssue_Click(object sender, EventArgs e)
         {
             btIssue.Enabled = false;
             txtbNotes.Enabled = false;
@@ -162,11 +157,11 @@ namespace DLMApp_PresentationLayer
 
             if (_IsNewLicense)
             {
-                IssueNewLicenseProcess();
+                await IssueNewLicenseProcess();
             }
             else
             {
-                IssueRenewLicenseProcess();
+                await IssueRenewLicenseProcess();
             }
         }
 
@@ -180,15 +175,15 @@ namespace DLMApp_PresentationLayer
             uctrlLisenseInfo1.Reset();
         }
 
-        void SearchNewLicenseProcess()
+        async Task SearchNewLicenseProcess()
         {
             Reset();
 
             _ApplicationID = int.Parse(mtxtxbApplicationID.Text);
 
-            if (ApplicationService.IsStatusNew(_ApplicationID))
+            if (await ApplicationService.IsStatusNew(_ApplicationID))
             {
-                _LicenseClass = LicenseService.GetLicenseClass(_ApplicationID, ref _PersonID);
+                (_LicenseClass, _PersonID) = await LicenseService.GetLicenseClass(_ApplicationID);
 
                 if (_LicenseClass != null)
                 {
@@ -210,7 +205,7 @@ namespace DLMApp_PresentationLayer
             }
         }
 
-        void SearchRenewNewLicenseProcess()
+        async Task SearchRenewNewLicenseProcess()
         {
             if (!string.IsNullOrWhiteSpace(mtxtbLicenseID.Text))
             {
@@ -218,9 +213,9 @@ namespace DLMApp_PresentationLayer
 
                 _ApplicationID = int.Parse(mtxtxbApplicationID.Text);
 
-                if (ApplicationService.IsStatusNew(_ApplicationID))
+                if (await ApplicationService.IsStatusNew(_ApplicationID))
                 {
-                    _License = LicenseService.Find(int.Parse(mtxtbLicenseID.Text));
+                    _License = await LicenseService.Find(int.Parse(mtxtbLicenseID.Text));
                     
                     if (_License != null)
                     {
@@ -247,17 +242,17 @@ namespace DLMApp_PresentationLayer
             }
         }
 
-        private void btSearch_Click(object sender, EventArgs e)
+        private async void btSearch_Click(object sender, EventArgs e)
         {
             if (!string.IsNullOrWhiteSpace(mtxtxbApplicationID.Text))
             {
                 if (_IsNewLicense)
                 {
-                    SearchNewLicenseProcess();
+                    await SearchNewLicenseProcess();
                 }
                 else
                 {
-                    SearchRenewNewLicenseProcess();
+                    await SearchRenewNewLicenseProcess();
                 }
             }
             else

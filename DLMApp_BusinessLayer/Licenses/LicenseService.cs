@@ -2,11 +2,8 @@
 using DLMApp_ModulesLayer;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using static System.Net.Mime.MediaTypeNames;
+
 
 namespace DLMApp_BusinessLayer
 {
@@ -14,16 +11,28 @@ namespace DLMApp_BusinessLayer
     {
         // =========================================================================================
 
-        public static List<clsLicenseClass> GetAllLicensesClasses()
+        public static async Task<List<clsLicenseClass>> GetAllLicensesClasses()
         {
-            return LicenseRepository.GetAllLicensesClasses();
+            return await LicenseRepository.GetAllLicensesClasses();
         }
 
-        public static clsLicenseClass GetLicenseClass(int ApplicationID, ref int PersonID)
+        public static async Task<(clsLicenseClass, int)> GetLicenseClass(int ApplicationID)
         {
             if (ApplicationID > 0)
             {
-                return LicenseRepository.GetLicenseClass(ApplicationID, ref PersonID);
+                return await LicenseRepository.GetLicenseClass(ApplicationID);
+            }
+            else
+            {
+                return (null, 0);
+            }
+        }
+
+        public static async Task<clsLicenseClass> GetLicenseClass(byte LicenseClassID)
+        {
+            if (LicenseClassID > 0)
+            {
+                return await LicenseRepository.GetLicenseClass(LicenseClassID);
             }
             else
             {
@@ -31,35 +40,11 @@ namespace DLMApp_BusinessLayer
             }
         }
 
-        public static clsLicenseClass GetLicenseClass(byte LicenseClassID)
-        {
-            if (LicenseClassID > 0)
-            {
-                return LicenseRepository.GetLicenseClass(LicenseClassID);
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        public static float GetLicenseClassFees(byte LicenseClassID)
-        {
-            if (LicenseClassID > 0)
-            {
-                return LicenseRepository.GetLicenseClassFees(LicenseClassID);
-            }
-            else
-            {
-                return 0;
-            }
-        }
-
-        public static bool UpdateLicenseClass(byte LicenseClassID, float LicenseFees, byte ValidityPeriod, byte MinimumAllowedAge)
+        public static async Task<bool> UpdateLicenseClass(byte LicenseClassID, float LicenseFees, byte ValidityPeriod, byte MinimumAllowedAge)
         {
             if (LicenseClassID > 0 && LicenseFees > 0 && ValidityPeriod > 0 && MinimumAllowedAge > 0)
             {
-                return LicenseRepository.UpdateLicenseClass(LicenseClassID, LicenseFees, ValidityPeriod, MinimumAllowedAge);
+                return await LicenseRepository.UpdateLicenseClass(LicenseClassID, LicenseFees, ValidityPeriod, MinimumAllowedAge);
             }
             else
             {
@@ -70,11 +55,11 @@ namespace DLMApp_BusinessLayer
         // =========================================================================================
 
 
-        public static bool DoesHaveLicenseOfSameClass(int PersonID, byte LicenseClassID)
+        public static async Task<bool> DoesHaveLicenseOfSameClass(int PersonID, byte LicenseClassID)
         {
             if (PersonID > 0 && LicenseClassID > 0)
             {
-                return LicenseRepository.DoesHaveLicenseOfSameClass(PersonID, LicenseClassID);
+                return await LicenseRepository.DoesHaveLicenseOfSameClass(PersonID, LicenseClassID);
             }
             else
             {
@@ -82,21 +67,21 @@ namespace DLMApp_BusinessLayer
             }
         }
 
-        public static bool AddNewLicense(clsLicense license)
+        public static async Task<bool> AddNewLicense(clsLicense license)
         {
             if (license.IsFull())
             {
                 if (license.ID != 0)
                 {
-                    LicenseService.UpdateActiveLicense(license.ID, false);
+                    await LicenseService.UpdateActiveLicense(license.ID, false);
                 }
 
                 if (license.LicenseStatusID == enLicenseStatus.New || license.LicenseStatusID == enLicenseStatus.Renew)
                 {
-                    ApplicationService.UpdateApplicationStatus(license.ApplicationID, enApplicationStatus.Completed);
+                    await ApplicationService.UpdateApplicationStatus(license.ApplicationID, enApplicationStatus.Completed);
                 }
 
-                return LicenseRepository.AddNewLicense(license);
+                return await LicenseRepository.AddNewLicense(license);
             }
             else
             {
@@ -109,16 +94,16 @@ namespace DLMApp_BusinessLayer
             return ReleaseDate.AddYears(ValidityPeriod);
         }
 
-        public static clsLicense Find(int LicenseID)
+        public static async Task<clsLicense> Find(int LicenseID)
         {
             if (LicenseID > 0)
             {
-                clsLicense license = LicenseRepository.Find(LicenseID);
+                clsLicense license = await LicenseRepository.Find(LicenseID);
 
                 if (license != null)
                 {
-                    license.LicenseClassInfo = GetLicenseClass(license.LicenseClassID);
-                    license.PersonInfo = PersonService.FindByDriverID(license.DriverID);
+                    license.LicenseClassInfo = await GetLicenseClass(license.LicenseClassID);
+                    license.PersonInfo = await PersonService.FindByDriverID(license.DriverID);
                 }
 
                 return license;
@@ -151,11 +136,11 @@ namespace DLMApp_BusinessLayer
             license.LicenseFees = 0;
         }
 
-        public static bool UpdateActiveLicense(int LicenseID, bool Active)
+        public static async Task<bool> UpdateActiveLicense(int LicenseID, bool Active)
         {
             if (LicenseID > 0)
             {
-                return LicenseRepository.UpdateActiveLicense(LicenseID, Active);
+                return await LicenseRepository.UpdateActiveLicense(LicenseID, Active);
             }
             else
             {
@@ -163,16 +148,16 @@ namespace DLMApp_BusinessLayer
             }
         }
 
-        public static clsLicense FindActiveAndValidLicense(int PersonID, byte LicenseClassID)
+        public static async Task<clsLicense> FindActiveAndValidLicense(int PersonID, byte LicenseClassID)
         {
             if (PersonID > 0 && LicenseClassID > 0)
             {
-                clsLicense license = LicenseRepository.FindActiveAndValidLicense(PersonID, LicenseClassID);
+                clsLicense license = await LicenseRepository.FindActiveAndValidLicense(PersonID, LicenseClassID);
 
                 if (license != null)
                 {
-                    license.LicenseClassInfo = GetLicenseClass(license.LicenseClassID);
-                    license.PersonInfo = PersonService.FindByDriverID(license.DriverID);
+                    license.LicenseClassInfo = await GetLicenseClass(license.LicenseClassID);
+                    license.PersonInfo = await PersonService.FindByDriverID(license.DriverID);
                 }
 
                 return license;
@@ -183,11 +168,11 @@ namespace DLMApp_BusinessLayer
             }
         }
 
-        public static bool UpdateDetainedLicense(int LicenseID, bool Detained)
+        public static async Task<bool> UpdateDetainedLicense(int LicenseID, bool Detained)
         {
             if (LicenseID > 0)
             {
-                return LicenseRepository.UpdateDetainedLicense(LicenseID, Detained);
+                return await LicenseRepository.UpdateDetainedLicense(LicenseID, Detained);
             }
             else
             {
@@ -195,16 +180,16 @@ namespace DLMApp_BusinessLayer
             }
         }
 
-        public static List<clsLicense> GetAllLicenses()
+        public static async Task<List<clsLicense>> GetAllLicenses()
         {
-            return LicenseRepository.GetAllLicenses();
+            return await LicenseRepository.GetAllLicenses();
         }
 
-        public static List<clsLicense> FindAllByDriverID(int DriverID)
+        public static async Task<List<clsLicense>> FindAllByDriverID(int DriverID)
         {
             if (DriverID > 0)
             {
-                return LicenseRepository.FindAllByDriverID(DriverID);
+                return await LicenseRepository.FindAllByDriverID(DriverID);
             }
             else
             {
@@ -212,11 +197,11 @@ namespace DLMApp_BusinessLayer
             }
         }
 
-        public static List<clsLicense> FindAllByNationalNumber(string NationalNumber)
+        public static async Task<List<clsLicense>> FindAllByNationalNumber(string NationalNumber)
         {
             if (!string.IsNullOrWhiteSpace(NationalNumber))
             {
-                return LicenseRepository.FindAllByNationalNumber(NationalNumber);
+                return await LicenseRepository.FindAllByNationalNumber(NationalNumber);
             }
             else
             {
@@ -235,10 +220,6 @@ namespace DLMApp_BusinessLayer
                 return false;
             }
         }
-
-
-
-
 
 
 

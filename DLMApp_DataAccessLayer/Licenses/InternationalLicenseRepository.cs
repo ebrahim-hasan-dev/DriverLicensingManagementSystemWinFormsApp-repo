@@ -1,17 +1,15 @@
 ﻿using DLMApp_ModulesLayer;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+
 
 namespace DLMApp_DataAccessLayer
 {
     public class InternationalLicenseRepository
     {
-        public static bool AddNewInternationalLicense(clsInternationalLicense InternationalLicense)
+        public static async Task<bool> AddNewInternationalLicense(clsInternationalLicense InternationalLicense)
         {
             bool Added = false;
 
@@ -39,9 +37,9 @@ namespace DLMApp_DataAccessLayer
                     Command.Parameters.AddWithValue("@DriverID", InternationalLicense.DriverID);
                     Command.Parameters.AddWithValue("@CreatedByUserID", InternationalLicense.CreatedByUserID);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    object InternationalLicenseobj = Command.ExecuteScalar();
+                    object InternationalLicenseobj = await Command.ExecuteScalarAsync();
 
                     if (InternationalLicenseobj != null)
                     {
@@ -71,7 +69,7 @@ namespace DLMApp_DataAccessLayer
             return Added;
         }
 
-        public static bool UpdateInternationalLicneseToInactive(int DriverID)
+        public static async Task<bool> UpdateInternationalLicneseToInactive(int DriverID)
         {
             bool Update = false;
 
@@ -91,9 +89,9 @@ namespace DLMApp_DataAccessLayer
                     Command.Parameters.AddWithValue("@DriverID", DriverID);
                     Command.Parameters.AddWithValue("@DateNow", DateTime.Now);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    if (Command.ExecuteNonQuery() > 0)
+                    if (await Command.ExecuteNonQueryAsync() > 0)
                     {
                         Update = true;
                     }
@@ -120,7 +118,7 @@ namespace DLMApp_DataAccessLayer
             return Update;
         }
 
-        public static List<clsInternationalLicense> GetInternationalLicnesesForDriver(int DriverID)
+        public static async Task<List<clsInternationalLicense>> GetInternationalLicnesesForDriver(int DriverID)
         {
             List <clsInternationalLicense> ListOfclsInternationalLicenses = new List<clsInternationalLicense>();
 
@@ -142,11 +140,11 @@ namespace DLMApp_DataAccessLayer
 
                     Command.Parameters.AddWithValue("@DriverID", DriverID);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    Reader = Command.ExecuteReader();
+                    Reader = await Command.ExecuteReaderAsync();
 
-                    while (Reader.Read())
+                    while (await Reader.ReadAsync())
                     {
                        clsInternationalLicense internationalLicense = new clsInternationalLicense();
 

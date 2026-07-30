@@ -1,15 +1,7 @@
 ﻿using DLMApp_ModulesLayer;
 using DLMApp_BusinessLayer;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-
 
 
 namespace DLMApp_PresentationLayer
@@ -179,17 +171,17 @@ namespace DLMApp_PresentationLayer
             _loginScreen.Show();
         }
 
-        private void currentUserInfoToolStripMenuItem_Click(object sender, EventArgs e)
+        private async void currentUserInfoToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            clsPerson Person = PersonService.FindByPersonID(clsGlobal.CurrentUser.PersonID);
+            clsPerson Person = await PersonService.FindByPersonID(clsGlobal.CurrentUser.PersonID);
 
             fmShowUserInfoScreen showPersonInfo = new fmShowUserInfoScreen(Person, clsGlobal.CurrentUser.UserName, clsGlobal.CurrentUser.IsActive);
             showPersonInfo.ShowDialog();
         }
 
-        private void changePasswordToolStripMenuItem_Click(object sender, EventArgs e)
+        private async void changePasswordToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            clsPerson Person = PersonService.FindByPersonID(clsGlobal.CurrentUser.PersonID);
+            clsPerson Person = await PersonService.FindByPersonID(clsGlobal.CurrentUser.PersonID);
 
             fmChangePasswordScreen udateUserScreen = new fmChangePasswordScreen(clsGlobal.CurrentUser, Person);
             udateUserScreen.ShowDialog();

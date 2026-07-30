@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace DLMApp_ModulesLayer
 {
     public class clsUser
@@ -18,5 +13,7 @@ namespace DLMApp_ModulesLayer
         {
             return !string.IsNullOrWhiteSpace(this.UserName) && !string.IsNullOrWhiteSpace(this.Password) && this.PersonID > 0;
         }
+
     }
+
 }

@@ -2,9 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 
 namespace DLMApp_DataAccessLayer
 {
@@ -12,10 +12,10 @@ namespace DLMApp_DataAccessLayer
     {
         // ===============================================================================================================
 
-        public static clsApplicationType GetApplicationType(enApplicationTypes ApplicationTypeID)
+        public static async Task<clsApplicationType> GetApplicationType(enApplicationTypes ApplicationTypeID)
         {
             clsApplicationType applicationType = null;
-
+            
             SqlConnection Connection = null;
             SqlCommand Command = null;
             SqlDataReader Reader = null;
@@ -30,11 +30,11 @@ namespace DLMApp_DataAccessLayer
 
                 Command.Parameters.AddWithValue("@ApplicationTypeID", (byte)ApplicationTypeID);
 
-                Connection.Open();
+                await Connection.OpenAsync();
 
-                Reader = Command.ExecuteReader();
+                Reader = await Command.ExecuteReaderAsync();
 
-                while (Reader.Read())
+                while (await Reader.ReadAsync())
                 {
                     applicationType = new clsApplicationType();
 
@@ -76,7 +76,7 @@ namespace DLMApp_DataAccessLayer
             return applicationType;
         }
 
-        public static List<clsApplicationType> GetAllApplicationTypes()
+        public static async Task<List<clsApplicationType>> GetAllApplicationTypes()
         {
             List<clsApplicationType> ListOfApplicationTypes = new List<clsApplicationType>();
 
@@ -92,11 +92,11 @@ namespace DLMApp_DataAccessLayer
 
                 Command = new SqlCommand(GetAllQuery, Connection);
 
-                Connection.Open();
+                await Connection.OpenAsync();
 
-                Reader = Command.ExecuteReader();
+                Reader = await Command.ExecuteReaderAsync();
 
-                while (Reader.Read())
+                while (await Reader.ReadAsync())
                 {
                     clsApplicationType ApplicationType = new clsApplicationType();
 
@@ -138,7 +138,7 @@ namespace DLMApp_DataAccessLayer
             return ListOfApplicationTypes;
         }
 
-        public static bool UpdateApplicationTypeFees(byte ApplicationTypeID, float ApplicationTypeFees)
+        public static async Task<bool> UpdateApplicationTypeFees(byte ApplicationTypeID, float ApplicationTypeFees)
         {
             bool Updated = false;
 
@@ -158,9 +158,9 @@ namespace DLMApp_DataAccessLayer
                     Command.Parameters.AddWithValue("@ApplicationTypeID", ApplicationTypeID);
                     Command.Parameters.AddWithValue("@ApplicationTypeFees", ApplicationTypeFees);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    if (Command.ExecuteNonQuery() > 0)
+                    if (await Command.ExecuteNonQueryAsync() > 0)
                     {
                         Updated = true;
                     }
@@ -191,7 +191,7 @@ namespace DLMApp_DataAccessLayer
         // ================================================================================================================
 
 
-        public static bool AddNewApplication(clsApplication Application)
+        public static async Task<bool> AddNewApplication(clsApplication Application)
         {
             bool Added = false;
 
@@ -218,12 +218,17 @@ namespace DLMApp_DataAccessLayer
                     Command.Parameters.AddWithValue("@CreatedByUserID", Application.CreatedByUserID);
                     Command.Parameters.AddWithValue("@PersonID", Application.PersonID);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    if (int.TryParse(Command.ExecuteScalar().ToString(), out int ApplicationID))
+                    object ID = await Command.ExecuteScalarAsync();
+
+                    if (ID != null)
                     {
-                        Application.ApplicationID = ApplicationID;
-                        Added = true;
+                        if (int.TryParse(ID.ToString(), out int ApplicationID))
+                        {
+                            Application.ApplicationID = ApplicationID;
+                            Added = true;
+                        }
                     }
                 }
                 catch(Exception ex)
@@ -248,7 +253,7 @@ namespace DLMApp_DataAccessLayer
             return Added;
         }
 
-        public static bool AddNewLocalLisenceApplication(clsNewLocalLicenseApplication NewLocalLicenseApplication)
+        public static async Task<bool> AddNewLocalLisenceApplication(clsNewLocalLicenseApplication NewLocalLicenseApplication)
         {
            bool Added = false;
 
@@ -270,12 +275,17 @@ namespace DLMApp_DataAccessLayer
                     Command.Parameters.AddWithValue("@OrderID", NewLocalLicenseApplication.ApplicationInfo.ApplicationID);
                     Command.Parameters.AddWithValue("@LicenseCategoryID", NewLocalLicenseApplication.LicenseClassID);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    if (int.TryParse(Command.ExecuteScalar().ToString(), out int NewLocalLicenseApplicationID))
+                    object ID = await Command.ExecuteScalarAsync();
+
+                    if (ID != null)
                     {
-                        NewLocalLicenseApplication.NewLocalLicenseApplicationID = NewLocalLicenseApplicationID;
-                        Added = true;
+                        if (int.TryParse(ID.ToString(), out int NewLocalLicenseApplicationID))
+                        {
+                            NewLocalLicenseApplication.NewLocalLicenseApplicationID = NewLocalLicenseApplicationID;
+                            Added = true;
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -300,7 +310,7 @@ namespace DLMApp_DataAccessLayer
             return Added;
         }
 
-        public static int FindNewLocalLicenseID(int ApplicationID)
+        public static async Task<int> FindNewLocalLicenseID(int ApplicationID)
         {
             int NewLocalLicenseID = 0;
 
@@ -319,9 +329,14 @@ namespace DLMApp_DataAccessLayer
 
                     Command.Parameters.AddWithValue("@OrderID", ApplicationID);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    int.TryParse(Command.ExecuteScalar().ToString(), out NewLocalLicenseID);
+                    object ID = await Command.ExecuteScalarAsync();
+
+                    if (ID != null)
+                    {
+                        int.TryParse(ID.ToString(), out NewLocalLicenseID);
+                    }
                 }
                 catch(Exception ex)
                 {
@@ -346,64 +361,7 @@ namespace DLMApp_DataAccessLayer
             return NewLocalLicenseID;
         }
 
-        public static bool IsExist(int ApplicationID)
-        {
-            bool Exist = false;
-
-            if (ApplicationID > 0)
-            {
-                SqlConnection Connection = null;
-                SqlCommand Command = null;
-                SqlDataReader Reader = null;
-
-                try
-                {
-                    Connection = new SqlConnection(clsConnectionString.ConnectionString);
-
-                    string FindQuery = "select [Order_ID] from [Orders] where [Order_ID] = @ApplicationID;";
-
-                    Command = new SqlCommand(FindQuery, Connection);
-
-                    Command.Parameters.AddWithValue("@ApplicationID", ApplicationID);
-
-                    Connection.Open();
-
-                    Reader = Command.ExecuteReader();
-
-                    if (Reader.HasRows)
-                    {
-                        Exist = true;
-                    }
-                }
-                catch(Exception ex)
-                {
-                    clsEventLog.WriteToEventLog(ex.Message, enLogType.Error);
-                }
-                finally
-                {
-                    if (Reader != null)
-                    {
-                        Reader.Close();
-                        Reader.Dispose();
-                    }
-
-                    if (Command != null)
-                    {
-                        Command.Dispose();
-                    }
-
-                    if (Connection != null)
-                    {
-                        Connection.Close();
-                        Connection.Dispose();
-                    }
-                }
-            }
-
-            return Exist;
-        }
-
-        public static bool Delete(int ApplicationID)
+        public static async Task<bool> Delete(int ApplicationID)
         {
             bool Delete = false;
 
@@ -422,9 +380,9 @@ namespace DLMApp_DataAccessLayer
 
                     Command.Parameters.AddWithValue("@ApplicationID", ApplicationID);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    if (Command.ExecuteNonQuery() > 0)
+                    if (await Command.ExecuteNonQueryAsync() > 0)
                     {
                         Delete = true;
                     }
@@ -451,7 +409,7 @@ namespace DLMApp_DataAccessLayer
             return Delete;
         }
 
-        public static bool UpdateApplicationStatus(int ApplicationID, enApplicationStatus ApplicationStatus)
+        public static async Task<bool> UpdateApplicationStatus(int ApplicationID, enApplicationStatus ApplicationStatus)
         {
             bool Success = false;
 
@@ -471,9 +429,9 @@ namespace DLMApp_DataAccessLayer
                     Command.Parameters.AddWithValue("@ApplicationID", ApplicationID);
                     Command.Parameters.AddWithValue("@DateTimeNow", DateTime.Now);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    if (Command.ExecuteNonQuery() > 0)
+                    if (await Command.ExecuteNonQueryAsync() > 0)
                     {
                         Success = true;
                     }
@@ -500,7 +458,7 @@ namespace DLMApp_DataAccessLayer
             return Success;
         }
 
-        public static clsApplication Find(int ApplicationID)
+        public static async Task<clsApplication> Find(int ApplicationID)
         {
             clsApplication Application = null;
 
@@ -521,11 +479,11 @@ namespace DLMApp_DataAccessLayer
 
                     Command.Parameters.AddWithValue("@ApplicationID", ApplicationID);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    Reader = Command.ExecuteReader();
+                    Reader = await Command.ExecuteReaderAsync();
 
-                    if (Reader.Read())
+                    if (await Reader.ReadAsync())
                     {
                         Application = new clsApplication();
 
@@ -587,7 +545,7 @@ namespace DLMApp_DataAccessLayer
             return Application;
         }
 
-        public static List<clsNewLocalLicenseApplication> FindAllNewLocalLicensesApplications()
+        public static async Task<List<clsNewLocalLicenseApplication>> FindAllNewLocalLicensesApplications()
         {
             List<clsNewLocalLicenseApplication> ListOfNewLocalLicenseApplications = new List<clsNewLocalLicenseApplication>();
 
@@ -603,11 +561,11 @@ namespace DLMApp_DataAccessLayer
 
                 Command = new SqlCommand(GetAllQuery, Connection);
 
-                Connection.Open();
+                await Connection.OpenAsync();
 
-                Reader = Command.ExecuteReader();
+                Reader = await Command.ExecuteReaderAsync();
 
-                while (Reader.Read())
+                while (await Reader.ReadAsync())
                 {
                     clsNewLocalLicenseApplication NewLocalLicenseApplication = new clsNewLocalLicenseApplication();
 
@@ -679,7 +637,7 @@ namespace DLMApp_DataAccessLayer
             return ListOfNewLocalLicenseApplications;
         }
 
-        public static List<clsNewLocalLicenseApplication> FindAllNewLocalLicensesApplications(DateTime AddedDateTime)
+        public static async Task<List<clsNewLocalLicenseApplication>> FindAllNewLocalLicensesApplications(DateTime AddedDateTime)
         {
             List<clsNewLocalLicenseApplication> ListOfNewLocalLicenseApplications = new List<clsNewLocalLicenseApplication>();
 
@@ -701,11 +659,11 @@ namespace DLMApp_DataAccessLayer
                     Command.Parameters.AddWithValue("@AddedDateTime", AddedDateTime.Date);
                     Command.Parameters.AddWithValue("@NextDate", AddedDateTime.AddDays(1).Date);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    Reader = Command.ExecuteReader();
+                    Reader = await Command.ExecuteReaderAsync();
 
-                    while (Reader.Read())
+                    while (await Reader.ReadAsync())
                     {
                         clsNewLocalLicenseApplication NewLocalLicenseApplication = new clsNewLocalLicenseApplication();
 
@@ -777,7 +735,7 @@ namespace DLMApp_DataAccessLayer
             return ListOfNewLocalLicenseApplications;
         }
 
-        public static List<clsApplication> FindAllRenewLicensesApplications()
+        public static async Task<List<clsApplication>> FindAllRenewLicensesApplications()
         {
             List<clsApplication> ListOfApplications = new List<clsApplication>();
 
@@ -793,11 +751,11 @@ namespace DLMApp_DataAccessLayer
 
                 Command = new SqlCommand(GetAllQuery, Connection);
 
-                Connection.Open();
+                await Connection.OpenAsync();
 
-                Reader = Command.ExecuteReader();
+                Reader = await Command.ExecuteReaderAsync();
 
-                while (Reader.Read())
+                while (await Reader.ReadAsync())
                 {
                     clsApplication Application = new clsApplication();
 
@@ -871,7 +829,7 @@ namespace DLMApp_DataAccessLayer
             return ListOfApplications;
         }
 
-        public static List<clsApplication> FindAllRenewLicensesApplications(DateTime AddedDateTime)
+        public static async Task<List<clsApplication>> FindAllRenewLicensesApplications(DateTime AddedDateTime)
         {
             List<clsApplication> ListOfApplications = new List<clsApplication>();
 
@@ -893,11 +851,11 @@ namespace DLMApp_DataAccessLayer
                     Command.Parameters.AddWithValue("@AddedDateTime", AddedDateTime.Date);
                     Command.Parameters.AddWithValue("@NextDay", AddedDateTime.AddDays(1).Date);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    Reader = Command.ExecuteReader();
+                    Reader = await Command.ExecuteReaderAsync();
 
-                    while (Reader.Read())
+                    while (await Reader.ReadAsync())
                     {
                         clsApplication Application = new clsApplication();
 
@@ -972,7 +930,7 @@ namespace DLMApp_DataAccessLayer
             return ListOfApplications;
         }
 
-        public static bool UpdateNumberOfPassedTests(List<clsPeopleRegisteredInAppointmentDTO> ListOfRegisteredPeople)
+        public static async Task<bool> UpdateNumberOfPassedTests(List<clsPeopleRegisteredInAppointmentDTO> ListOfRegisteredPeople)
         {
             bool Success = false;
 
@@ -1005,9 +963,9 @@ namespace DLMApp_DataAccessLayer
                             Command.Parameters.AddWithValue("@" + ListOfRegisteredPeople[i].LocalLicenseApplicationID, ListOfRegisteredPeople[i].LocalLicenseApplicationID);
                         }
 
-                        Connection.Open();
+                        await Connection.OpenAsync();
 
-                        if (Command.ExecuteNonQuery() > 0)
+                        if (await Command.ExecuteNonQueryAsync() > 0)
                         {
                             Success = true;
                         }
@@ -1039,7 +997,7 @@ namespace DLMApp_DataAccessLayer
             return Success;
         }
 
-        public static bool IsStatusNew(int ApplicationID)
+        public static async Task<bool> IsStatusNew(int ApplicationID)
         {
             bool StatusNew = false;
 
@@ -1059,9 +1017,9 @@ namespace DLMApp_DataAccessLayer
 
                     Command.Parameters.AddWithValue("@ApplicationID", ApplicationID);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    Reader = Command.ExecuteReader();
+                    Reader = await Command.ExecuteReaderAsync();
 
                     if (Reader.HasRows)
                     {
@@ -1096,7 +1054,7 @@ namespace DLMApp_DataAccessLayer
             return StatusNew;
         }
 
-        public static int DoesHaveApplicationOfSameLicenseClassForNewLocalLicenseStatusNew(int PersonID, byte LicneseClass)
+        public static async Task<int> DoesHaveApplicationOfSameLicenseClassForNewLocalLicenseStatusNew(int PersonID, byte LicneseClass)
         {
             int ApplicationID = 0;
 
@@ -1119,11 +1077,11 @@ namespace DLMApp_DataAccessLayer
                     Command.Parameters.AddWithValue("@PersonID", PersonID);
                     Command.Parameters.AddWithValue("@LicneseClass", LicneseClass);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    Reader = Command.ExecuteReader();
+                    Reader = await Command.ExecuteReaderAsync();
 
-                    if (Reader.Read())
+                    if (await Reader.ReadAsync())
                     {
                         int.TryParse(Reader["Order_ID"].ToString(), out int ID);
                         ApplicationID = ID;
@@ -1157,7 +1115,7 @@ namespace DLMApp_DataAccessLayer
             return ApplicationID;
         }
 
-        public static List<clsApplication> FindAllRenewLicenseApplicationsForNationalNumber(string NationalNumber)
+        public static async Task<List<clsApplication>> FindAllRenewLicenseApplicationsForNationalNumber(string NationalNumber)
         {
             List<clsApplication> ListOfApplications = new List<clsApplication>();
 
@@ -1177,11 +1135,11 @@ namespace DLMApp_DataAccessLayer
 
                     Command.Parameters.AddWithValue("@NationalNumber", NationalNumber);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    Reader = Command.ExecuteReader();
+                    Reader = await Command.ExecuteReaderAsync();
 
-                    while (Reader.Read())
+                    while (await Reader.ReadAsync())
                     {
                         clsApplication Application = new clsApplication();
 
@@ -1257,7 +1215,7 @@ namespace DLMApp_DataAccessLayer
             return ListOfApplications;
         }
 
-        public static List<clsNewLocalLicenseApplication> FindAllNewLocalLicensesApplicationsForNationalNumber(string NationalNumber)
+        public static async Task<List<clsNewLocalLicenseApplication>> FindAllNewLocalLicensesApplicationsForNationalNumber(string NationalNumber)
         {
             List<clsNewLocalLicenseApplication> ListOfNewLocalLicenseApplications = new List<clsNewLocalLicenseApplication>();
 
@@ -1277,11 +1235,11 @@ namespace DLMApp_DataAccessLayer
 
                     Command.Parameters.AddWithValue("@NationalNumber", NationalNumber);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    Reader = Command.ExecuteReader();
+                    Reader = await Command.ExecuteReaderAsync();
 
-                    while (Reader.Read())
+                    while (await Reader.ReadAsync())
                     {
                         clsNewLocalLicenseApplication NewLocalLicenseApplication = new clsNewLocalLicenseApplication();
 
@@ -1353,7 +1311,7 @@ namespace DLMApp_DataAccessLayer
             return ListOfNewLocalLicenseApplications;
         }
 
-        public static bool MakeFaildRenewLicenseApplicationsIsCompleted(List<clsPeopleRegisteredInAppointmentDTO> ListOfRegisteredPeopleRenewLicense)
+        public static async Task<bool> MakeFaildRenewLicenseApplicationsIsCompleted(List<clsPeopleRegisteredInAppointmentDTO> ListOfRegisteredPeopleRenewLicense)
         {
             bool Success = false;
 
@@ -1386,9 +1344,9 @@ namespace DLMApp_DataAccessLayer
                             Command.Parameters.AddWithValue("@" + ListOfRegisteredPeopleRenewLicense[i].ApplicationID, ListOfRegisteredPeopleRenewLicense[i].ApplicationID);
                         }
 
-                        Connection.Open();
+                        await Connection.OpenAsync();
 
-                        if (Command.ExecuteNonQuery() > 0)
+                        if (await Command.ExecuteNonQueryAsync() > 0)
                         {
                             Success = true;
                         }

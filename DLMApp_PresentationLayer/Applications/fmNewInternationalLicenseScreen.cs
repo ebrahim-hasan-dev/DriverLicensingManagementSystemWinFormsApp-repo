@@ -1,14 +1,8 @@
 ﻿using DLMApp_BusinessLayer;
 using DLMApp_ModulesLayer;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+
 
 namespace DLMApp_PresentationLayer
 {
@@ -38,7 +32,7 @@ namespace DLMApp_PresentationLayer
             internationalLicense.ApplicationID = ApplicationID;
         }
 
-        private void btIssue_Click(object sender, EventArgs e)
+        private async void btIssue_Click(object sender, EventArgs e)
         {
             if (!string.IsNullOrWhiteSpace(mtxtbLocalLicenseID.Text))
             {
@@ -46,7 +40,7 @@ namespace DLMApp_PresentationLayer
 
                 int LocalLicenseID = int.Parse(mtxtbLocalLicenseID.Text);
 
-                clsLicense License = LicenseService.Find(LocalLicenseID);
+                clsLicense License = await LicenseService.Find(LocalLicenseID);
 
                 if (License != null)
                 {
@@ -59,19 +53,19 @@ namespace DLMApp_PresentationLayer
                                 clsApplication Application = Utility.FillAndGetApplication(License.PersonInfo.PersonID, enApplicationStatus.Completed,
                                     enApplicationTypes.NewInternationalLicense, _ApplicationType.ApplicationTypeFees, clsGlobal.CurrentUser.UserID);
 
-                                if (ApplicationService.AddNewApplication(Application))
+                                if (await ApplicationService.AddNewApplication(Application))
                                 {
                                     clsInternationalLicense internationalLicense = new clsInternationalLicense();
 
                                     FillInternationalLicense(internationalLicense, License, Application.ApplicationID);
 
-                                    if (InternationalLicenseService.AddNewInternationalLicense(internationalLicense))
+                                    if (await InternationalLicenseService.AddNewInternationalLicense(internationalLicense))
                                     {
                                         MessageBox.Show("The operation was completed successfully", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                                         uctrlApplicationInfo1.lbApplicationIDResult.Text = Application.ApplicationID.ToString();
 
-                                        uctrlInternationalLicenseInfo1.SetLicenseInfo(internationalLicense, License.PersonInfo, Application.ApplicationID);
+                                        await uctrlInternationalLicenseInfo1.SetLicenseInfo(internationalLicense, License.PersonInfo, Application.ApplicationID);
                                     }
                                 }
                                 else
@@ -109,9 +103,9 @@ namespace DLMApp_PresentationLayer
             mtxtbLocalLicenseID.Focus();
         }
 
-        private void fmNewInternationalLicenseScreen_Load(object sender, EventArgs e)
+        private async void fmNewInternationalLicenseScreen_Load(object sender, EventArgs e)
         {
-            _ApplicationType = ApplicationService.GetApplicationType(enApplicationTypes.NewInternationalLicense);
+            _ApplicationType = await ApplicationService.GetApplicationType(enApplicationTypes.NewInternationalLicense);
 
             uctrlApplicationInfo1.SetApplicationInfo(_ApplicationType);
 

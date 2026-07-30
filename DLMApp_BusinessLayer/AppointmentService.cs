@@ -1,21 +1,18 @@
 ﻿using DLMApp_DataAccessLayer;
 using DLMApp_ModulesLayer;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using static System.Net.Mime.MediaTypeNames;
+
 
 namespace DLMApp_BusinessLayer
 {
     public class AppointmentService
     {
-        public static bool AddNewAppointment(clsAppointment Appointment)
+        public static async Task<bool> AddNewAppointment(clsAppointment Appointment)
         {
             if (Appointment.IsFull())
             {
-                return AppointmentRepository.AddNewAppointment(Appointment);
+                return await AppointmentRepository.AddNewAppointment(Appointment);
             }
             else
             {
@@ -23,11 +20,11 @@ namespace DLMApp_BusinessLayer
             }
         }
 
-        public static bool IsExist(clsAppointment Appointment)
+        public static async Task<bool> IsExist(clsAppointment Appointment)
         {
             if (Appointment.Appointment != default(DateTime))
             {
-                return AppointmentRepository.IsExist(Appointment);
+                return await AppointmentRepository.IsExist(Appointment);
             }
             else
             {
@@ -35,21 +32,20 @@ namespace DLMApp_BusinessLayer
             }
         }
 
-        public static bool AppointmentUpdate(int AppointmentID, short MaxNumberOfPeople, ref short NumberOfPeopleRegistered)
+        public static async Task<bool> AppointmentUpdate(int AppointmentID, short MaxNumberOfPeople, clsEnrollmentResult EnrollmentResult)
         {
             if (AppointmentID > 0 && MaxNumberOfPeople > 0)
             {
-                NumberOfPeopleRegistered = AppointmentRepository.GetNumberOfPeopleRegistered(AppointmentID);
+                EnrollmentResult.NumberOfPeopleRegistered = await AppointmentRepository.GetNumberOfPeopleRegistered(AppointmentID);
 
-                if (NumberOfPeopleRegistered < MaxNumberOfPeople)
+                if (EnrollmentResult.NumberOfPeopleRegistered < MaxNumberOfPeople)
                 {
-                    NumberOfPeopleRegistered++;
-                    return AppointmentRepository.IncreaseNumberOfPeople(AppointmentID);
+                    EnrollmentResult.NumberOfPeopleRegistered++;
+                    return await AppointmentRepository.IncreaseNumberOfPeople(AppointmentID);
                 }
                 else
                 {
-                    AppointmentRepository.SetAppointmentComplete(AppointmentID);
-
+                    await AppointmentRepository.SetAppointmentComplete(AppointmentID);
                     return false;
                 }
             }
@@ -58,20 +54,6 @@ namespace DLMApp_BusinessLayer
                 return false;
             }
         }
-
-        public static short GetNumberOfPeopleRegistered(int AppointmentID)
-        {
-            if (AppointmentID > 0)
-            {
-                return AppointmentRepository.GetNumberOfPeopleRegistered(AppointmentID);
-            }
-            else
-            {
-                return -1;
-            }
-        }
-
-
 
 
     }

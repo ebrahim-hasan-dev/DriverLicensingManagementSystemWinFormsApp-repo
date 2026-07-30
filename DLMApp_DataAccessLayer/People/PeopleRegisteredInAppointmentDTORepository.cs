@@ -2,17 +2,17 @@
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+
 
 namespace DLMApp_DataAccessLayer
 {
     public class PeopleRegisteredInAppointmentDTORepository
     {
-        public static List<clsPeopleRegisteredInAppointmentDTO> GetAllRegisteredPeopleInAppointment(byte TestID, ref string CreatedByUser)
+        public static async Task<(List<clsPeopleRegisteredInAppointmentDTO>, string)> GetAllRegisteredPeopleInAppointment(byte TestID)
         {
             List<clsPeopleRegisteredInAppointmentDTO> ListOfRegisteredPeople = new List<clsPeopleRegisteredInAppointmentDTO>();
+            string CreatedByUser = "";
 
             if (TestID > 0)
             {
@@ -32,12 +32,11 @@ namespace DLMApp_DataAccessLayer
                     Command.Parameters.AddWithValue("@TestID", TestID);
                     Command.Parameters.AddWithValue("@DateNow", DateTime.Now);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    Reader = Command.ExecuteReader();
+                    Reader = await Command.ExecuteReaderAsync();
 
-
-                    while (Reader.Read())
+                    while (await Reader.ReadAsync())
                     {
                         clsPeopleRegisteredInAppointmentDTO PeopleRegisteredInAppointmentDTO = new clsPeopleRegisteredInAppointmentDTO();
 
@@ -110,12 +109,13 @@ namespace DLMApp_DataAccessLayer
                 }
             }
 
-            return ListOfRegisteredPeople;
+            return (ListOfRegisteredPeople, CreatedByUser);
         }
 
-        public static List<clsPeopleRegisteredInAppointmentDTO> GetAllRegisteredPeopleInAppointmentTestDay(byte TestID, ref string CreatedByUser, DateTime Appointment)
+        public static async Task<(List<clsPeopleRegisteredInAppointmentDTO>, string)> GetAllRegisteredPeopleInAppointmentTestDay(byte TestID, DateTime Appointment)
         {
             List<clsPeopleRegisteredInAppointmentDTO> ListOfRegisteredPeople = new List<clsPeopleRegisteredInAppointmentDTO>();
+            string CreatedByUser = "";
 
             if (TestID > 0)
             {
@@ -134,12 +134,11 @@ namespace DLMApp_DataAccessLayer
                     Command.Parameters.AddWithValue("@TestID", TestID);
                     Command.Parameters.AddWithValue("@Appointment", Appointment.Date);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    Reader = Command.ExecuteReader();
+                    Reader = await Command.ExecuteReaderAsync();
 
-
-                    while (Reader.Read())
+                    while (await Reader.ReadAsync())
                     {
                         clsPeopleRegisteredInAppointmentDTO PeopleRegisteredInAppointmentDTO = new clsPeopleRegisteredInAppointmentDTO();
 
@@ -206,12 +205,13 @@ namespace DLMApp_DataAccessLayer
                 }
             }
 
-            return ListOfRegisteredPeople;
+            return (ListOfRegisteredPeople, CreatedByUser);
         }
 
-        public static List<clsPeopleRegisteredInAppointmentDTO> GetAllRegisteredPeopleInAppointmentTestDayRenewLicenseTestDay(byte TestID, ref string CreatedByUse, DateTime Appointment)
+        public static async Task<(List<clsPeopleRegisteredInAppointmentDTO>, string)> GetAllRegisteredPeopleInAppointmentTestDayRenewLicenseTestDay(byte TestID, DateTime Appointment)
         {
             List<clsPeopleRegisteredInAppointmentDTO> ListOfRegisteredPeople = new List<clsPeopleRegisteredInAppointmentDTO>();
+            string CreatedByUse = "";
 
             if (TestID > 0)
             {
@@ -230,11 +230,11 @@ namespace DLMApp_DataAccessLayer
                     Command.Parameters.AddWithValue("@TestID", TestID);
                     Command.Parameters.AddWithValue("@Appointment", Appointment.Date);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    Reader = Command.ExecuteReader();
+                    Reader = await Command.ExecuteReaderAsync();
 
-                    while (Reader.Read())
+                    while (await Reader.ReadAsync())
                     {
                         clsPeopleRegisteredInAppointmentDTO PeopleRegisteredInAppointmentDTO = new clsPeopleRegisteredInAppointmentDTO();
 
@@ -293,12 +293,13 @@ namespace DLMApp_DataAccessLayer
                 }
             }
 
-            return ListOfRegisteredPeople;
+            return (ListOfRegisteredPeople, CreatedByUse);
         }
 
-        public static List<clsPeopleRegisteredInAppointmentDTO> GetAllRegisteredPeopleInAppointmentTestDayRenewLicense(byte TestID, ref string CreatedByUser)
+        public static async Task<(List<clsPeopleRegisteredInAppointmentDTO>, string)> GetAllRegisteredPeopleInAppointmentTestDayRenewLicense(byte TestID)
         {
             List<clsPeopleRegisteredInAppointmentDTO> ListOfRegisteredPeople = new List<clsPeopleRegisteredInAppointmentDTO>();
+            string CreatedByUser = "";
 
             if (TestID > 0)
             {
@@ -318,12 +319,11 @@ namespace DLMApp_DataAccessLayer
                     Command.Parameters.AddWithValue("@TestID", TestID);
                     Command.Parameters.AddWithValue("@DateNow", DateTime.Now);
 
-                    Connection.Open();
+                    await Connection.OpenAsync();
 
-                    Reader = Command.ExecuteReader();
+                    Reader = await Command.ExecuteReaderAsync();
 
-
-                    while (Reader.Read())
+                    while (await Reader.ReadAsync())
                     {
                         clsPeopleRegisteredInAppointmentDTO PeopleRegisteredInAppointmentDTO = new clsPeopleRegisteredInAppointmentDTO();
 
@@ -387,7 +387,7 @@ namespace DLMApp_DataAccessLayer
                 }
             }
 
-            return ListOfRegisteredPeople;
+            return (ListOfRegisteredPeople, CreatedByUser);
         }
 
 
